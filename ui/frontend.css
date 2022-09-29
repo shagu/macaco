@@ -1,0 +1,200 @@
+/* Sidebar */
+#folder {
+  margin: 2px;
+  padding: 3px 6px;
+  text-overflow: ellipsis;
+  border: 1px var(--background-window) solid;
+  border-radius: 4px;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'title count';
+  white-space: nowrap;
+}
+
+#folder:hover {
+  background: var(--background-accent);
+}
+
+#folder.active {
+  background: var(--background-accent);
+  border: 1px var(--border-accent) solid;
+}
+
+#folder-title {
+  grid-area: title;
+  font-size: small;
+}
+
+#folder-count {
+  grid-area: count;
+  font-size: small;
+  text-align: right;
+  color: #555;
+  padding-left: 4px;
+  margin-left: 4px;
+}
+
+/* Content */
+#content {
+  padding: 5px;
+}
+
+#content #help {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 100;
+  font-size: 24pt;
+  color: var(--border-dark);
+}
+
+#content #help #text {
+  font-size: 12pt;
+  max-width: fit-content;
+  text-align: justify;
+}
+
+#content #card {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px;
+  overflow: hidden;
+  width: 128px;
+  border: 1px rgba(0,0,0,0) solid;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+}
+
+#content #card:hover > #card-title {
+}
+
+#content #card:hover {
+  background-color: var(--background-window);
+}
+
+#content #card.new {
+  background: var(--background-window);
+  border: 1px var(--border-normal) solid;
+}
+
+#content #card.selection {
+  background: var(--background-accent);
+  border: 1px var(--border-accent) solid;
+}
+
+#content #card.selection:hover {
+  background: var(--background-accent);
+  border: 1px var(--border-accent) solid;
+}
+
+#content  #card img {
+  width: 128px;
+  height: 176px;
+  border-radius: 5px;
+}
+
+#content #card #card-pricetag {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.75);
+  position: absolute;
+  text-align: right;
+  font-size: small;
+  padding: 5px 10px;
+  right: 5px;
+  top: 25px;
+}
+
+#content #card #card-title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  font-size: 10pt;
+  font-weight: 200;
+  width: 100%;
+}
+
+/* Preview */
+#preview {
+  display: none;
+  grid-template-areas:
+    'preview-image   preview-image    '
+    'edition-label   edition-input    '
+    'number-label    number-input     '
+    'language-label  language-input   '
+    'foil-label      foil-input       '
+    'button          button           '
+    'metadata        metadata         '
+    'spacer          spacer           '
+    ;
+
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto auto auto auto 1fr;
+  max-width: min-content;
+}
+
+#preview-imagebox { grid-area: preview-image; }
+#preview-edition-label { grid-area: edition-label; }
+#preview-edition-input { grid-area: edition-input; }
+#preview-number-label { grid-area: number-label; }
+#preview-number-input { grid-area: number-input; }
+#preview-language-label { grid-area: language-label; }
+#preview-language-input { grid-area: language-input; }
+#preview-foil-label { grid-area: foil-label; }
+#preview-foil-input { grid-area: foil-input; }
+#preview-metadata { grid-area: metadata; }
+#preview-button { grid-area: button; }
+#spacer { grid-area: spacer; }
+
+#preview input[type=text], #preview select {
+  width: 100px;
+  box-sizing: border-box;
+}
+
+#preview-image { width: 252px; height: 352px; }
+#preview-add-card { width: 100%; box-sizing: border-box; }
+#preview-edition { float: right; text-transform: uppercase; }
+#preview-edition::placeholder { text-transform: none; }
+#preview-number { float: right; }
+#preview-language { float: right; }
+#preview-foil { float: right; }
+#preview-metadata {
+  overflow: auto;
+  border: 1px var(--border-normal) solid;
+  background: var(--background-content);
+  margin-top: 4px;
+  padding: 4px;
+  line-height: 20px;
+}
+
+#preview-metadata-mana {
+  float: right;
+}
+
+#preview-metadata img {
+  height: 16px;
+  vertical-align: middle;
+  margin: 0px 1px;
+}
+
+#preview-metadata #quote {
+  font-style: italic;
+  color: var(--border-normal);
+
+  border-top: 1px var(--border-normal) solid;
+  padding: 2px 0px;
+  margin: 4px 0px;
+}
+
+#preview-metadata #type {
+  border-bottom: 1px var(--border-normal) solid;
+  padding: 2px 0px;
+  margin: 4px 0px;
+}
+
+#preview-metadata div.vspacer {
+  height: 8px;
+}

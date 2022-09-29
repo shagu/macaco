@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cardfiles</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="popups.css">
+  <link rel="stylesheet" href="frontend.css">
+</head>
+
+<script src="popups.js"></script>
+<script src="frontend.js"></script>
+
+<body>
+  <div id="popups"></div>
+
+  <div id=window>
+    <div id=header>
+      <button id="open-button">Open Folder</button>
+      <button id="import-button">Import File</button>
+      <button id="download-button">Fetch Metadata</button>
+    </div>
+
+    <div id=sidebar></div>
+    <div id=content>
+      <div id=help>
+        Welcome to cardfiles.
+        <div id=text>
+          Open an existing collection folder or create a new one, where the collection should be stored at.
+        </div>
+      </div>
+    </div>
+    <div id=meta>
+      <div id=preview>
+        <div id=preview-imagebox>
+          <img id="preview-image" src="./img/card-background.jpg" />
+        </div>
+
+        <div id=preview-edition-label>Edition:</div>
+        <div id=preview-edition-input>
+          <input id="preview-edition" type="text" placeholder="Edition" />
+        </div>
+
+        <div id=preview-number-label>Number:</div>
+        <div id=preview-number-input>
+          <input id="preview-number" type="text" placeholder="Number" />
+        </div>
+
+        <div id=preview-language-label>Language:</div>
+        <div id=preview-language-input>
+          <select id="preview-language" name="language" id="language">
+            <option value="en">English</option>
+            <option value="de">German</option>
+          </select>
+        </div>
+
+        <div id=preview-foil-label>Foil:</div>
+        <div id=preview-foil-input>
+          <input id="preview-foil" type="checkbox" />
+        </div>
+
+        <div id=preview-button>
+          <button id="preview-add-card" disabled>New/Update Card</button>
+        </div>
+
+        <div id=preview-metadata>
+          <span id=preview-metadata-mana></span>
+        </div>
+      </div>
+    </div>
+
+    <div id=footer></div>
+  </div>
+</body>
+</html>
