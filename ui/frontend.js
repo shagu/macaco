@@ -198,6 +198,25 @@ collection.set_preview = (card, existing) => {
   collection.dom.preview.language.value = collection.selection.language
   collection.dom.preview.foil.checked   = collection.selection.foil
   collection.dom.preview.preview.src    = collection.selection.file
+
+  // prices
+  const cardmarket = collection.selection.foil ? collection.selection.price_foil_cardmarket : collection.selection.price_normal_cardmarket
+  const cardkingdom = collection.selection.foil ? collection.selection.price_foil_cardkingdom : collection.selection.price_normal_cardkingdom
+  if(cardmarket) {
+    collection.dom.preview.cardmarket.innerHTML = `CardMarket<span id=right>${cardmarket.toFixed(2)}€</span>`
+    let color = cardmarket > 10 ? "#f00" : cardmarket > 1 ? '#f50' : '#000'
+    collection.dom.preview.cardmarket.style = `display: block; color: ${color};`
+  } else {
+    collection.dom.preview.cardmarket.style = "display: none;"
+  }
+
+  if(cardkingdom) {
+    collection.dom.preview.cardkingdom.innerHTML  = `CardKingdom<span id=right>${cardkingdom.toFixed(2)}$</span>`
+    let color = cardkingdom > 10 ? "#f00" : cardkingdom > 1 ? '#f50' : '#000'
+    collection.dom.preview.cardkingdom.style = `display: block; color: ${color};`
+  } else {
+    collection.dom.preview.cardkingdom.style = "display: none;"
+  }
 }
 
 collection.update_preview = () => {
@@ -257,6 +276,8 @@ collection.init = () => {
     language: document.getElementById('preview-language'),
     preview: document.getElementById('preview-image'),
     button: document.getElementById('preview-add-card'),
+    cardmarket: document.getElementById('preview-cardmarket'),
+    cardkingdom: document.getElementById('preview-cardkingdom'),
   }
 
   collection.dom.headerbar = {

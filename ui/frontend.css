@@ -128,11 +128,15 @@
     'foil-label      foil-input       '
     'button          button           '
     'metadata        metadata         '
+    'cardmarket      cardmarket       '
+    'cardkingdom     cardkingdom      '
     'spacer          spacer           '
+    'buttons         buttons         '
     ;
 
   grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto auto auto auto auto auto 1fr auto;
+  min-height: 100%;
   max-width: min-content;
 }
 
@@ -147,7 +151,10 @@
 #preview-foil-input { grid-area: foil-input; }
 #preview-metadata { grid-area: metadata; }
 #preview-button { grid-area: button; }
-#spacer { grid-area: spacer; }
+#preview-cardmarket { grid-area: cardmarket; }
+#preview-cardkingdom { grid-area: cardkingdom; }
+#preview-spacer { grid-area: spacer; min-height: 0px; }
+#preview-buttons { grid-area: buttons; }
 
 #preview input[type=text], #preview select {
   width: 100px;
@@ -197,4 +204,23 @@
 
 #preview-metadata div.vspacer {
   height: 8px;
+}
+
+#preview-cardmarket, #preview-cardkingdom {
+  overflow: auto;
+  border: 1px var(--border-normal) solid;
+  margin-top: 4px;
+  padding: 4px;
+  line-height: 20px;
+}
+
+#preview-cardmarket #right, #preview-cardkingdom #right {
+  float: right;
+  line-height: 20px;
+}
+
+#preview-buttons button {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
 }
