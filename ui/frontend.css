@@ -9,7 +9,7 @@
   --background-accent:  #d6ecf8;
 
   --border-normal:      #bcbebf;
-  --border-dark:        #0a0c0d;
+  --border-dark:        #5a5c5d;
   --border-accent:      #3daee9;
 }
 
@@ -284,6 +284,8 @@ input[type=checkbox]:focus {
   grid-template-rows: auto auto auto auto auto auto auto auto auto 1fr auto;
   min-height: 100%;
   max-width: min-content;
+  align-items: center;
+  gap: 2px;
 }
 
 #preview-imagebox { grid-area: preview-image; }
@@ -303,22 +305,21 @@ input[type=checkbox]:focus {
 #preview-buttons { grid-area: buttons; }
 
 #preview input[type=text], #preview select {
-  width: 100px;
+  width: 180px;
   box-sizing: border-box;
 }
 
 #preview-image { width: 252px; height: 352px; }
 #preview-add-card { width: 100%; box-sizing: border-box; }
-#preview-edition { float: right; text-transform: uppercase; }
+#preview-edition { float: right; text-transform: uppercase; text-align: right; }
 #preview-edition::placeholder { text-transform: none; }
-#preview-number { float: right; }
-#preview-language { float: right; }
+#preview-number { float: right; text-align: right; }
+#preview-language { float: right; text-align: right; }
 #preview-foil { float: right; }
 #preview-metadata {
   overflow: auto;
   border: 1px var(--border-normal) solid;
   background: var(--background-content);
-  margin-top: 4px;
   padding: 4px;
   line-height: 20px;
 }
@@ -355,7 +356,6 @@ input[type=checkbox]:focus {
 #preview-cardmarket, #preview-cardkingdom {
   overflow: auto;
   border: 1px var(--border-normal) solid;
-  margin-top: 4px;
   padding: 4px;
   line-height: 20px;
 }
@@ -368,5 +368,4 @@ input[type=checkbox]:focus {
 #preview-buttons button {
   width: 100%;
   box-sizing: border-box;
-  margin-top: 4px;
 }
