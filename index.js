@@ -8,8 +8,8 @@ core = {
 core.electron.app.whenReady().then(async () => {
   // create new window
   core.window = new core.electron.BrowserWindow({
-    width: 1280,
-    height: 786,
+    width: 1600,
+    height: 920,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -19,7 +19,7 @@ core.electron.app.whenReady().then(async () => {
 
   // setup content
   core.window.setMenu(null)
-  core.window.loadFile(core.path.join(__dirname, 'ui', 'window.html'))
+  core.window.loadFile(core.path.join(__dirname, 'ui', 'frontend.html'))
 
   // development stuff
   if(process.env.DEV) {
