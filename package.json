@@ -1,6 +1,6 @@
 {
   "name": "macaco",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A Magic Card Collection Software",
   "main": "index.js",
   "scripts": {
@@ -23,26 +23,23 @@
     "stream-chain": "^2.2.5",
     "stream-json": "^1.7.5"
   },
+
   "build": {
     "appId": "shagu.macaco",
     "productName": "Macaco",
     "artifactName": "${name}-${version}-${os}.${ext}",
-
+    "dmg": {
+      "writeUpdateInfo": false
+    },
     "mac": {
       "category": "public.app-category.utilities",
-      "target": [
-        "dmg"
-      ]
+      "target": [ "dmg" ]
     },
     "linux": {
-      "target": [
-        "AppImage"
-      ]
+      "target": [ "AppImage" ]
     },
     "win": {
-      "target": [
-        "portable"
-      ]
+      "target": [ "portable" ]
     }
   }
 }
