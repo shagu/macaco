@@ -1,0 +1,39 @@
+name: release
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  linux_build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: Install and Publish
+      run: |
+        npm install
+        GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npm run dist
+
+  macos_build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: Install and Publish
+      run: |
+        npm install
+        GH_TOKEN=${{ secrets.GITHUB_TOKEN }} npm run dist
+
+  windows_build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: Install and Publish
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        npm install
+        npm run dist
+

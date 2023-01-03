@@ -7,7 +7,7 @@
     "postinstall": "install-app-deps",
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder --publish always"
   },
   "author": "Eric Mauser",
   "license": "MIT",
@@ -26,6 +26,8 @@
   "build": {
     "appId": "shagu.macaco",
     "productName": "Macaco",
+    "artifactName": "${name}-${version}-${os}.${ext}",
+
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
