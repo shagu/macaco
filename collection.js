@@ -144,6 +144,12 @@ core.electron.ipcMain.handle('load-card', async (event, card) => {
   }
 })
 
+core.electron.ipcMain.handle('new-folder', async (event, folder) => {
+  if(!core.folder) return
+  fs.mkdirSync(path.join(core.folder, folder), { recursive: true })
+  await collection.reload()
+})
+
 core.electron.ipcMain.handle('add-card', async (event, card) => {
   await collection.add_card(card)
   await collection.reload()

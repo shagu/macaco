@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   collection.invoke['add-card'] = (card) => ipcRenderer.invoke('add-card', card)
   collection.invoke['load-card'] = (card) => ipcRenderer.invoke('load-card', card)
+  collection.invoke['new-folder'] = (name) => ipcRenderer.invoke('new-folder', name)
   collection.invoke['open-folder'] = () => ipcRenderer.invoke('open-folder')
   collection.invoke['import-backup'] = (path) => ipcRenderer.invoke('import-backup', path)
   collection.invoke['download-metadata'] = () => ipcRenderer.invoke('download-metadata')

@@ -167,6 +167,26 @@ input[type=checkbox]:focus {
   border: 1px var(--border-accent) solid;
 }
 
+#folder-input {
+  width: calc(100% - 4px);
+  margin: 2px;
+  box-sizing: border-box;
+
+  border-radius: 4px;
+  padding: 6px;
+
+  background: var(--background-normal);
+  border: 1px var(--border-normal) dashed;
+  color: var(--border-dark);
+  text-align: center;
+}
+
+#folder-input.active {
+  background: var(--background-content);
+  border: 1px var(--border-accent) dashed;
+  color: inherit;
+}
+
 #folder-title {
   grid-area: title;
   font-size: small;

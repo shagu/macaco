@@ -15,8 +15,9 @@ collection.reload_sidebar = () => {
     let div_folder = document.createElement("div")
     div_folder.setAttribute('id', "folder")
 
-    if (folder == collection.path)
+    if (folder == collection.path) {
       div_folder.classList.add("active")
+    }
 
     div_sidebar.appendChild(div_folder)
 
@@ -36,6 +37,37 @@ collection.reload_sidebar = () => {
       collection.reload()
     }
   }
+
+  /* add folder button */
+  let folder_input = document.createElement("input")
+  folder_input.setAttribute('type', 'text')
+  folder_input.setAttribute('id', "folder-input")
+  div_sidebar.appendChild(folder_input)
+  const input_enable = function() {
+    folder_input.classList.add("active")
+    folder_input.value = ""
+  }
+
+  const input_disable = function() {
+    folder_input.classList.remove("active")
+    folder_input.value = "New Folder"
+    folder_input.blur()
+  }
+
+  folder_input.onfocus = input_enable
+  folder_input.onblur = input_disable
+  folder_input.onkeydown = function(e) {
+    if (e.key === 'Enter') {
+      collection.invoke["new-folder"](folder_input.value)
+      input_disable()
+    }
+
+    if (e.key === 'Escape') {
+      input_disable()
+    }
+  }
+
+  input_disable()
 }
 
 collection.reload_statusbar = () => {
