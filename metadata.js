@@ -306,8 +306,8 @@ let metadata = {
       core.utils.popup(`Scryfall Download: ${card.set}:${card.number}`, caption, status.percent/100)
     }
 
-    const image = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_${card.set}:${card.number}:${card.language}${card.foil ? ':f' : ''}.jpg`)
-    const fallback = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_${card.set}:${card.number}:en${card.foil ? ':f' : ''}.jpg`)
+    const image = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
+    const fallback = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
 
     // fetch image
     if(!fs.existsSync(image)) {

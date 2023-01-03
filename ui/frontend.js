@@ -272,7 +272,7 @@ collection.new_card = async () => {
   if(!collection.selection) return
 
   const ui_card = collection.selection
-  const identifier = `[${ui_card.set}:${ui_card.number}:${ui_card.language}${ui_card.foil ? ':f' : ''}]`
+  const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
 
   popups.show(`${ui_card.name}`, identifier, 0)
   const new_card = await collection.invoke['add-card'](ui_card)

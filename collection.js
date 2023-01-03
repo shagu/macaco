@@ -8,17 +8,14 @@ const collection = {
   add_card: async (card) => {
     await core.metadata.update_card(card)
 
-    let suffix = `${card.set}:${card.number}:${card.language}`
-    suffix = card.foil ? `${suffix}:f` : suffix
-
-    let name = card.name ? card.name : "Unknown"
-    name = name.replaceAll('/', '|')
+    let suffix = `${card.set}.${card.number}.${card.language}`
+    suffix = card.foil ? `${suffix}.f` : suffix
 
     let count = 1
-    let filename = `${name} [${suffix}].jpg`
+    let filename = `[${suffix}](${count}).jpg`
 
     while(fs.existsSync(path.join(core.folder, card.path, filename))) {
-      filename = `${name} (${count}) [${suffix}].jpg`
+      filename = `[${suffix}](${count}).jpg`
       count++
     }
 
@@ -64,7 +61,7 @@ const collection = {
         let parse = file.match(/(.*?) ?\[(.*)\]/i)
         if (parse && parse[2]) {
           let name = parse[1] == '' ? 'Unknown' : parse[1]
-          let meta = parse[2].split(":")
+          let meta = parse[2].split(".")
 
           name = name.replaceAll('|', '/')
 
@@ -126,10 +123,10 @@ const collection = {
 }
 
 core.electron.ipcMain.handle('load-card', async (event, card) => {
-  let suffix = `${card.set}:${card.number}:${card.language}`
-  suffix = card.foil ? `${suffix}:f` : suffix
+  let suffix = `${card.set}.${card.number}.${card.language}`
+  suffix = card.foil ? `${suffix}.f` : suffix
 
-  card.file = path.join(core.data_directory, "images", `preview_${suffix}.jpg`)
+  card.file = path.join(core.data_directory, "images", `preview_[${suffix}].jpg`)
 
   if (!fs.existsSync(card.file)) {
     await core.metadata.get_image(card, true)
