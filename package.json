@@ -1,7 +1,7 @@
 {
-  "name": "cardfiles",
+  "name": "macaco",
   "version": "1.0.0",
-  "description": "a file for every card",
+  "description": "A Magic Card Collection Software",
   "main": "index.js",
   "scripts": {
     "start": "electron ."
@@ -14,9 +14,7 @@
   },
   "dependencies": {
     "better-sqlite3": "^7.6.2",
-    "big-json": "^3.2.0",
     "jimp": "^0.16.2",
-    "json-big": "^1.0.2",
     "jszip": "^3.10.1",
     "stream-chain": "^2.2.5",
     "stream-json": "^1.7.5"

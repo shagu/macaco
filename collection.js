@@ -113,8 +113,8 @@ const collection = {
 
     core.folder = folder
     await collection.reload(true)
-
     core.utils.popup("Open Collection Folder", folder, 1)
+    core.window.setTitle(`Macaco - ${folder}`)
   },
 
   reload: async (with_progress) => {
