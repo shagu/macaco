@@ -178,6 +178,8 @@ collection.reload_preview = () => {
 }
 
 collection.reload = () => {
+  collection.path = collection.db[collection.path] ? collection.path : "."
+
   if(!collection.db[collection.path]) {
     collection.dom.headerbar.import.disabled = true
     return
