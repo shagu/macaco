@@ -167,6 +167,11 @@ input[type=checkbox]:focus {
   border: 1px var(--border-accent) solid;
 }
 
+#folder.drag {
+  background: var(--border-accent);
+  border: 1px var(--border-accent) solid;
+}
+
 #folder-input {
   width: calc(100% - 4px);
   margin: 2px;
@@ -190,6 +195,7 @@ input[type=checkbox]:focus {
 #folder-title {
   grid-area: title;
   font-size: small;
+  pointer-events: none;
 }
 
 #folder-count {
@@ -199,6 +205,7 @@ input[type=checkbox]:focus {
   color: #555;
   padding-left: 4px;
   margin-left: 4px;
+  pointer-events: none;
 }
 
 /* Content */
@@ -256,10 +263,11 @@ input[type=checkbox]:focus {
   border: 1px var(--border-accent) solid;
 }
 
-#content  #card img {
+#content #card img {
   width: 128px;
   height: 176px;
   border-radius: 5px;
+  pointer-events: none;
 }
 
 #content #card #card-pricetag {
@@ -271,6 +279,7 @@ input[type=checkbox]:focus {
   padding: 5px 10px;
   right: 5px;
   top: 25px;
+  pointer-events: none;
 }
 
 #content #card #card-title {
@@ -281,6 +290,7 @@ input[type=checkbox]:focus {
   font-size: 10pt;
   font-weight: 200;
   width: 100%;
+  pointer-events: none;
 }
 
 /* Preview */

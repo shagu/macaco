@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   frontend.invoke['add-card'] = (card) => ipcRenderer.invoke('add-card', card)
   frontend.invoke['load-card'] = (card) => ipcRenderer.invoke('load-card', card)
+  frontend.invoke['move-card'] = (card, dest) => ipcRenderer.invoke('move-card', card, dest)
   frontend.invoke['new-folder'] = (name) => ipcRenderer.invoke('new-folder', name)
   frontend.invoke['open-folder'] = () => ipcRenderer.invoke('open-folder')
   frontend.invoke['import-backup'] = (path) => ipcRenderer.invoke('import-backup', path)

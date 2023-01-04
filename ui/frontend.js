@@ -13,6 +13,8 @@ frontend.reload_sidebar = () => {
 
   for (const [folder, content] of Object.entries(frontend.db)) {
     let div_folder = document.createElement("div")
+    const caption = "<b>🗀</b> " + (folder == "." ? "Library" : folder)
+
     div_folder.setAttribute('id', "folder")
 
     if (folder == frontend.path) {
@@ -24,13 +26,42 @@ frontend.reload_sidebar = () => {
     div_folder.div_title = document.createElement("div")
     div_folder.div_title.setAttribute('id', 'folder-title')
 
-    div_folder.div_title.innerHTML = "<b>🗀</b> " + (folder == "." ? "Library" : folder)
+    div_folder.div_title.innerHTML = caption
     div_folder.appendChild(div_folder.div_title)
 
     div_folder.div_count = document.createElement("div")
     div_folder.div_count.setAttribute('id', 'folder-count')
     div_folder.div_count.innerHTML = content.length
     div_folder.appendChild(div_folder.div_count)
+
+    div_folder.ondragenter = function(e) {
+      e.preventDefault()
+      e.target.classList.add("drag")
+    }
+
+    div_folder.ondragover = function(e) {
+      e.preventDefault()
+    }
+
+    div_folder.ondragleave = function(e) {
+      e.preventDefault()
+      e.target.classList.remove('drag')
+    }
+
+    div_folder.ondrop = function(e) {
+      e.preventDefault()
+      e.target.classList.remove('drag')
+
+      const data = e.dataTransfer.getData("text/plain")
+
+      try {
+        const card = JSON.parse(data)
+        frontend.invoke["move-card"](card, folder)
+      } catch(e) {
+        console.log("Can't handle drop input")
+        return
+      }
+    }
 
     div_folder.onclick = function() {
       frontend.path = folder
@@ -115,6 +146,7 @@ frontend.reload_view = () => {
 
   for (const card of view) {
     let div_card = document.createElement("div")
+    div_card.setAttribute("draggable", true)
     frontend.dom.cards.push(div_card)
 
     div_card.data = card
@@ -122,6 +154,10 @@ frontend.reload_view = () => {
       frontend.set_preview(this.data, true)
       frontend.reload_view_selection()
       e.stopPropagation()
+    }
+
+    div_card.ondragstart = function(e) {
+      e.dataTransfer.setData("text/plain", JSON.stringify(e.target.data))
     }
 
     div_card.setAttribute('id', 'card')

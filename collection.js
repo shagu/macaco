@@ -39,6 +39,28 @@ const collection = {
     core.window.webContents.send('add-card-update', card)
   },
 
+  move_card: async (card, dest) => {
+    if(!card || !card.set || !card.number || !card.language || !card.file)
+      return
+
+    if(!fs.existsSync(card.file) || !fs.existsSync(path.join(core.folder, dest)))
+      return
+
+    const old_file = card.file
+    let suffix = `${card.set}.${card.number}.${card.language}`
+    suffix = card.foil ? `${suffix}.f` : suffix
+
+    let count = 1
+    let filename = `[${suffix}](${count}).jpg`
+
+    while(fs.existsSync(path.join(core.folder, dest, filename))) {
+      filename = `[${suffix}](${count}).jpg`
+      count++
+    }
+
+    fs.renameSync(old_file, path.join(core.folder, dest, filename))
+  },
+
   scan_cards: async (folder = ".") => {
     // abort if nothing was opened yet
     if(!core.folder) return
@@ -154,6 +176,11 @@ core.electron.ipcMain.handle('new-folder', async (event, folder) => {
 
 core.electron.ipcMain.handle('add-card', async (event, card) => {
   await collection.add_card(card)
+  await collection.reload()
+})
+
+core.electron.ipcMain.handle('move-card', async (event, card, dest) => {
+  await collection.move_card(card, dest)
   await collection.reload()
 })
 
