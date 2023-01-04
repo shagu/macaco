@@ -264,7 +264,7 @@ let metadata = {
 
   update_card: async (card) => {
     // make sure metadata database is initialized
-    await metadata.load_database()
+    await metadata.setup_metadata()
 
     const edition = card.set.toUpperCase()
     const number = card.number.toString().toUpperCase()

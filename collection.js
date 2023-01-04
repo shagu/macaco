@@ -95,23 +95,25 @@ const collection = {
     let current = 0
     for (const [folder, cards] of Object.entries(collection.library)) {
       for (card of cards) {
+          // add extended metadata to card
+          await core.metadata.update_card(card)
+
           if (with_progress) {
             current++
             const percent = current/num
             const caption = `${folder}<br/>${current} of ${num} (${percent.toFixed()*100}%)`
             core.utils.popup("Open Collection Folder", caption, percent)
           }
-
-          // add extended metadata to card
-          await core.metadata.update_card(card)
       }
     }
   },
 
   open: async (folder) => {
-    core.utils.popup("Open Collection Folder", folder, null)
-
     core.folder = folder
+
+    core.utils.popup("Open Collection Folder", "Waiting for metadata...", null)
+    await core.metadata.setup_metadata()
+    core.utils.popup("Open Collection Folder", folder, null)
     await collection.reload(true)
     core.utils.popup("Open Collection Folder", folder, 1)
     core.window.setTitle(`Macaco - ${folder}`)
