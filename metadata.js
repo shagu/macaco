@@ -160,7 +160,7 @@ let metadata = {
         )
       }
 
-      core.utils.popup("MTGJSON Printings", "Reading File ...", null)
+      core.utils.popup("MTGJSON Printings", "Reading File...<br/>This can take up to 5 minutes.", null)
 
       const pipeline = chain([
         fs.createReadStream(printings_file),
@@ -175,7 +175,7 @@ let metadata = {
       })
 
       pipeline.on('end', () => {
-        core.utils.popup("MTGJSON Printings", "Reading File ...", 1)
+        core.utils.popup("MTGJSON Printings", "Complete!", 1)
         resolve(printings)
       })
     })
@@ -201,7 +201,7 @@ let metadata = {
         )
       }
 
-      core.utils.popup("MTGJSON Prices", "Reading File ...", null)
+      core.utils.popup("MTGJSON Prices", "Reading File...<br/>This can take up to 10 minutes.", null)
 
       const pipeline = chain([
         fs.createReadStream(prices_file),
@@ -218,7 +218,7 @@ let metadata = {
       })
 
       pipeline.on('end', () => {
-        core.utils.popup("MTGJSON Prices", "Reading File ...", 1)
+        core.utils.popup("MTGJSON Prices", "Complete!", 1)
         resolve(prices)
       })
     })
