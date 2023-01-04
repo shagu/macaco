@@ -63,6 +63,9 @@ const collection = {
           let name = parse[1] == '' ? 'Unknown' : parse[1]
           let meta = parse[2].split(".")
 
+          // don't proceed on invalid files'
+          if(!meta[0] || !meta[1] || !meta[2]) continue
+
           name = name.replaceAll('|', '/')
 
           // build card
