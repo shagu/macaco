@@ -1,21 +1,21 @@
-let collection = { path: ".", db: {}, dom: {} }
+let frontend = { path: ".", db: {}, dom: {} }
 
-collection.objcompare = (a, b, o) => {
+frontend.objcompare = (a, b, o) => {
   if(!a || !b) return false
   if(!o) return a == b
   for (const e of o) if(a[e] != b[e]) return false
   return true
 }
 
-collection.reload_sidebar = () => {
+frontend.reload_sidebar = () => {
   let div_sidebar = document.getElementById('sidebar')
   div_sidebar.innerHTML = ""
 
-  for (const [folder, content] of Object.entries(collection.db)) {
+  for (const [folder, content] of Object.entries(frontend.db)) {
     let div_folder = document.createElement("div")
     div_folder.setAttribute('id', "folder")
 
-    if (folder == collection.path) {
+    if (folder == frontend.path) {
       div_folder.classList.add("active")
     }
 
@@ -33,8 +33,8 @@ collection.reload_sidebar = () => {
     div_folder.appendChild(div_folder.div_count)
 
     div_folder.onclick = function() {
-      collection.path = folder
-      collection.reload()
+      frontend.path = folder
+      frontend.reload()
     }
   }
 
@@ -58,7 +58,7 @@ collection.reload_sidebar = () => {
   folder_input.onblur = input_disable
   folder_input.onkeydown = function(e) {
     if (e.key === 'Enter') {
-      collection.invoke["new-folder"](folder_input.value)
+      frontend.invoke["new-folder"](folder_input.value)
       input_disable()
     }
 
@@ -70,11 +70,11 @@ collection.reload_sidebar = () => {
   input_disable()
 }
 
-collection.reload_statusbar = () => {
+frontend.reload_statusbar = () => {
   let [num_cards, num_lists] = [0, 0]
   let div_footer = document.getElementById('footer')
 
-  for (const [folder, content] of Object.entries(collection.db)) {
+  for (const [folder, content] of Object.entries(frontend.db)) {
     num_cards += content.length
     num_lists++
   }
@@ -82,12 +82,12 @@ collection.reload_statusbar = () => {
   div_footer.innerHTML = `<b>${num_cards}</b> Cards | <b>${num_lists}</b> Folders`
 }
 
-collection.reload_view_selection = () => {
-  if (!collection.dom.cards) return
+frontend.reload_view_selection = () => {
+  if (!frontend.dom.cards) return
 
-  for (const div of collection.dom.cards) {
-    if (collection.selection &&  div.data.file == collection.selection.file) {
-      if (collection.selection.current_file) {
+  for (const div of frontend.dom.cards) {
+    if (frontend.selection &&  div.data.file == frontend.selection.file) {
+      if (frontend.selection.current_file) {
         div.classList.add("selection")
       } else {
         div.classList.add("new")
@@ -99,28 +99,28 @@ collection.reload_view_selection = () => {
   }
 }
 
-collection.reload_view = () => {
-  let view = collection.db[collection.path]
+frontend.reload_view = () => {
+  let view = frontend.db[frontend.path]
   let div_content = document.getElementById('content')
 
   div_content.onclick = function(e) {
-    collection.reset_preview()
-    collection.reload_view_selection()
+    frontend.reset_preview()
+    frontend.reload_view_selection()
     e.stopPropagation()
   }
 
   div_content.innerHTML = ""
-  collection.dom.cards = []
+  frontend.dom.cards = []
 
 
   for (const card of view) {
     let div_card = document.createElement("div")
-    collection.dom.cards.push(div_card)
+    frontend.dom.cards.push(div_card)
 
     div_card.data = card
     div_card.onclick = function(e) {
-      collection.set_preview(this.data, true)
-      collection.reload_view_selection()
+      frontend.set_preview(this.data, true)
+      frontend.reload_view_selection()
       e.stopPropagation()
     }
 
@@ -156,10 +156,10 @@ collection.reload_view = () => {
     div_card.appendChild(div_card.div_pricetag)
   }
 
-  collection.reload_view_selection()
+  frontend.reload_view_selection()
 }
 
-collection.text_to_html = (str) => {
+frontend.text_to_html = (str) => {
   if(!str) return ""
 
   const icons = /{(.+?)}/gi
@@ -172,144 +172,144 @@ collection.text_to_html = (str) => {
   return str
 }
 
-collection.reload_preview = () => {
-  collection.dom.preview.panel.style = "display: grid;"
-  if(!collection.selection) collection.reset_preview()
+frontend.reload_preview = () => {
+  frontend.dom.preview.panel.style = "display: grid;"
+  if(!frontend.selection) frontend.reset_preview()
 }
 
-collection.reload = () => {
-  collection.path = collection.db[collection.path] ? collection.path : "."
+frontend.reload = () => {
+  frontend.path = frontend.db[frontend.path] ? frontend.path : "."
 
-  if(!collection.db[collection.path]) {
-    collection.dom.headerbar.import.disabled = true
+  if(!frontend.db[frontend.path]) {
+    frontend.dom.headerbar.import.disabled = true
     return
   } else {
-    collection.dom.headerbar.import.disabled = false
+    frontend.dom.headerbar.import.disabled = false
   }
 
-  collection.reload_sidebar()
-  collection.reload_statusbar()
-  collection.reload_view()
-  collection.reload_preview()
+  frontend.reload_sidebar()
+  frontend.reload_statusbar()
+  frontend.reload_view()
+  frontend.reload_preview()
 }
 
-collection.reset_preview = () => {
-  collection.set_preview({
+frontend.reset_preview = () => {
+  frontend.set_preview({
     set: "", number: "",
     foil: false, language: "en",
-    unknown: true, path: collection.path,
+    unknown: true, path: frontend.path,
   })
 }
 
-collection.set_preview = (card, existing) => {
-  collection.selection = card
+frontend.set_preview = (card, existing) => {
+  frontend.selection = card
 
   // write current file if preview is an existing one
   if (existing) card.current_file = card.file
 
   if (card.unknown) {
     // write a dummy card & disable button
-    collection.dom.preview.info.innerHTML = "Unknown Card"
-    collection.selection.file = "./img/card-background.jpg"
-    collection.dom.preview.button.disabled = true
+    frontend.dom.preview.info.innerHTML = "Unknown Card"
+    frontend.selection.file = "./img/card-background.jpg"
+    frontend.dom.preview.button.disabled = true
   } else {
-    collection.dom.preview.info.innerHTML = `
+    frontend.dom.preview.info.innerHTML = `
       <span id="preview-metadata-mana">
-        ${collection.text_to_html(collection.selection.manacost)}
+        ${frontend.text_to_html(frontend.selection.manacost)}
       </span>
-      <b>${collection.selection.name ? collection.selection.name : ''}</b><br/>
-      <div id=type>${collection.selection.type ? collection.selection.type : ''}</div>
-      ${collection.text_to_html(collection.selection.text)}
+      <b>${frontend.selection.name ? frontend.selection.name : ''}</b><br/>
+      <div id=type>${frontend.selection.type ? frontend.selection.type : ''}</div>
+      ${frontend.text_to_html(frontend.selection.text)}
       ${card.flavor ? `<div id=quote>${card.flavor}</div>` : ''}
     `
 
-    collection.dom.preview.button.disabled = false
+    frontend.dom.preview.button.disabled = false
   }
 
   // adjust button label
   if (card.current_file) {
-    collection.dom.preview.button.innerHTML = "Update Card"
+    frontend.dom.preview.button.innerHTML = "Update Card"
   } else {
-    collection.dom.preview.button.innerHTML = "New Card"
+    frontend.dom.preview.button.innerHTML = "New Card"
   }
 
   // update preview
-  collection.dom.preview.edition.value  = collection.selection.set
-  collection.dom.preview.number.value   = collection.selection.number
-  collection.dom.preview.language.value = collection.selection.language
-  collection.dom.preview.foil.checked   = collection.selection.foil
-  collection.dom.preview.preview.src    = collection.selection.file
+  frontend.dom.preview.edition.value  = frontend.selection.set
+  frontend.dom.preview.number.value   = frontend.selection.number
+  frontend.dom.preview.language.value = frontend.selection.language
+  frontend.dom.preview.foil.checked   = frontend.selection.foil
+  frontend.dom.preview.preview.src    = frontend.selection.file
 
   // prices
-  const cardmarket = collection.selection.foil ? collection.selection.price_foil_cardmarket : collection.selection.price_normal_cardmarket
-  const cardkingdom = collection.selection.foil ? collection.selection.price_foil_cardkingdom : collection.selection.price_normal_cardkingdom
+  const cardmarket = frontend.selection.foil ? frontend.selection.price_foil_cardmarket : frontend.selection.price_normal_cardmarket
+  const cardkingdom = frontend.selection.foil ? frontend.selection.price_foil_cardkingdom : frontend.selection.price_normal_cardkingdom
   if(cardmarket) {
-    collection.dom.preview.cardmarket.innerHTML = `CardMarket<span id=right>${cardmarket.toFixed(2)}€</span>`
+    frontend.dom.preview.cardmarket.innerHTML = `CardMarket<span id=right>${cardmarket.toFixed(2)}€</span>`
     let color = cardmarket > 10 ? "#f00" : cardmarket > 1 ? '#f50' : '#000'
-    collection.dom.preview.cardmarket.style = `display: block; color: ${color};`
+    frontend.dom.preview.cardmarket.style = `display: block; color: ${color};`
   } else {
-    collection.dom.preview.cardmarket.style = "display: none;"
+    frontend.dom.preview.cardmarket.style = "display: none;"
   }
 
   if(cardkingdom) {
-    collection.dom.preview.cardkingdom.innerHTML  = `CardKingdom<span id=right>${cardkingdom.toFixed(2)}$</span>`
+    frontend.dom.preview.cardkingdom.innerHTML  = `CardKingdom<span id=right>${cardkingdom.toFixed(2)}$</span>`
     let color = cardkingdom > 10 ? "#f00" : cardkingdom > 1 ? '#f50' : '#000'
-    collection.dom.preview.cardkingdom.style = `display: block; color: ${color};`
+    frontend.dom.preview.cardkingdom.style = `display: block; color: ${color};`
   } else {
-    collection.dom.preview.cardkingdom.style = "display: none;"
+    frontend.dom.preview.cardkingdom.style = "display: none;"
   }
 }
 
-collection.update_preview = () => {
+frontend.update_preview = () => {
   // read available data from input fields
-  collection.selection = collection.selection || { }
-  collection.selection.set = collection.dom.preview.edition.value.toLowerCase()
-  collection.selection.number = collection.dom.preview.number.value
-  collection.selection.language = collection.dom.preview.language.value
-  collection.selection.foil = collection.dom.preview.foil.checked ? true : false
-  collection.selection.path = collection.path
+  frontend.selection = frontend.selection || { }
+  frontend.selection.set = frontend.dom.preview.edition.value.toLowerCase()
+  frontend.selection.number = frontend.dom.preview.number.value
+  frontend.selection.language = frontend.dom.preview.language.value
+  frontend.selection.foil = frontend.dom.preview.foil.checked ? true : false
+  frontend.selection.path = frontend.path
 
   // change ui to loading mode and invoke a card update
-  collection.dom.preview.info.innerHTML = "Please Wait..."
-  collection.dom.preview.preview.src = "./img/card-background.jpg"
-  collection.dom.preview.button.disabled = true
+  frontend.dom.preview.info.innerHTML = "Please Wait..."
+  frontend.dom.preview.preview.src = "./img/card-background.jpg"
+  frontend.dom.preview.button.disabled = true
 
-  collection.invoke['load-card'](collection.selection)
+  frontend.invoke['load-card'](frontend.selection)
 }
 
-collection.new_card = async () => {
-  if(!collection.selection) return
-  if(collection.selection.unknown) return
+frontend.new_card = async () => {
+  if(!frontend.selection) return
+  if(frontend.selection.unknown) return
 
-  const ui_card = collection.selection
+  const ui_card = frontend.selection
   const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
 
   popups.show(`${ui_card.name}`, identifier, 0)
-  const new_card = await collection.invoke['add-card'](ui_card)
+  const new_card = await frontend.invoke['add-card'](ui_card)
   popups.show(`${ui_card.name}`, identifier, 1)
 }
 
-collection.invoke = {
+frontend.invoke = {
   'add-card':  (data) => { /* dummy */ },
   'load-card': (data) => { /* dummy */ }
 }
 
-collection.event = {
+frontend.event = {
  'update-collection': (event, data) => {
-    collection.db = data
-    collection.reload()
+    frontend.db = data
+    frontend.reload()
   },
   'add-card-update': (event, card) => {
     // only update if current selection is still the same
-    const ui_card = collection.selection
-    if(collection.objcompare(ui_card, card, ["set", "number", "foil", "language"])) {
-      collection.set_preview(card)
+    const ui_card = frontend.selection
+    if(frontend.objcompare(ui_card, card, ["set", "number", "foil", "language"])) {
+      frontend.set_preview(card)
     }
   }
 }
 
-collection.init = () => {
-  collection.dom.preview = {
+frontend.init = () => {
+  frontend.dom.preview = {
     panel: document.getElementById('preview'),
     info: document.getElementById('preview-metadata'),
     edition: document.getElementById('preview-edition'),
@@ -322,42 +322,42 @@ collection.init = () => {
     cardkingdom: document.getElementById('preview-cardkingdom'),
   }
 
-  collection.dom.headerbar = {
+  frontend.dom.headerbar = {
     open: document.getElementById('open-button'),
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
   }
 
   // add current card to library
-  collection.dom.preview.edition.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') collection.new_card()
+  frontend.dom.preview.edition.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') frontend.new_card()
   })
 
-  collection.dom.preview.number.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') collection.new_card()
+  frontend.dom.preview.number.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') frontend.new_card()
   })
 
-  collection.dom.preview.button.addEventListener('click', async() => {
-    collection.new_card()
+  frontend.dom.preview.button.addEventListener('click', async() => {
+    frontend.new_card()
   })
 
   // refresh card (metadata and artwork) on each keypress
-  collection.dom.preview.edition.addEventListener("input", collection.update_preview)
-  collection.dom.preview.number.addEventListener("input", collection.update_preview)
-  collection.dom.preview.foil.addEventListener("input", collection.update_preview)
-  collection.dom.preview.language.addEventListener("input", collection.update_preview)
+  frontend.dom.preview.edition.addEventListener("input", frontend.update_preview)
+  frontend.dom.preview.number.addEventListener("input", frontend.update_preview)
+  frontend.dom.preview.foil.addEventListener("input", frontend.update_preview)
+  frontend.dom.preview.language.addEventListener("input", frontend.update_preview)
 
-  collection.dom.headerbar.open.addEventListener('click', async () => {
-    collection.invoke['open-folder']()
+  frontend.dom.headerbar.open.addEventListener('click', async () => {
+    frontend.invoke['open-folder']()
   })
 
-  collection.dom.headerbar.import.addEventListener('click', async () => {
-    collection.invoke['import-backup'](collection.path)
+  frontend.dom.headerbar.import.addEventListener('click', async () => {
+    frontend.invoke['import-backup'](frontend.path)
   })
 
-  collection.dom.headerbar.metadata.addEventListener('click', async () => {
-    collection.invoke['download-metadata'](collection.path)
+  frontend.dom.headerbar.metadata.addEventListener('click', async () => {
+    frontend.invoke['download-metadata'](frontend.path)
   })
 }
 
-window.addEventListener('DOMContentLoaded', collection.init)
+window.addEventListener('DOMContentLoaded', frontend.init)
