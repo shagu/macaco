@@ -270,6 +270,7 @@ collection.update_preview = () => {
 
 collection.new_card = async () => {
   if(!collection.selection) return
+  if(collection.selection.unknown) return
 
   const ui_card = collection.selection
   const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
