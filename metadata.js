@@ -337,7 +337,11 @@ let metadata = {
     // make foil
     if (card.foil == true && fs.existsSync(card.file)) {
       let image = await jimp.read(card.file)
-      let foil = await jimp.read('./foil.png')
+
+      // TODO: goal: only one path for dev and prod
+      let foil_dev = path.join(__dirname, "foil.png")
+      let foil_prod = path.join(process.resourcesPath, "foil.png")
+      let foil = await jimp.read(fs.existsSync(foil_dev) ? foil_dev : foil_prod)
 
       foil = foil.resize(image.bitmap.width, image.bitmap.height)
 

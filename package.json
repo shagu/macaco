@@ -28,6 +28,7 @@
     "appId": "shagu.macaco",
     "productName": "Macaco",
     "artifactName": "${name}-${version}-${os}.${ext}",
+    "extraResources": [ "foil.png" ],
     "dmg": {
       "writeUpdateInfo": false
     },
