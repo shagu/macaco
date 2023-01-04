@@ -178,6 +178,13 @@ collection.reload_preview = () => {
 }
 
 collection.reload = () => {
+  if(!collection.db[collection.path]) {
+    collection.dom.headerbar.import.disabled = true
+    return
+  } else {
+    collection.dom.headerbar.import.disabled = false
+  }
+
   collection.reload_sidebar()
   collection.reload_statusbar()
   collection.reload_view()
