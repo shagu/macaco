@@ -281,7 +281,7 @@ frontend.set_preview = (card, existing) => {
   const cardkingdom = frontend.selection.foil ? frontend.selection.price_foil_cardkingdom : frontend.selection.price_normal_cardkingdom
   if(cardmarket) {
     frontend.dom.preview.cardmarket.innerHTML = `CardMarket<span id=right>${cardmarket.toFixed(2)}€</span>`
-    let color = cardmarket > 10 ? "#f00" : cardmarket > 1 ? '#f50' : '#000'
+    let color = cardmarket > 10 ? "#f00" : cardmarket > 1 ? '#f50' : 'inherit'
     frontend.dom.preview.cardmarket.style = `display: block; color: ${color};`
   } else {
     frontend.dom.preview.cardmarket.style = "display: none;"
@@ -289,7 +289,7 @@ frontend.set_preview = (card, existing) => {
 
   if(cardkingdom) {
     frontend.dom.preview.cardkingdom.innerHTML  = `CardKingdom<span id=right>${cardkingdom.toFixed(2)}$</span>`
-    let color = cardkingdom > 10 ? "#f00" : cardkingdom > 1 ? '#f50' : '#000'
+    let color = cardkingdom > 10 ? "#f00" : cardkingdom > 1 ? '#f50' : 'inherit'
     frontend.dom.preview.cardkingdom.style = `display: block; color: ${color};`
   } else {
     frontend.dom.preview.cardkingdom.style = "display: none;"

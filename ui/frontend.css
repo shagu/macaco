@@ -1,16 +1,34 @@
 /* Base Elements */
-:root {
-  color-scheme: light;
-  /* breeze colors (KDE) */
-  --background-window:  #eff0f1;
-  --background-header:  #dee0e2;
-  --background-content: #ffffff;
-  --background-button:  #fcfcfc;
-  --background-accent:  #d6ecf8;
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    /* breeze colors (KDE) */
+    --background-window:  #eff0f1;
+    --background-header:  #dee0e2;
+    --background-content: #ffffff;
+    --background-button:  #fcfcfc;
+    --background-accent:  #d6ecf8;
 
-  --border-normal:      #bcbebf;
-  --border-dark:        #5a5c5d;
-  --border-accent:      #3daee9;
+    --border-normal:      #bcbebf;
+    --border-strong:      #5a5c5d;
+    --border-accent:      #3daee9;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    /* breeze colors (KDE) */
+    --background-window:  #2a2e32;
+    --background-header:  #31363b;
+    --background-content: #1b1e20;
+    --background-button:  #31363b;
+    --background-accent:  #1f485e;
+
+    --border-normal:      #64686b;
+    --border-strong:      #bcbebf;
+    --border-accent:      #3daee9;
+  }
 }
 
 html {
@@ -182,7 +200,7 @@ input[type=checkbox]:focus {
 
   background: var(--background-normal);
   border: 1px var(--border-normal) dashed;
-  color: var(--border-dark);
+  color: var(--border-strong);
   text-align: center;
 }
 
@@ -202,7 +220,7 @@ input[type=checkbox]:focus {
   grid-area: count;
   font-size: small;
   text-align: right;
-  color: #555;
+  color: var(--border-strong);
   padding-left: 4px;
   margin-left: 4px;
   pointer-events: none;
@@ -220,7 +238,7 @@ input[type=checkbox]:focus {
   transform: translate(-50%, -50%);
   font-weight: 100;
   font-size: 24pt;
-  color: var(--border-dark);
+  color: var(--border-strong);
 }
 
 #content #help #text {
