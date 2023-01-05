@@ -10,6 +10,7 @@ core.electron.app.whenReady().then(async () => {
   core.window = new core.electron.BrowserWindow({
     width: 1600,
     height: 920,
+    icon: core.path.join(__dirname, "icon.png"),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
