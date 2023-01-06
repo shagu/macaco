@@ -307,6 +307,12 @@ frontend.set_preview = (card, existing) => {
   } else {
     frontend.dom.preview.cardkingdom.style = "display: none;"
   }
+
+  // reload element width due to scrollbars
+  frontend.dom.preview.panel.style.overflow = "hidden"
+  setTimeout(function() {
+    frontend.dom.preview.panel.style.overflow = "auto"
+  }, 1)
 }
 
 frontend.update_preview = () => {
