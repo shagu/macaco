@@ -128,6 +128,7 @@ frontend.reload_view_selection = () => {
         div.classList.add("selection")
       } else {
         div.classList.add("new")
+        document.getElementById('content').scrollTop = div.offsetTop - 100
       }
     } else {
       div.classList.remove("selection")
@@ -245,7 +246,7 @@ frontend.reload = () => {
 frontend.reset_preview = () => {
   frontend.set_preview({
     set: "", number: "",
-    foil: false, language: "en",
+    foil: false, language: "de",
     unknown: true, path: frontend.path,
   })
 }
