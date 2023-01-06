@@ -129,6 +129,7 @@ frontend.reload_view_selection = () => {
       } else {
         div.classList.add("new")
         document.getElementById('content').scrollTop = div.offsetTop - 100
+        setTimeout(function() { div.style.boxShadow = "none" }, 256)
       }
     } else {
       div.classList.remove("selection")

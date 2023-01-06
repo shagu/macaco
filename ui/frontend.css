@@ -284,6 +284,8 @@ input[type=checkbox]:focus {
 #content #card.new {
   background: var(--background-window);
   border: 1px var(--border-normal) solid;
+  box-shadow: 0px 0px 10px var(--border-accent);
+  transition: box-shadow 1.0s ease-in-out;
 }
 
 #content #card.selection {
