@@ -29,9 +29,15 @@ frontend.reload_sidebar = () => {
     div_folder.div_title.innerHTML = caption
     div_folder.appendChild(div_folder.div_title)
 
+    let visible_count = 0
+    for (const card of content) {
+      if(filters.visible(card, frontend.dom.headerbar.filter.value))
+        visible_count++
+    }
+
     div_folder.div_count = document.createElement("div")
     div_folder.div_count.setAttribute('id', 'folder-count')
-    div_folder.div_count.innerHTML = content.length
+    div_folder.div_count.innerHTML = visible_count
     div_folder.appendChild(div_folder.div_count)
 
     div_folder.ondragenter = function(e) {
@@ -132,6 +138,7 @@ frontend.reload_view_selection = () => {
 
 frontend.reload_view = () => {
   let view = frontend.db[frontend.path]
+
   let div_content = document.getElementById('content')
 
   div_content.onclick = function(e) {
@@ -143,8 +150,12 @@ frontend.reload_view = () => {
   div_content.innerHTML = ""
   frontend.dom.cards = []
 
+  if(!view) return
 
   for (const card of view) {
+    // skip to next if invisible
+    if(!filters.visible(card, frontend.dom.headerbar.filter.value)) continue
+
     let div_card = document.createElement("div")
     div_card.setAttribute("draggable", true)
     frontend.dom.cards.push(div_card)
@@ -218,9 +229,11 @@ frontend.reload = () => {
 
   if(!frontend.db[frontend.path]) {
     frontend.dom.headerbar.import.disabled = true
+    frontend.dom.headerbar.filter.disabled = true
     return
   } else {
     frontend.dom.headerbar.import.disabled = false
+    frontend.dom.headerbar.filter.disabled = false
   }
 
   frontend.reload_sidebar()
@@ -362,6 +375,7 @@ frontend.init = () => {
     open: document.getElementById('open-button'),
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
+    filter: document.getElementById('card-filter'),
   }
 
   // add current card to library
@@ -382,6 +396,9 @@ frontend.init = () => {
   frontend.dom.preview.number.addEventListener("input", frontend.update_preview)
   frontend.dom.preview.foil.addEventListener("input", frontend.update_preview)
   frontend.dom.preview.language.addEventListener("input", frontend.update_preview)
+
+  // refresh collection on each filter change
+  frontend.dom.headerbar.filter.onkeyup = frontend.reload
 
   frontend.dom.headerbar.open.addEventListener('click', async () => {
     frontend.invoke['open-folder']()

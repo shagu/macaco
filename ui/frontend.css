@@ -69,10 +69,16 @@ button:focus {
 }
 
 button:disabled,
-button[disabled]{
+button[disabled],
+input[type=text]:disabled {
   pointer-events: none;
   background-color: rgba(0,0,0,0);
   box-shadow: none;
+}
+
+
+input[type=text]:disabled::placeholder {
+  color: var(--border-normal);
 }
 
 input[type=text], select {
@@ -130,6 +136,9 @@ input[type=checkbox]:focus {
   background: var(--background-header);
   border-bottom: 1px var(--border-normal) solid;
   padding: 5px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 0px 4px;
 }
 
 #sidebar {
@@ -160,6 +169,12 @@ input[type=checkbox]:focus {
 #footer {
   grid-area: footer;
   padding: 5px;
+}
+
+/* Headerbar */
+#card-filter {
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Sidebar */
