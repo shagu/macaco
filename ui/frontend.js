@@ -211,12 +211,19 @@ frontend.reload_view = () => {
 frontend.text_to_html = (str) => {
   if(!str) return ""
 
+  // multicolor icons, separated by "/"
+  const micons = /{(.+?)\/(.+?)}/gi
+  str = str.replace(micons, "<img src='img/icons/$1$2.png' alt='$1$2'>")
+
+  // normal icons, same as filename
   const icons = /{(.+?)}/gi
   str = str.replace(icons, "<img src='img/icons/$1.png' alt='$1'>")
 
+  // turn every text in brackets small
   const small = /\((.+?)\)/gi
   str = str.replace(small, "<small><i>($1)</i></small>")
 
+  // add a vertical spacer on each line-break
   str = str.replaceAll("\n", "<div class='vspacer'></div>")
   return str
 }
