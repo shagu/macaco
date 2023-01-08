@@ -124,7 +124,7 @@ input[type=checkbox]:focus {
   grid-template-areas:
     'header   header  header'
     'sidebar  content meta'
-    'sidebar  footer  footer';
+    'sidebar  footer  meta';
 
   gap: 1px;
   grid-template-columns: auto 1fr auto;
