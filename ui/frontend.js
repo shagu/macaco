@@ -31,7 +31,7 @@ frontend.reload_sidebar = () => {
 
     let visible_count = 0
     for (const card of content) {
-      if(filters.visible(card, frontend.dom.headerbar.filter.value))
+      if(filters.visible(card, frontend.dom.headerbar.filter.value.toLowerCase()))
         visible_count++
     }
 
@@ -156,7 +156,7 @@ frontend.reload_view = () => {
 
   for (const card of view) {
     // skip to next if invisible
-    if(!filters.visible(card, frontend.dom.headerbar.filter.value)) continue
+    if(!filters.visible(card, frontend.dom.headerbar.filter.value.toLowerCase())) continue
 
     let div_card = document.createElement("div")
     div_card.setAttribute("draggable", true)
