@@ -141,6 +141,15 @@ frontend.reload_view_selection = () => {
 frontend.reload_view = () => {
   let view = frontend.db[frontend.path]
 
+  const observer = new IntersectionObserver(function (entries, observer) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.src = entry.target.dataset.src
+        observer.unobserve(entry.target)
+      }
+    })
+  })
+
   let div_content = document.getElementById('content')
 
   div_content.onclick = function(e) {
@@ -177,8 +186,9 @@ frontend.reload_view = () => {
     div_content.appendChild(div_card)
 
     div_card.image = document.createElement("img")
-    div_card.image.src = card.file
+    div_card.image.setAttribute('data-src', card.file)
     div_card.appendChild(div_card.image)
+    observer.observe(div_card.image)
 
     div_card.div_title = document.createElement("div")
     div_card.div_title.setAttribute('id', 'card-title')
