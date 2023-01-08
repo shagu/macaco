@@ -108,15 +108,21 @@ frontend.reload_sidebar = () => {
 }
 
 frontend.reload_statusbar = () => {
-  let [num_cards, num_lists] = [0, 0]
+  let [num_cards, num_lists, price] = [0, 0, 0]
   let div_footer = document.getElementById('footer')
 
   for (const [folder, content] of Object.entries(frontend.db)) {
-    num_cards += content.length
-    num_lists++
+    for (const card of content) {
+      price += card.price || 0
+      num_cards++
+    }
+
+    if(content.length > 0) {
+      num_lists++
+    }
   }
 
-  div_footer.innerHTML = `<b>${num_cards}</b> Cards | <b>${num_lists}</b> Folders`
+  div_footer.innerHTML = `Collection with <b>${num_cards}</b> cards in <b>${num_lists}</b> folders worth <b>${price.toFixed(2)}€</b>.`
 }
 
 frontend.reload_view_selection = () => {
