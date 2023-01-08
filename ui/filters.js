@@ -1,4 +1,4 @@
-let filters = { tags: { } }
+let filters = { tags: { }, min: 1 }
 
 filters.tags["cmc"] = {
   pattern: /\s?cmc=([^ ]+)/i,
@@ -13,15 +13,20 @@ filters.tags["cmc"] = {
 }
 
 filters.visible = (card, str) => {
-  str = str.toLowerCase()
+  // always return true on empty strings
+  if(str.length < filters.min) return true
 
-  for (const [name, parser] of Object.entries(filters.tags)) {
-    let match = parser.pattern.exec(str)
-    if (match && match[1]) {
-      str = str.replace(parser.pattern, "")
-      if(!parser.matched(card, match)) return false
+  // only scan for tags when string is > 2
+  if(str.length > 2) {
+    for (const [name, parser] of Object.entries(filters.tags)) {
+      let match = parser.pattern.exec(str)
+      if (match && match[1]) {
+        str = str.replace(parser.pattern, "")
+        if(!parser.matched(card, match)) return false
+      }
     }
   }
 
+  // perform the name search
   return card.name.toLowerCase().includes(str.trim())
 }
