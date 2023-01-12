@@ -8,10 +8,12 @@
     --background-content: #ffffff;
     --background-button:  #fcfcfc;
     --background-accent:  #d6ecf8;
+    --background-notify:  #ffeecc;
 
     --border-normal:      #bcbebf;
     --border-strong:      #5a5c5d;
     --border-accent:      #3daee9;
+    --border-notify:      #ffaa00;
   }
 }
 
@@ -24,10 +26,12 @@
     --background-content: #1b1e20;
     --background-button:  #31363b;
     --background-accent:  #1f485e;
+    --background-notify:  #442200;
 
     --border-normal:      #64686b;
     --border-strong:      #bcbebf;
     --border-accent:      #3daee9;
+    --border-notify:      #ffaa00;
   }
 }
 
@@ -64,7 +68,6 @@ button:active {
 }
 
 button:focus {
-  border: 1px var(--border-accent) solid;
   outline: none;
 }
 
@@ -72,10 +75,17 @@ button:disabled,
 button[disabled],
 input[type=text]:disabled {
   pointer-events: none;
-  background-color: rgba(0,0,0,0);
+  background: rgba(0,0,0,0);
   box-shadow: none;
+  filter: grayscale(75%);
 }
 
+button.checked {
+  box-shadow: 0px 0px 3px var(--border-accent) inset,
+              0px 0px 1px var(--border-strong) !important;
+
+  border: 1px var(--border-accent) solid;
+}
 
 input[type=text]:disabled::placeholder {
   color: var(--border-normal);
@@ -137,8 +147,40 @@ input[type=checkbox]:focus {
   border-bottom: 1px var(--border-normal) solid;
   padding: 5px;
   display: grid;
-  grid-template-columns: auto auto 1fr auto;
-  gap: 0px 4px;
+  grid-template-columns: auto 1fr auto;
+  gap: 4px;
+}
+
+#header div {
+  height: 28px;
+}
+
+#header button.icon {
+  height: 100%;
+  aspect-ratio: 1/1;
+  background-size: cover;
+  box-shadow: 0px 0px 3px var(--background-button) inset;
+}
+
+#header #button-color-w { background-image: url("img/white.png"); }
+#header #button-color-u { background-image: url("img/blue.png"); }
+#header #button-color-b { background-image: url("img/black.png"); }
+#header #button-color-r { background-image: url("img/red.png"); }
+#header #button-color-g { background-image: url("img/green.png"); }
+#header #button-color-c { background-image: url("img/artifact.png"); }
+#header #button-color-m { background-image: url("img/multi.png"); }
+
+#header #open-button { background-image: url("img/open.svg"); }
+#header #import-button { background-image: url("img/import.svg"); }
+#header #download-button { background-image: url("img/download.svg"); }
+
+#header #filter-button {
+  background-image: url("img/filter.svg");
+}
+
+#header #separator {
+  display: inline-block;
+  margin: 4px;
 }
 
 #sidebar {
@@ -282,9 +324,9 @@ input[type=checkbox]:focus {
 }
 
 #content #card.new {
-  background: var(--background-window);
-  border: 1px var(--border-normal) solid;
-  box-shadow: 0px 0px 10px var(--border-accent);
+  background: var(--background-notify);
+  border: 1px var(--border-notify) solid;
+  box-shadow: 0px 0px 10px var(--border-notify);
   transition: box-shadow 1.0s ease-in-out;
 }
 

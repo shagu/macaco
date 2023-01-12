@@ -147,6 +147,7 @@ frontend.reload_view_selection = () => {
 frontend.reload_view = () => {
   let view = frontend.db[frontend.path]
 
+  let div_content = document.getElementById('content')
   const observer = new IntersectionObserver(function (entries, observer) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
@@ -154,9 +155,10 @@ frontend.reload_view = () => {
         observer.unobserve(entry.target)
       }
     })
+  }, {
+    root: div_content,
+    rootMargin: "640px",
   })
-
-  let div_content = document.getElementById('content')
 
   div_content.onclick = function(e) {
     frontend.reset_preview()
@@ -168,6 +170,7 @@ frontend.reload_view = () => {
   frontend.dom.cards = []
 
   if(!view) return
+
 
   for (const card of view) {
     // skip to next if invisible
@@ -222,6 +225,7 @@ frontend.reload_view = () => {
   }
 
   frontend.reload_view_selection()
+  console.log("Done", Date.now())
 }
 
 frontend.text_to_html = (str) => {
@@ -249,16 +253,22 @@ frontend.reload_preview = () => {
   if(!frontend.selection) frontend.reset_preview()
 }
 
+frontend.ui_lock = (state) => {
+  let ui_lock = [ "import", "filter", "mana_w", "mana_u", "mana_b", "mana_r", "mana_g", "mana_c", "mana_m" ]
+  for (const element of ui_lock) {
+    frontend.dom.headerbar[element].disabled = state
+  }
+}
+
 frontend.reload = () => {
   frontend.path = frontend.db[frontend.path] ? frontend.path : "."
 
+
   if(!frontend.db[frontend.path]) {
-    frontend.dom.headerbar.import.disabled = true
-    frontend.dom.headerbar.filter.disabled = true
+    frontend.ui_lock(true)
     return
   } else {
-    frontend.dom.headerbar.import.disabled = false
-    frontend.dom.headerbar.filter.disabled = false
+    frontend.ui_lock(false)
   }
 
   frontend.reload_sidebar()
@@ -388,6 +398,36 @@ frontend.event = {
   }
 }
 
+frontend.update_mana_filter = (e) => {
+  let colors = [ "w", "u", "b", "r", "g", "c", "m" ]
+  let current = frontend.dom.headerbar.filter.value
+  let string = ""
+
+  if(e.target.classList.contains("checked")) {
+    e.target.classList.remove("checked")
+  } else {
+    e.target.classList.add("checked")
+  }
+
+  for (const mana of colors) {
+    if(frontend.dom.headerbar["mana_" + mana].classList.contains("checked")) {
+      if(string.length == 0) {
+        string = "c=" + mana
+      } else {
+        string += "," + mana
+      }
+    }
+  }
+
+  string = string.length > 0 ? string + " " : string
+  current = current.replace(/\bc=([^ ]+)/i, "")
+
+  let new_string = string + current.trim()
+  if(new_string == current) return
+  frontend.dom.headerbar.filter.value = string + current.trim()
+  frontend.reload()
+}
+
 frontend.init = () => {
   frontend.dom.preview = {
     panel: document.getElementById('preview'),
@@ -407,6 +447,13 @@ frontend.init = () => {
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
     filter: document.getElementById('card-filter'),
+    mana_w: document.getElementById('button-color-w'),
+    mana_u: document.getElementById('button-color-u'),
+    mana_b: document.getElementById('button-color-b'),
+    mana_r: document.getElementById('button-color-r'),
+    mana_g: document.getElementById('button-color-g'),
+    mana_c: document.getElementById('button-color-c'),
+    mana_m: document.getElementById('button-color-m'),
   }
 
   // add current card to library
@@ -430,6 +477,14 @@ frontend.init = () => {
 
   // refresh collection on each filter change
   frontend.dom.headerbar.filter.onkeyup = frontend.reload
+
+  frontend.dom.headerbar.mana_w.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_u.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_b.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_r.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_g.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_c.onclick = frontend.update_mana_filter
+  frontend.dom.headerbar.mana_m.onclick = frontend.update_mana_filter
 
   frontend.dom.headerbar.open.addEventListener('click', async () => {
     frontend.invoke['open-folder']()

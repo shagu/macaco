@@ -17,10 +17,29 @@
 
   <div id=window>
     <div id=header>
-      <button id="open-button">Open Folder</button>
-      <button id="import-button" disabled>Import Card List</button>
-      <div><input id="card-filter" type="text" placeholder="Search..." disabled/></div>
-      <button id="download-button">Fetch Metadata</button>
+      <div id=header-left>
+        <button class="icon" id="open-button"></button>
+        <span id="separator"></span>
+        <button class="icon" id="button-color-w" disabled></button>
+        <button class="icon" id="button-color-u" disabled></button>
+        <button class="icon" id="button-color-b" disabled></button>
+        <button class="icon" id="button-color-r" disabled></button>
+        <button class="icon" id="button-color-g" disabled></button>
+        <button class="icon" id="button-color-c" disabled></button>
+        <button class="icon" id="button-color-m" disabled></button>
+        <span id="separator"></span>
+      </div>
+
+      <div id=header-center>
+        <input id="card-filter" type="text" placeholder="Search..." disabled/>
+      </div>
+
+      <div id=header-right>
+        <button class="icon" id="filter-button"></button>
+        <span id="separator"></span>
+        <button class="icon" id="import-button" disabled></button>
+        <button class="icon" id="download-button"></button>
+      </div>
     </div>
 
     <div id=sidebar></div>
