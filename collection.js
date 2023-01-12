@@ -122,8 +122,8 @@ const collection = {
 
           if (with_progress) {
             current++
-            const percent = current/num
-            const caption = `${folder}<br/>${current} of ${num} (${percent.toFixed()*100}%)`
+            const percent = current / num
+            const caption = `${folder}<br/>${current} of ${num} (${(percent*100).toFixed()}%)`
             core.utils.popup("Open Collection Folder", caption, percent)
           }
       }
