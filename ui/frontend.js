@@ -404,6 +404,12 @@ frontend.event = {
   }
 }
 
+frontend.update_text_filter = (e) => {
+  if (e.target.value == e.target.last_value) return
+  e.target.last_value = e.target.value
+  frontend.reload()
+}
+
 frontend.update_mana_filter = (e) => {
   let colors = [ "w", "u", "b", "r", "g", "c", "m" ]
   let current = frontend.dom.headerbar.filter.value
@@ -482,8 +488,7 @@ frontend.init = () => {
   frontend.dom.preview.language.addEventListener("input", frontend.update_preview)
 
   // refresh collection on each filter change
-  frontend.dom.headerbar.filter.onkeyup = frontend.reload
-
+  frontend.dom.headerbar.filter.onkeyup = frontend.update_text_filter
   frontend.dom.headerbar.mana_w.onclick = frontend.update_mana_filter
   frontend.dom.headerbar.mana_u.onclick = frontend.update_mana_filter
   frontend.dom.headerbar.mana_b.onclick = frontend.update_mana_filter
