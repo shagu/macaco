@@ -144,6 +144,51 @@ frontend.reload_view_selection = () => {
   }
 }
 
+frontend.dom_build_card = (div_card) => {
+  const card = div_card.data
+
+  div_card.setAttribute('id', 'card')
+  div_card.setAttribute("draggable", true)
+
+  div_card.onclick = function(e) {
+    frontend.set_preview(this.data, true)
+    frontend.reload_view_selection()
+    e.stopPropagation()
+  }
+
+  div_card.ondragstart = function(e) {
+    e.dataTransfer.setData("text/plain", JSON.stringify(e.target.data))
+  }
+
+  div_card.image = document.createElement("img")
+  div_card.image.setAttribute('src', card.file)
+  div_card.appendChild(div_card.image)
+
+  div_card.div_title = document.createElement("div")
+  div_card.div_title.setAttribute('id', 'card-title')
+  div_card.div_title.innerHTML = card.name
+  div_card.appendChild(div_card.div_title)
+
+  div_card.div_pricetag = document.createElement("div")
+  div_card.div_pricetag.setAttribute('id', 'card-pricetag')
+  div_card.appendChild(div_card.div_pricetag)
+
+  if ( card.price ) {
+    div_card.div_pricetag.innerHTML = `${card.price.toFixed(2)}€`
+
+    if ( card.price > 10.0 ) {
+      div_card.div_pricetag.style = "color: #f55;"
+    } else if ( card.price > 1.0 ) {
+      div_card.div_pricetag.style = "color: #fa5;"
+    } else {
+      div_card.div_pricetag.style = "color: #fff;"
+    }
+  } else {
+    div_card.div_pricetag.innerHTML = `N/A`
+    div_card.div_pricetag.style = "color: #555;"
+  }
+}
+
 frontend.reload_view = () => {
   let view = frontend.db[frontend.path]
 
@@ -151,13 +196,13 @@ frontend.reload_view = () => {
   const observer = new IntersectionObserver(function (entries, observer) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
-        entry.target.src = entry.target.dataset.src
+        frontend.dom_build_card(entry.target)
         observer.unobserve(entry.target)
       }
     })
   }, {
     root: div_content,
-    rootMargin: "640px",
+    rootMargin: "1080px",
   })
 
   div_content.onclick = function(e) {
@@ -171,57 +216,18 @@ frontend.reload_view = () => {
 
   if(!view) return
 
-
   for (const card of view) {
     // skip to next if invisible
     if(!filters.visible(card, frontend.dom.headerbar.filter.value.toLowerCase())) continue
 
     let div_card = document.createElement("div")
-    div_card.setAttribute("draggable", true)
-    frontend.dom.cards.push(div_card)
-
+    div_card.setAttribute('id', 'card-dummy')
     div_card.data = card
-    div_card.onclick = function(e) {
-      frontend.set_preview(this.data, true)
-      frontend.reload_view_selection()
-      e.stopPropagation()
-    }
 
-    div_card.ondragstart = function(e) {
-      e.dataTransfer.setData("text/plain", JSON.stringify(e.target.data))
-    }
-
-    div_card.setAttribute('id', 'card')
     div_content.appendChild(div_card)
+    observer.observe(div_card)
 
-    div_card.image = document.createElement("img")
-    div_card.image.setAttribute('data-src', card.file)
-    div_card.appendChild(div_card.image)
-    observer.observe(div_card.image)
-
-    div_card.div_title = document.createElement("div")
-    div_card.div_title.setAttribute('id', 'card-title')
-    div_card.div_title.innerHTML = card.name
-    div_card.appendChild(div_card.div_title)
-
-    div_card.div_pricetag = document.createElement("div")
-    div_card.div_pricetag.setAttribute('id', 'card-pricetag')
-    if ( card.price ) {
-      div_card.div_pricetag.innerHTML = `${card.price.toFixed(2)}€`
-
-      if ( card.price > 10.0 ) {
-        div_card.div_pricetag.style = "color: #f55;"
-      } else if ( card.price > 1.0 ) {
-        div_card.div_pricetag.style = "color: #fa5;"
-      } else {
-        div_card.div_pricetag.style = "color: #fff;"
-      }
-    } else {
-      div_card.div_pricetag.innerHTML = `N/A`
-      div_card.div_pricetag.style = "color: #555;"
-    }
-
-    div_card.appendChild(div_card.div_pricetag)
+    frontend.dom.cards.push(div_card)
   }
 
   frontend.reload_view_selection()

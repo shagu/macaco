@@ -304,6 +304,19 @@ input[type=checkbox]:focus {
   text-align: justify;
 }
 
+#content #card-dummy {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px;
+  width: 128px;
+  height: 200px;
+  border: 1px rgba(0,0,0,0) solid;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  background: var(--background-window);
+}
+
 #content #card {
   display: inline-block;
   margin: 4px;
