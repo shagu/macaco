@@ -250,7 +250,6 @@ let metadata = {
         if (!fs.existsSync(database_file) || force) {
           const [ printings, prices ] = await Promise.all([ metadata.load_printings(force), metadata.load_prices(force) ])
           metadata.build_database(printings, prices)
-          console.log("build database complete")
         }
 
         await metadata.load_database()
@@ -266,8 +265,12 @@ let metadata = {
     // make sure metadata database is initialized
     await metadata.setup_metadata()
 
+    // flag as unknown
+    card.unknown = true
+
     const edition = card.set.toUpperCase()
     const number = card.number.toString().toUpperCase()
+    const language = get_language(card.language)
 
     // check for existing metadata
     if (metadata.database && metadata.database[edition][number]) {
@@ -277,23 +280,22 @@ let metadata = {
       // attach all json data to card
       for(entry in jsoncard) card[entry] = jsoncard[entry]
 
+      // remove unused datasets
+      delete card.locales
+      delete card.unknown
+      delete card.uuid
+
+      // obtain default price
       card.price = card.price_normal_cardmarket || card.price_normal_cardkingdom
       if(card.foil) card.price = card.price_foil_cardmarket || card.price_foil_cardkingdom || card.price
 
-      // overwrite values with localized entries
-      const language = get_language(card.language)
-      if(language.short && jsoncard.locales && jsoncard.locales[language.short]) {
-        const locale = jsoncard.locales[language.short]
-        card.name = locale.name || card.name
-        card.type = locale.type || card.type
-        card.text = locale.text || card.text
-        card.flavor = locale.flavor || card.flavor
-        card.multiverse = locale.multiverse || card.multiverse
-      }
-
-      card.unknown = null
-    } else {
-      card.unknown = true
+      // apply locales where possible
+      let locale = jsoncard.locales && jsoncard.locales[language.short] || {}
+      card.name = locale.name || card.name
+      card.type = locale.type || card.type
+      card.text = locale.text || card.text
+      card.flavor = locale.flavor || card.flavor
+      card.multiverse = locale.multiverse || card.multiverse
     }
   },
 
