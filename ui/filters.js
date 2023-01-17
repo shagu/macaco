@@ -63,6 +63,9 @@ filters.visible = (card, str) => {
     }
   }
 
-  // perform the name search
-  return card.name.toLowerCase().includes(str.trim())
+  // perform the fulltext search
+  const search = str.trim()
+  if(card.text && card.text.toLowerCase().includes(search)) return true
+  if(card.name && card.name.toLowerCase().includes(search)) return true
+  return false
 }
