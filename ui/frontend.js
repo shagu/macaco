@@ -31,7 +31,7 @@ frontend.reload_sidebar = () => {
 
     let visible_count = 0
     for (const card of content) {
-      if(filters.visible(card, frontend.dom.headerbar.filter.value.toLowerCase()))
+      if(filters.visible(card, frontend.dom.headerbar.search.value.toLowerCase()))
         visible_count++
     }
 
@@ -227,7 +227,7 @@ frontend.sort_from_query = (query) => {
 }
 
 frontend.reload_view = () => {
-  let query = frontend.dom.headerbar.filter.value.toLowerCase()
+  let query = frontend.dom.headerbar.search.value.toLowerCase()
   query = frontend.sort_from_query(query)
 
   let view = frontend.db[frontend.path]
@@ -452,7 +452,7 @@ frontend.update_text_filter = (e) => {
 
 frontend.update_mana_filter = (e) => {
   let colors = [ "w", "u", "b", "r", "g", "c", "m" ]
-  let current = frontend.dom.headerbar.filter.value
+  let current = frontend.dom.headerbar.search.value
   let string = ""
 
   if(e.target.classList.contains("checked")) {
@@ -476,7 +476,7 @@ frontend.update_mana_filter = (e) => {
 
   let new_string = string + current.trim()
   if(new_string == current) return
-  frontend.dom.headerbar.filter.value = string + current.trim()
+  frontend.dom.headerbar.search.value = string + current.trim()
   frontend.reload()
 }
 
@@ -498,7 +498,7 @@ frontend.init = () => {
     open: document.getElementById('open-button'),
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
-    filter: document.getElementById('card-filter'),
+    search: document.getElementById('card-search'),
     mana_w: document.getElementById('button-color-w'),
     mana_u: document.getElementById('button-color-u'),
     mana_b: document.getElementById('button-color-b'),
@@ -527,8 +527,8 @@ frontend.init = () => {
   frontend.dom.preview.foil.addEventListener("input", frontend.update_preview)
   frontend.dom.preview.language.addEventListener("input", frontend.update_preview)
 
-  // refresh collection on each filter change
-  frontend.dom.headerbar.filter.onkeyup = frontend.update_text_filter
+  // refresh collection on each search query change
+  frontend.dom.headerbar.search.onkeyup = frontend.update_text_filter
   frontend.dom.headerbar.mana_w.onclick = frontend.update_mana_filter
   frontend.dom.headerbar.mana_u.onclick = frontend.update_mana_filter
   frontend.dom.headerbar.mana_b.onclick = frontend.update_mana_filter
