@@ -300,7 +300,7 @@ frontend.reload_preview = () => {
 }
 
 frontend.ui_lock = (state) => {
-  let ui_lock = [ "import", "filter", "mana_w", "mana_u", "mana_b", "mana_r", "mana_g", "mana_c", "mana_m" ]
+  let ui_lock = [ "import", "search", "mana_w", "mana_u", "mana_b", "mana_r", "mana_g", "mana_c", "mana_m" ]
   for (const element of ui_lock) {
     frontend.dom.headerbar[element].disabled = state
   }
@@ -498,6 +498,7 @@ frontend.init = () => {
     open: document.getElementById('open-button'),
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
+    filter: document.getElementById('menu-filter'),
     search: document.getElementById('card-search'),
     mana_w: document.getElementById('button-color-w'),
     mana_u: document.getElementById('button-color-u'),

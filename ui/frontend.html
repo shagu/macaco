@@ -10,10 +10,20 @@
 
 <script src="popups.js"></script>
 <script src="filters.js"></script>
+<script src="menus.js"></script>
 <script src="frontend.js"></script>
 
 <body>
   <div id="popups"></div>
+
+  <div class=menu id=menu-main-frame>
+    <button class="icon" id="import-button" disabled>Import DelverLens Backup</button>
+    <button class="icon" id="download-button">Download & Setup Metadata</button>
+  </div>
+
+  <div class=menu id=menu-filter-frame>
+    <button>Todo...</button>
+  </div>
 
   <div id=window>
     <div id=header>
@@ -35,10 +45,8 @@
       </div>
 
       <div id=header-right>
-        <button class="icon" id="filter-button"></button>
-        <span id="separator"></span>
-        <button class="icon" id="import-button" disabled></button>
-        <button class="icon" id="download-button"></button>
+        <button class="icon menu-button" id="menu-filter"></button>
+        <button class="icon menu-button" id="menu-main"></button>
       </div>
     </div>
 

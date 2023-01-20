@@ -171,12 +171,9 @@ input[type=checkbox]:focus {
 #header #button-color-m { background-image: url("img/multi.png"); }
 
 #header #open-button { background-image: url("img/open.svg"); }
-#header #import-button { background-image: url("img/import.svg"); }
-#header #download-button { background-image: url("img/download.svg"); }
 
-#header #filter-button {
-  background-image: url("img/filter.svg");
-}
+#header #menu-main { background-image: url("img/menu.svg"); }
+#header #menu-filter { background-image: url("img/filter.svg"); }
 
 #header #separator {
   display: inline-block;
@@ -213,8 +210,27 @@ input[type=checkbox]:focus {
   padding: 5px;
 }
 
+.menu {
+  position: fixed;
+  width: max-content;
+  max-width: 200px;
+  max-height: max-content;
+  background: var(--background-window);
+  border: 1px var(--border-normal) solid;
+  border-radius: 5px;
+  padding: 10px;
+  display: none;
+  box-shadow: 0px 0px 15px var(--border-normal);
+  z-index: 16;
+}
+
+.menu button {
+  margin: 1px;
+  width: 100%;
+}
+
 /* Headerbar */
-#card-filter {
+#card-search {
   box-sizing: border-box;
   width: 100%;
 }
