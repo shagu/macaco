@@ -13,6 +13,18 @@ filters.tags["cmc"] = {
   }
 }
 
+filters.tags["rarity"] = {
+  pattern: /\brarity=([^ ]+)/i,
+  matched: (card, match) => {
+    let atleast_one = false
+    for(const rarity of match[1].split(",")) {
+      if(card.rarity == rarity) atleast_one = true
+    }
+
+    return atleast_one
+  }
+}
+
 // color
 filters.tags["c"] = {
   pattern: /\bc=([^ ]+)/i,
