@@ -77,7 +77,8 @@ filters.visible = (card, str) => {
 
   // perform the fulltext search
   const search = str.trim()
-  if(card.text && card.text.toLowerCase().includes(search)) return true
   if(card.name && card.name.toLowerCase().includes(search)) return true
+  if(card.text && card.text.toLowerCase().includes(search)) return true
+  if(card.type && card.type.toLowerCase().includes(search)) return true
   return false
 }
