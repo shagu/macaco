@@ -78,8 +78,14 @@ filters.visible = (card, str) => {
 
   // perform the fulltext search
   const search = str.trim()
-  if(card.name && card.name.toLowerCase().includes(search)) return true
-  if(card.text && card.text.toLowerCase().includes(search)) return true
-  if(card.type && card.type.toLowerCase().includes(search)) return true
+  if (card.name && card.name.toLowerCase().includes(search)) return true
+  if (!card.locales) return false
+
+  for (const [language, locale] of Object.entries(card.locales)) {
+    if(locale.name && locale.name.toLowerCase().includes(search)) return true
+    if(locale.text && locale.text.toLowerCase().includes(search)) return true
+    if(locale.type && locale.type.toLowerCase().includes(search)) return true
+  }
+
   return false
 }
