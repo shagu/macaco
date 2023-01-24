@@ -3,358 +3,185 @@ const path = require('path')
 const jimp = require('jimp')
 const zlib = require('zlib')
 
-const { chain }  = require('stream-chain')
-const { parser } = require('stream-json')
-const { pick }   = require('stream-json/filters/Pick')
-const { ignore } = require('stream-json/filters/Ignore')
-const { streamValues } = require('stream-json/streamers/StreamValues')
+const data_file = path.join(core.data_directory, "db", "macaco-data.json.gz")
+const locales_file = path.join(core.data_directory, "db", "macaco-locales.json.gz")
 
-const database_file = path.join(core.data_directory, "db", "database.json")
-const printings_file = path.join(core.data_directory, "db", "mtgjson-printings.json.gz")
-const prices_file = path.join(core.data_directory, "db", "mtgjson-prices.json.gz")
+let metadata = { }
 
-let language_map = {
-  "Ancient Greek": ["grc"],
-  "Arabic": ["ar"],
-  "Chinese Simplified": [ "zhs", "cs" ],
-  "Chinese Traditional": [ "zht", "ct" ],
-  "English": [ "en" ],
-  "French": ["fr"],
-  "German": ["de"],
-  "Hebrew": [ "he" ],
-  "Italian": [ "it" ],
-  "Japanese": [ "ja", "jp" ],
-  "Korean": [ "ko", "kr" ],
-  "Latin": [ "la" ],
-  "Phyrexian": [ "ph" ],
-  "Portuguese (Brazil)": [ "pt" ],
-  "Russian": [ "ru" ],
-  "Sanskrit": [ "sa" ],
-  "Spanish": [ "es", "sp" ]
-}
-
-let get_language = (query) => {
-  if (language_map[query]) {
-    return { full: query, short: language_map[query][0] }
-  }
-
-  for (const [language, values] of Object.entries(language_map)) {
-    for (const abrv of values) {
-      if (abrv == query) {
-        return { full: language, short: language_map[language][0] }
-      }
-    }
-  }
-
-  return { full: false, short: false }
-}
-
-let metadata = {
-  build_database: (printings, prices) => {
-    const database = {}
-
-    core.utils.popup("Building Local Database", "Please wait ...", null)
-
-    for (const set in printings) {
-      for (const cardid in printings[set].cards) {
-        const jsoncard = printings[set].cards[cardid]
-        const number = jsoncard.number.toString().toUpperCase()
-
-        // create entries if not existing
-        if (!database[set]) database[set] = {}
-        if (!database[set][number]) {
-          database[set][number] = { locales: {} }
-        }
-
-        let card = database[set][number]
-
-        { // assignments of jsoncard data to card object
-          const assign = {
-            name: "", type: "", text: "", flavor: "flavorText",
-            artist: "", types: "", colors: "", rarity: "",
-            manacost: "manaCost", manavalue: "manaValue",
-            scryfall: "scryfallId", multiverse: "multiverseId",
-            uuid: ""
-          }
-
-          // update card with assignments
-          for ( const index in assign) {
-            card[index] = jsoncard[assign[index] == "" ? index : assign[index]]
-          }
-        }
-
-        { // locales
-          for (const locale of jsoncard.foreignData) {
-            const language = get_language(locale.language)
-            if(language.short) {
-              card.locales[language.short] = {
-                name: locale.name,
-                type: locale.type,
-                text: locale.text,
-                flavor: locale.flavor,
-                multiverse: locale.multiverseId
-              }
-            }
-          }
-        }
-
-        { // prices
-          { // cardkingdom (normal)
-            let index = prices[jsoncard.uuid]?.paper?.cardkingdom?.buylist?.normal
-            if(index) card.price_normal_cardkingdom = index[Object.keys(index)[Object.keys(index).length - 1]]
-          }
-
-          { // cardkingdom (foil)
-            let index = prices[jsoncard.uuid]?.paper?.cardkingdom?.buylist?.foil
-            if(index) card.price_foil_cardkingdom = index[Object.keys(index)[Object.keys(index).length - 1]]
-          }
-
-          { // cardmarket (normal)
-            let index = prices[jsoncard.uuid]?.paper?.cardmarket?.retail?.normal
-            if(index) card.price_normal_cardmarket = index[Object.keys(index)[Object.keys(index).length - 1]]
-          }
-
-          { // cardmarket (foil)
-            let index = prices[jsoncard.uuid]?.paper?.cardmarket?.retail?.foil
-            if(index) card.price_foil_cardmarket = index[Object.keys(index)[Object.keys(index).length - 1]]
-          }
-
-          // free memory on already processed prices
-          prices[jsoncard.uuid] = null
-        }
-
-        { // save to database
-          database[set] = database[set] || {}
-          database[set][number] = card
-        }
-      }
-    }
-
-    core.utils.popup("Building Local Database", "Writing File ...", null)
-
-    printings = null
-    prices = null
-
-    fs.writeFileSync(database_file, JSON.stringify(database))
-
-    core.utils.popup("Building Local Database", "Complete!", 1)
-  },
-
-  load_printings: (force) => {
-    return new Promise(async (resolve, reject) => {
-      let printings = {}
-
-      let notify = (status) => {
-        const current = core.utils.byte_units(status.current)
-        const maxsize = core.utils.byte_units(status.size)
-        const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
-        core.utils.popup("MTGJSON Printings", caption, status.percent/100)
-      }
-
-      if (!fs.existsSync(prices_file) || force) {
-        console.log("Downloading", "MTGJSON Printings")
-        await core.fetcher.queue(
-          "https://mtgjson.com/api/v5/AllPrintings.json.gz",
-          printings_file,
-          notify, false, "mtgjson-printings"
-        )
-      }
-
-      core.utils.popup("MTGJSON Printings", "Reading File...<br/>This can take up to 5 minutes.", null)
-
-      const pipeline = chain([
-        fs.createReadStream(printings_file),
-        zlib.createGunzip(),
-        parser(),
-        pick({filter: 'data'}),
-        streamValues()
-      ]);
-
-      pipeline.on('data', (data) => {
-        printings = data.value
-      })
-
-      pipeline.on('end', () => {
-        core.utils.popup("MTGJSON Printings", "Complete!", 1)
-        resolve(printings)
-      })
-    })
-  },
-
-  load_prices: (force) => {
-    return new Promise(async (resolve, reject) => {
-      let prices = {}
-
-      let notify = (status) => {
-        const current = core.utils.byte_units(status.current)
-        const maxsize = core.utils.byte_units(status.size)
-        const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
-        core.utils.popup("MTGJSON Prices", caption, status.percent/100)
-      }
-
-      if (!fs.existsSync(prices_file) || force) {
-        console.log("Downloading", "MTGJSON Prices")
-        await core.fetcher.queue(
-          "https://mtgjson.com/api/v5/AllPrices.json.gz",
-          prices_file,
-          notify, false, "mtgjson-prices"
-        )
-      }
-
-      core.utils.popup("MTGJSON Prices", "Reading File...<br/>This can take up to 10 minutes.", null)
-
-      const pipeline = chain([
-        fs.createReadStream(prices_file),
-        zlib.createGunzip(),
-        parser(),
-        pick({filter: 'data'}),
-        // less ram usage (?), increase parsing time by 2 minutes:
-        ignore({filter: /\bpaper.tcgplayer\b|\bpaper.cardkingdom.retail\b|\bpaper.cardmarket.buylist\b|\bpaper.tcgplayer\b|\bpaper.tcgplayer\b|\bpaper.cardsphere\b|\bmtgo\b/i}),
-        streamValues()
-      ]);
-
-      pipeline.on('data', (data) => {
-        prices = data.value
-      })
-
-      pipeline.on('end', () => {
-        core.utils.popup("MTGJSON Prices", "Complete!", 1)
-        resolve(prices)
-      })
-    })
-  },
-
-  load_database: () => {
-    return new Promise(async (resolve, reject) => {
-      // return if database is already loaded or does not exist
-      if (metadata.database || !fs.existsSync(database_file)) {
-        resolve(true)
-        return
-      }
-
-      // read existing database from disk
-      let rawdata = fs.readFileSync(database_file)
-      metadata.database = JSON.parse(rawdata)
-
-      resolve(true)
-    })
-  },
-
-  setup_metadata: async (force) => {
-    if(metadata.prepare || ( metadata.database) && !force) {
-      // if already initialized or preparing return here
-      return metadata.prepare
-    } else {
-      // if uninitialized return a new promise that takes care of setting up things
-      metadata.prepare = new Promise(async (resolve, reject) => {
-        if (!fs.existsSync(database_file) || force) {
-          const [ printings, prices ] = await Promise.all([ metadata.load_printings(force), metadata.load_prices(force) ])
-          metadata.build_database(printings, prices)
-        }
-
-        await metadata.load_database()
-        metadata.prepare = null
-        resolve(true)
-      })
-
-      return metadata.prepare
-    }
-  },
-
-  update_card: async (card) => {
-    // make sure metadata database is initialized
-    await metadata.setup_metadata()
-
-    // flag as unknown
-    card.unknown = true
-
-    const edition = card.set.toUpperCase()
-    const number = card.number.toString().toUpperCase()
-    const language = get_language(card.language)
-
-    // check for existing metadata
-    if (metadata.database && metadata.database[edition][number]) {
-      // get card data from json file
-      const jsoncard = metadata.database[edition][number]
-
-      // attach all json data to card
-      for(entry in jsoncard) card[entry] = jsoncard[entry]
-
-      // remove unused datasets
-      delete card.locales
-      delete card.unknown
-      delete card.uuid
-
-      // obtain default price
-      card.price = card.price_normal_cardmarket || card.price_normal_cardkingdom
-      if(card.foil) card.price = card.price_foil_cardmarket || card.price_foil_cardkingdom || card.price
-
-      // apply locales where possible
-      let locale = jsoncard.locales && jsoncard.locales[language.short] || {}
-      card.name = locale.name || card.name
-      card.type = locale.type || card.type
-      card.text = locale.text || card.text
-      card.flavor = locale.flavor || card.flavor
-      card.multiverse = locale.multiverse || card.multiverse
-    }
-  },
-
-  get_image: async (card, preview) => {
+metadata.fetch_data = (force) => {
+  return new Promise(async (resolve, reject) => {
     let notify = (status) => {
-      if (preview) return
       const current = core.utils.byte_units(status.current)
       const maxsize = core.utils.byte_units(status.size)
       const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
-      core.utils.popup(`Scryfall Download: ${card.set}:${card.number}`, caption, status.percent/100)
+      core.utils.popup("Macaco Card Data", caption, status.percent/100)
     }
 
-    const image = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
-    const fallback = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
-
-    // fetch image
-    if(!fs.existsSync(image)) {
+    if (!fs.existsSync(data_file) || force) {
+      console.log("Downloading", "Macaco Card Data")
       await core.fetcher.queue(
-        `https://api.scryfall.com/cards/${card.set}/${card.number}/${card.language}?format=image&version=${preview ? 'small' : 'border_crop'}`,
-        image,
-        notify, false, "mtgjson-cards"
+        "https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz",
+        data_file,
+        notify, force, "macaco-locales"
       )
+    }
 
-      // try to fetch english version as fallback
-      if(!fs.existsSync(image) && !fs.existsSync(fallback)) {
-        await core.fetcher.queue(
-          `https://api.scryfall.com/cards/${card.set}/${card.number}/en?format=image&version=${preview ? 'small' : 'border_crop'}`,
-          fallback,
-          notify, false, "mtgjson-cards-fallback"
-        )
+    resolve(true)
+  })
+}
+
+metadata.fetch_locales = (force) => {
+  return new Promise(async (resolve, reject) => {
+    let notify = (status) => {
+      const current = core.utils.byte_units(status.current)
+      const maxsize = core.utils.byte_units(status.size)
+      const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
+      core.utils.popup("Macaco Card Locales", caption, status.percent/100)
+    }
+
+    if (!fs.existsSync(locales_file) || force) {
+      console.log("Downloading", "Macaco Card Locales")
+      await core.fetcher.queue(
+        "https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz",
+        locales_file,
+        notify, force, "macaco-locales"
+      )
+    }
+
+    resolve(true)
+  })
+}
+
+metadata.setup_metadata = async (force) => {
+  if(metadata.prepare || ( metadata.data && metadata.locales) && !force) {
+    // if already initialized or preparing return here
+    return metadata.prepare
+  } else {
+    // if uninitialized return a new promise that takes care of setting up things
+    metadata.prepare = new Promise(async (resolve, reject) => {
+      await Promise.all([ metadata.fetch_data(force), metadata.fetch_locales(force) ])
+
+      // load macaco-metadata
+      core.utils.popup("Macaco Card Data", "Reading File...", null)
+      let rawdata = fs.readFileSync(data_file)
+      rawdata = zlib.gunzipSync(rawdata)
+      metadata.data = JSON.parse(rawdata)
+      core.utils.popup("Macaco Card Data", "Complete!", 1)
+
+      // load macaco-metadata
+      core.utils.popup("Macaco Card Locales", "Reading File...", null)
+      let rawlocales = fs.readFileSync(locales_file)
+      rawlocales = zlib.gunzipSync(rawlocales)
+      metadata.locales = JSON.parse(rawlocales)
+      core.utils.popup("Macaco Card Locales", "Complete!", 1)
+
+      metadata.prepare = null
+      resolve(true)
+    })
+
+    return metadata.prepare
+  }
+}
+
+metadata.update_card = async (card) => {
+  // make sure metadata database is initialized
+   await metadata.setup_metadata()
+
+  // flag as unknown
+  card.unknown = true
+
+  const edition = card.set.toUpperCase()
+  const number = card.number.toString().toUpperCase()
+
+  // check for existing metadata
+  if (metadata.data && metadata.data[edition][number]) {
+    // get card data from json file
+    const jsoncard = metadata.data[edition][number]
+
+    // attach all json data to card
+    for(const entry in jsoncard) card[entry] = jsoncard[entry]
+
+    // attach all available locales
+    for(const language in jsoncard.locales) {
+      const locale = metadata.locales[card.name][language]
+
+      if(locale) {
+        const name_id = card.locales[language].name
+        const text_id = card.locales[language].text
+        const type_id = card.locales[language].type
+        const flavor_id = card.locales[language].flavor
+
+        card.locales[language].name = locale.name[name_id] || locale.name[0]
+        card.locales[language].text = locale.text[text_id] || locale.text[0]
+        card.locales[language].type = locale.type[type_id] || locale.type[0]
+        card.locales[language].flavor = locale.flavor[flavor_id] || locale.flavor[0]
       }
     }
 
-    // copy cached image to collection
-    if(fs.existsSync(image)) {
-      fs.copyFileSync(image, card.file)
-    } else if (fs.existsSync(fallback)) {
-      fs.copyFileSync(fallback, card.file)
+    // remove unused datasets
+    delete card.unknown
+    delete card.uuid
+
+    // obtain default price
+    card.price = card.prices[2] || card.prices[0]
+    if(card.foil) card.price = card.prices[3] || card.prices[1]
+  }
+}
+
+metadata.get_image = async (card, preview) => {
+  let notify = (status) => {
+    if (preview) return
+    const current = core.utils.byte_units(status.current)
+    const maxsize = core.utils.byte_units(status.size)
+    const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
+    core.utils.popup(`Scryfall Download: ${card.set}:${card.number}`, caption, status.percent/100)
+  }
+
+  const image = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
+  const fallback = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
+
+  // fetch image
+  if(!fs.existsSync(image)) {
+    await core.fetcher.queue(
+      `https://api.scryfall.com/cards/${card.set}/${card.number}/${card.language}?format=image&version=${preview ? 'small' : 'border_crop'}`,
+      image,
+      notify, false, "mtgjson-cards"
+    )
+
+    // try to fetch english version as fallback
+    if(!fs.existsSync(image) && !fs.existsSync(fallback)) {
+      await core.fetcher.queue(
+        `https://api.scryfall.com/cards/${card.set}/${card.number}/en?format=image&version=${preview ? 'small' : 'border_crop'}`,
+        fallback,
+        notify, false, "mtgjson-cards-fallback"
+      )
     }
+  }
 
-    // make foil
-    if (card.foil == true && fs.existsSync(card.file)) {
-      let image = await jimp.read(card.file)
+  // copy cached image to collection
+  if(fs.existsSync(image)) {
+    fs.copyFileSync(image, card.file)
+  } else if (fs.existsSync(fallback)) {
+    fs.copyFileSync(fallback, card.file)
+  }
 
-      // TODO: goal: only one path for dev and prod
-      let foil_dev = path.join(__dirname, "foil.png")
-      let foil_prod = path.join(process.resourcesPath, "foil.png")
-      let foil = await jimp.read(fs.existsSync(foil_dev) ? foil_dev : foil_prod)
+  // make foil
+  if (card.foil == true && fs.existsSync(card.file)) {
+    let image = await jimp.read(card.file)
 
-      foil = foil.resize(image.bitmap.width, image.bitmap.height)
+    let foil_dev = path.join(__dirname, "foil.png")
+    let foil_prod = path.join(process.resourcesPath, "foil.png")
+    let foil = await jimp.read(fs.existsSync(foil_dev) ? foil_dev : foil_prod)
 
-      image.composite(foil, 0, 0, {
-        mode: jimp.BLEND_SOURCE_OVER,
-        opacityDest: 1,
-        opacitySource: 0.4
-      })
+    foil = foil.resize(image.bitmap.width, image.bitmap.height)
 
-      await image.writeAsync(card.file)
-    }
+    image.composite(foil, 0, 0, {
+      mode: jimp.BLEND_SOURCE_OVER,
+      opacityDest: 1,
+      opacitySource: 0.4
+    })
+
+    await image.writeAsync(card.file)
   }
 }
 

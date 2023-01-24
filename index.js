@@ -39,5 +39,5 @@ core.electron.app.whenReady().then(async () => {
   core.collection = require('./collection.js')
 
   // pre-load database if existing
-  core.metadata.load_database()
+  core.metadata.setup_metadata()
 })
