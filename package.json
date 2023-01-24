@@ -19,28 +19,33 @@
   "dependencies": {
     "better-sqlite3": "^8.0.1",
     "jimp": "^0.16.2",
-    "jszip": "^3.10.1",
-    "stream-chain": "^2.2.5",
-    "stream-json": "^1.7.5"
+    "jszip": "^3.10.1"
   },
-
   "build": {
     "appId": "shagu.macaco",
     "productName": "Macaco",
     "artifactName": "${name}-${version}-${os}.${ext}",
-    "extraResources": [ "foil.png" ],
+    "extraResources": [
+      "foil.png"
+    ],
     "dmg": {
       "writeUpdateInfo": false
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "target": [ "dmg" ]
+      "target": [
+        "dmg"
+      ]
     },
     "linux": {
-      "target": [ "AppImage" ]
+      "target": [
+        "AppImage"
+      ]
     },
     "win": {
-      "target": [ "portable" ]
+      "target": [
+        "portable"
+      ]
     }
   }
 }
