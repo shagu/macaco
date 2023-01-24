@@ -7,13 +7,13 @@ let fetcher = {
 }
 
 // core download function
-fetcher.get = (url, path, notify, force) => {
+fetcher.get = (url, path, notify, force, original_url) => {
   return new Promise((resolve, reject) => {
     let request = http.get(url, async (response) => {
       // handle http status codes
       if (response.statusCode === 301 || response.statusCode === 302) {
         // recursive call on redirect, call self again
-        await fetcher.get(response.headers.location, path, notify)
+        await fetcher.get(response.headers.location, path, notify, force, (original_url || url))
         resolve()
         return
       } else if (response.statusCode !== 200) {
@@ -37,7 +37,7 @@ fetcher.get = (url, path, notify, force) => {
       }
 
       // build default notify status object
-      let status = { url: url, path: path, size: size }
+      let status = { url: (original_url || url), path: path, size: size }
 
       // notify goes here
       response.on("data", function(chunk) {
