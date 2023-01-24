@@ -35,15 +35,16 @@ filters.tags["c"] = {
 
     for(const color of match[1].split(",")) {
       if(color == "m") {
-        if(card.colors.length > 1) {
+        if(card.color && card.color.length > 1) {
           multicolor_enforced = true
+          atleast_one = true
         } else {
           return false
         }
       } else if (color=="c") {
-        if(card.colors.length == 0) atleast_one = true
+        if (!card.color || card.color.length == 0) atleast_one = true
       } else {
-        if(card.colors.includes(color.toUpperCase())) {
+        if(card.color && card.color.includes(color.toUpperCase())) {
           atleast_one = true
         } else {
           mismatch = true
@@ -54,7 +55,7 @@ filters.tags["c"] = {
     // special case if multicolor search is enforced
     // only return multicolor cards if the color selection
     // is also a full match
-    if(multicolor_enforced && !mismatch) return true
+    if(multicolor_enforced && mismatch) return false
 
     return atleast_one
   }
