@@ -1,5 +1,39 @@
 let frontend = { path: ".", db: {}, dom: {} }
 
+frontend.languages = {
+  "Ancient Greek": ["grc"],
+  "Arabic": ["ar"],
+  "Chinese Simplified": [ "zhs", "cs" ],
+  "Chinese Traditional": [ "zht", "ct" ],
+  "English": [ "en" ],
+  "French": ["fr"],
+  "German": ["de"],
+  "Hebrew": [ "he" ],
+  "Italian": [ "it" ],
+  "Japanese": [ "ja", "jp" ],
+  "Korean": [ "ko", "kr" ],
+  "Latin": [ "la" ],
+  "Phyrexian": [ "ph" ],
+  "Portuguese (Brazil)": [ "pt" ],
+  "Russian": [ "ru" ],
+  "Sanskrit": [ "sa" ],
+  "Spanish": [ "es", "sp" ]
+}
+
+frontend.get_locale = (card, entry) => {
+  let retval = ""
+
+  const lang_short = card.language
+  for (const [language, abbreviations] of Object.entries(frontend.languages)) {
+    if (abbreviations.includes(lang_short)) {
+      retval = card.locales[language] ? card.locales[language][entry] : false
+      retval = retval ? retval : card.locales["English"][entry]
+    }
+  }
+
+  return retval
+}
+
 frontend.objcompare = (a, b, o) => {
   if(!a || !b) return false
   if(!o) return a == b
@@ -166,7 +200,7 @@ frontend.dom_build_card = (div_card) => {
 
   div_card.div_title = document.createElement("div")
   div_card.div_title.setAttribute('id', 'card-title')
-  div_card.div_title.innerHTML = card.name
+  div_card.div_title.innerHTML = frontend.get_locale(card, "name")
   div_card.appendChild(div_card.div_title)
 
   div_card.div_pricetag = document.createElement("div")
@@ -343,14 +377,20 @@ frontend.set_preview = (card, existing) => {
     frontend.selection.file = "./img/card-background.jpg"
     frontend.dom.preview.button.disabled = true
   } else {
+    const name = frontend.get_locale(card, "name")
+    const type = frontend.get_locale(card, "type")
+    const flavor = frontend.get_locale(card, "flavor")
+    const text = frontend.text_to_html(frontend.get_locale(card, "text"))
+    const mana = frontend.text_to_html(card.mana)
+
     frontend.dom.preview.info.innerHTML = `
       <span id="preview-metadata-mana">
-        ${frontend.text_to_html(frontend.selection.manacost)}
+        ${mana}
       </span>
-      <b>${frontend.selection.name ? frontend.selection.name : ''}</b><br/>
-      <div id=type>${frontend.selection.type ? frontend.selection.type : ''}</div>
-      ${frontend.text_to_html(frontend.selection.text)}
-      ${card.flavor ? `<div id=quote>${card.flavor}</div>` : ''}
+      <b>${name}</b><br/>
+      <div id=type>${type}</div>
+      ${text}
+      ${flavor ? `<div id=quote>${flavor}</div>` : ''}
     `
 
     frontend.dom.preview.button.disabled = false
@@ -371,8 +411,14 @@ frontend.set_preview = (card, existing) => {
   frontend.dom.preview.preview.src    = frontend.selection.file
 
   // prices
-  const cardmarket = frontend.selection.foil ? frontend.selection.price_foil_cardmarket : frontend.selection.price_normal_cardmarket
-  const cardkingdom = frontend.selection.foil ? frontend.selection.price_foil_cardkingdom : frontend.selection.price_normal_cardkingdom
+  let cardmarket = frontend.selection.prices ? frontend.selection.prices[2] : false
+  let cardkingdom = frontend.selection.prices ? frontend.selection.prices[0] : false
+
+  if (frontend.selection.foil && frontend.selection.prices) {
+    cardmarket = frontend.selection.prices[3] || frontend.selection.prices[2]
+    cardkingdom = frontend.selection.prices[1] || frontend.selection.prices[0]
+  }
+
   if(cardmarket) {
     frontend.dom.preview.cardmarket.innerHTML = `CardMarket<span id=right>${cardmarket.toFixed(2)}€</span>`
     let color = cardmarket > 10 ? "#f00" : cardmarket > 1 ? '#f50' : 'inherit'
@@ -420,9 +466,9 @@ frontend.new_card = async () => {
   const ui_card = frontend.selection
   const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
 
-  popups.show(`${ui_card.name}`, identifier, 0)
+  popups.show(`${frontend.get_locale(ui_card, "name")}`, identifier, 0)
   const new_card = await frontend.invoke['add-card'](ui_card)
-  popups.show(`${ui_card.name}`, identifier, 1)
+  popups.show(`${frontend.get_locale(ui_card, "name")}`, identifier, 1)
 }
 
 frontend.invoke = {
