@@ -14,6 +14,8 @@
     --border-strong:      #5a5c5d;
     --border-accent:      #3daee9;
     --border-notify:      #ffaa00;
+
+    --text-color:         #111111;
   }
 }
 
@@ -32,6 +34,8 @@
     --border-strong:      #bcbebf;
     --border-accent:      #3daee9;
     --border-notify:      #ffaa00;
+
+    --text-color:         #eeeeee;
   }
 }
 
@@ -47,6 +51,7 @@ body {
   height: 100%;
   user-select: none;
   background: var(--background-window);
+  color: var(--text-color);
 }
 
 button {
@@ -162,18 +167,12 @@ input[type=checkbox]:focus {
   box-shadow: 0px 0px 3px var(--background-button) inset;
 }
 
-#header #button-color-w { background-image: url("img/white.png"); }
-#header #button-color-u { background-image: url("img/blue.png"); }
-#header #button-color-b { background-image: url("img/black.png"); }
-#header #button-color-r { background-image: url("img/red.png"); }
-#header #button-color-g { background-image: url("img/green.png"); }
-#header #button-color-c { background-image: url("img/artifact.png"); }
-#header #button-color-m { background-image: url("img/multi.png"); }
-
-#header #open-button { background-image: url("img/open.svg"); }
-
-#header #menu-main { background-image: url("img/menu.svg"); }
-#header #menu-filter { background-image: url("img/filter.svg"); }
+#header button.icon svg {
+  fill: var(--text-color);
+  stroke: none;
+  pointer-events: none;
+  margin: -4px;
+}
 
 #header #separator {
   display: inline-block;
