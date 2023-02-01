@@ -387,6 +387,24 @@ input[type=checkbox]:focus {
   pointer-events: none;
 }
 
+#content #card #card-count {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.50);
+  border-radius: 10px;
+  position: absolute;
+  font-size: large;
+  padding: 5px 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: min-content;
+  color: #fff;
+  left: 0;
+  right: 0;
+  bottom: 50px;
+  text-align: center;
+  pointer-events: none;
+}
+
 #content #card #card-title {
   white-space: nowrap;
   text-overflow: ellipsis;

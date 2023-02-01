@@ -1,5 +1,9 @@
 let frontend = { path: ".", db: {}, dom: {} }
 
+let config = {
+  combine: false,
+}
+
 frontend.languages = {
   "Ancient Greek": ["grc"],
   "Arabic": ["ar"],
@@ -207,6 +211,13 @@ frontend.dom_build_card = (div_card) => {
   div_card.div_pricetag.setAttribute('id', 'card-pricetag')
   div_card.appendChild(div_card.div_pricetag)
 
+  if (config.combine) {
+    div_card.div_count = document.createElement("div")
+    div_card.div_count.setAttribute('id', 'card-count')
+    div_card.div_count.innerHTML = `${card.count}x`
+    div_card.appendChild(div_card.div_count)
+  }
+
   if ( card.price ) {
     div_card.div_pricetag.innerHTML = `${card.price.toFixed(2)}€`
 
@@ -288,6 +299,7 @@ frontend.reload_view = () => {
 
   div_content.innerHTML = ""
   frontend.dom.cards = []
+  frontend.duplicates = {}
 
   if(!view) return
 
@@ -295,14 +307,26 @@ frontend.reload_view = () => {
     // skip to next if invisible
     if(!filters.visible(card, query)) continue
 
-    let div_card = document.createElement("div")
-    div_card.setAttribute('id', 'card-dummy')
-    div_card.data = card
+    const id = `${card.set}:${card.number}`
 
-    div_content.appendChild(div_card)
-    observer.observe(div_card)
+    if(config.combine == false || !frontend.duplicates[id]) {
+      let div_card = document.createElement("div")
+      div_card.setAttribute('id', 'card-dummy')
+      div_card.data = card
 
-    frontend.dom.cards.push(div_card)
+
+      div_content.appendChild(div_card)
+      observer.observe(div_card)
+
+      frontend.dom.cards.push(div_card)
+
+      // write duplicate index
+      frontend.duplicates[id] = div_card
+      frontend.duplicates[id].data.count = 1
+    } else {
+      // increase duplicate index
+      frontend.duplicates[id].data.count += 1
+    }
   }
 
   frontend.reload_view_selection()
