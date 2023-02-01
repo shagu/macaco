@@ -6,7 +6,7 @@ filters.tags["cmc"] = {
   matched: (card, match) => {
     let atleast_one = false
     for(const cmc of match[1].split(",")) {
-      if(card.manavalue == cmc) atleast_one = true
+      if(card.cmc == cmc) atleast_one = true
     }
 
     return atleast_one
