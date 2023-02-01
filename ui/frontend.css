@@ -86,8 +86,8 @@ input[type=text]:disabled {
 }
 
 button.checked {
-  box-shadow: 0px 0px 3px var(--border-accent) inset,
-              0px 0px 1px var(--border-strong) !important;
+  box-shadow: 0px 0px 2px var(--border-accent) inset,
+              0px 0px 1px var(--text-color) !important;
 
   border: 1px var(--border-accent) solid;
 }
