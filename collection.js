@@ -187,7 +187,6 @@ core.electron.ipcMain.handle('move-card', async (event, card, dest) => {
 // update metadata
 core.electron.ipcMain.handle('download-metadata', async (event, ...args) => {
   await core.metadata.setup_metadata(true)
-  await core.delver.setup_metadata(true)
   await collection.reload()
 })
 
