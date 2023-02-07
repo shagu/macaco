@@ -1,7 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const jimp = require('jimp')
-const zlib = require('zlib')
+
+const { Worker } = require('worker_threads')
 
 const data_file = path.join(core.data_directory, "db", "macaco-data.json.gz")
 const locales_file = path.join(core.data_directory, "db", "macaco-locales.json.gz")
@@ -61,22 +62,31 @@ metadata.setup_metadata = async (force) => {
     metadata.prepare = new Promise(async (resolve, reject) => {
       await Promise.all([ metadata.fetch_data(force), metadata.fetch_locales(force) ])
 
-      // load macaco-metadata
-      core.utils.popup("Macaco Card Data", "Reading File...", null)
-      let rawdata = fs.readFileSync(data_file)
-      rawdata = zlib.gunzipSync(rawdata)
-      metadata.data = JSON.parse(rawdata)
-      core.utils.popup("Macaco Card Data", "Complete!", 1)
+      core.utils.popup("Loading Macaco Metadata", "Reading Local Database...", null)
 
-      // load macaco-metadata
-      core.utils.popup("Macaco Card Locales", "Reading File...", null)
-      let rawlocales = fs.readFileSync(locales_file)
-      rawlocales = zlib.gunzipSync(rawlocales)
-      metadata.locales = JSON.parse(rawlocales)
-      core.utils.popup("Macaco Card Locales", "Complete!", 1)
+      let worker = new Worker('./json-loader.js')
 
-      metadata.prepare = null
-      resolve(true)
+      worker.on('message', (result) => {
+        core.utils.popup("Loading Macaco Metadata", "Reading Local Database...", null)
+        metadata.data = result.data
+        metadata.locales = result.locales
+      })
+
+      worker.on('exit', (retval) => {
+        if (retval !== 0) {
+          core.utils.popup("Loading Macaco Metadata", "Error!", 1)
+          reject(`JSON Loader stopped with exit code ${code}`)
+        } else {
+          core.utils.popup("Loading Macaco Metadata", "Complete!", 1)
+          metadata.prepare = null
+          resolve(true)
+        }
+      })
+
+      worker.postMessage({
+        data_file: data_file,
+        locales_file: locales_file
+      })
     })
 
     return metadata.prepare
