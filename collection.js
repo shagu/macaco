@@ -75,7 +75,9 @@ const collection = {
       let inode = path.join(core.folder, filename)
       let stat = fs.statSync(inode)
 
-      if (stat.isDirectory()) {
+      if(file.length > 1 && file.startsWith(".")) {
+        // ignore dotfiles
+      } else if (stat.isDirectory()) {
         // scan subdirectories
         await collection.scan_cards(filename)
       } else {
