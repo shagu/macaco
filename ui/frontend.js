@@ -173,7 +173,6 @@ frontend.reload_view_selection = () => {
       } else {
         div.classList.add("new")
         document.getElementById('content').scrollTop = div.offsetTop - 100
-        setTimeout(function() { div.style.boxShadow = "none" }, 256)
       }
     } else {
       div.classList.remove("selection")
@@ -526,9 +525,11 @@ frontend.update_mana_filter = (e) => {
   let string = ""
 
   if(e.target.classList.contains("checked")) {
+    e.target.classList.add("unchecked")
     e.target.classList.remove("checked")
   } else {
     e.target.classList.add("checked")
+    e.target.classList.remove("unchecked")
   }
 
   for (const mana of colors) {
@@ -579,6 +580,12 @@ frontend.init = () => {
     mana_m: document.getElementById('button-color-m'),
   }
 
+  frontend.dom.windowcontrols = {
+    minimize: document.getElementById('window-minimize'),
+    maximize: document.getElementById('window-maximize'),
+    close: document.getElementById('window-close'),
+  }
+
   // add current card to library
   frontend.dom.preview.edition.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') frontend.new_card()
@@ -619,6 +626,10 @@ frontend.init = () => {
   frontend.dom.headerbar.metadata.addEventListener('click', async () => {
     frontend.invoke['download-metadata'](frontend.path)
   })
+
+  frontend.dom.windowcontrols.minimize.addEventListener('click', frontend.invoke['window-minimize'])
+  frontend.dom.windowcontrols.maximize.addEventListener('click', frontend.invoke['window-maximize'])
+  frontend.dom.windowcontrols.close.addEventListener('click', frontend.invoke['window-close'])
 }
 
 window.addEventListener('DOMContentLoaded', frontend.init)

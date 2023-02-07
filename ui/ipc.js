@@ -15,4 +15,9 @@ window.addEventListener('DOMContentLoaded', () => {
   frontend.invoke['open-folder'] = () => ipcRenderer.invoke('open-folder')
   frontend.invoke['import-backup'] = (path) => ipcRenderer.invoke('import-backup', path)
   frontend.invoke['download-metadata'] = () => ipcRenderer.invoke('download-metadata')
+
+  // window controls
+  frontend.invoke['window-minimize'] = () => ipcRenderer.invoke('window-minimize')
+  frontend.invoke['window-maximize'] = () => ipcRenderer.invoke('window-maximize')
+  frontend.invoke['window-close'] = () => ipcRenderer.invoke('window-close')
 })
