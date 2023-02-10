@@ -47,7 +47,16 @@ menus.button_click = (e) => {
 
 menus.toggle = (query) => {
   for (const [name, frame] of Object.entries(menus.frames)) {
-    frame.style.display = name == query && frame.style.display !== "block" ? "block" : "none"
+    const button = menus.buttons[name]
+    const visible = name == query && frame.style.display !== "block" ? true : false
+
+    if(visible === true) {
+      frame.style.display = "block"
+      button.classList.add("checked")
+    } else {
+      frame.style.display = "none"
+      button.classList.remove("checked")
+    }
   }
 }
 
