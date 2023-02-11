@@ -206,4 +206,9 @@ core.electron.ipcMain.handle('open-folder', async (event, ...args) => {
   collection.reload()
 })
 
+// load local database on boot
+core.electron.ipcMain.handle('dom-loaded', async (event, ...args) => {
+  await core.metadata.setup_metadata()
+})
+
 module.exports = collection

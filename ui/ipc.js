@@ -20,4 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
   frontend.invoke['window-minimize'] = () => ipcRenderer.invoke('window-minimize')
   frontend.invoke['window-maximize'] = () => ipcRenderer.invoke('window-maximize')
   frontend.invoke['window-close'] = () => ipcRenderer.invoke('window-close')
+
+  // autostart
+  ipcRenderer.invoke('dom-loaded')
 })

@@ -54,7 +54,4 @@ core.electron.app.whenReady().then(async () => {
   core.electron.ipcMain.handle('window-close', () => {
     core.window.close()
   })
-
-  // pre-load database if existing
-  core.metadata.setup_metadata()
 })
