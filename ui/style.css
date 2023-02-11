@@ -148,18 +148,83 @@ input[type=text]:disabled {
 div.menu {
   display: none;
   position: fixed;
-  width: max-content;
-  max-width: 200px;
+  width: min-content;
   max-height: max-content;
   background: var(--window-light);
   border: 1px var(--border-normal) solid;
+  box-shadow: 0px 0px 5px var(--border-dark);
   padding: 5px;
   z-index: 16;
 }
 
+div.menu div.hbox {
+  margin: 2px;
+  padding: 4px;
+  background-color: var(--widget-normal);
+  border: 1px var(--border-normal) solid;
+}
+
+div.menu div.menu-segment-title {
+  padding: 4px;
+  color: var(--font-dark);
+}
+
+div.menu div.menu-multi-label {
+  text-align: left;
+  white-space: nowrap;
+  font-weight: bold;
+  padding: 4px;
+  margin: 4px;
+}
+
+div.menu div.menu-multi-entry {
+  margin: 1px;
+}
+
 div.menu button {
   margin: 1px;
-  width: 100%;
+  white-space: nowrap;
+  min-width: 100%;
+}
+
+div.menu button.icon {
+  height: 100%;
+}
+
+div.menu button.icon svg {
+  fill: var(--font-normal);
+  stroke: none;
+  pointer-events: none;
+  height: 16px;
+}
+
+div.menu button.icon svg path {
+  fill: var(--font-normal);
+}
+
+div.menu hr {
+  height: 0px;
+  background-color: var(--border-light);
+  border: none;
+  margin: 5px;
+}
+
+div.hbox {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto auto auto auto auto auto auto;
+  grid-template-rows: 1fr;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+div.vbox {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto auto auto auto auto auto auto auto auto auto auto;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 /* Popups (OSD Notify) */
