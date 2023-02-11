@@ -208,8 +208,8 @@ div.menu button {
 
 /* Page Layout (Root Window) */
 #window {
-  width: calc(100%);
-  height: calc(100%);
+  width: 100%;
+  height: 100%;
 
   display: grid;
   grid-template-areas:
