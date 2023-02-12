@@ -95,13 +95,7 @@ filters.get_string = (json) => {
   return string.trim()
 }
 
-filters.visible = (card, str) => {
-  // always return true on empty strings
-  if(str.length < filters.min) return true
-
-  // obtain search object from string
-  const query = filters.get_json(str)
-
+filters.visible = (card, query) => {
   // iterate over all attributes and break on mismatch
   for (const [filter, values] of Object.entries(query)) {
     if(filters.tags[filter] && !filters.tags[filter](card, values)) {
@@ -120,6 +114,21 @@ filters.visible = (card, str) => {
   }
 
   return false
+}
+
+filters.create_view = (db) => {
+  // abort on invalid data
+  if(!db) return false
+
+  // always return unfiltered on empty strings
+  let str = filters.dom.search.value
+  if(str.length < filters.min) return db
+
+  // obtain search query object from string
+  const query = filters.get_json(str)
+
+  // return filtered view
+  return db.filter(card => filters.visible(card, query))
 }
 
 filters.ui_init = () => {

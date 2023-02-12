@@ -67,15 +67,9 @@ frontend.reload_sidebar = () => {
     div_folder.div_title.innerHTML = caption
     div_folder.appendChild(div_folder.div_title)
 
-    let visible_count = 0
-    for (const card of content) {
-      if(filters.visible(card, frontend.dom.headerbar.search.value.toLowerCase()))
-        visible_count++
-    }
-
     div_folder.div_count = document.createElement("div")
     div_folder.div_count.setAttribute('id', 'folder-count')
-    div_folder.div_count.innerHTML = visible_count
+    div_folder.div_count.innerHTML = content ? filters.create_view(content).length : 0
     div_folder.appendChild(div_folder.div_count)
 
     div_folder.ondragenter = function(e) {
@@ -271,12 +265,6 @@ frontend.sort_from_query = (query) => {
 }
 
 frontend.reload_view = () => {
-  let query = frontend.dom.headerbar.search.value.toLowerCase()
-  query = frontend.sort_from_query(query)
-
-  let view = frontend.db[frontend.path]
-  view.sort(frontend.sort)
-
   let div_content = document.getElementById('content')
   const observer = new IntersectionObserver(function (entries, observer) {
     entries.forEach(function (entry) {
@@ -300,19 +288,16 @@ frontend.reload_view = () => {
   frontend.dom.cards = []
   frontend.duplicates = {}
 
-  if(!view) return
+  if(!frontend.view) return
+  frontend.view.sort(frontend.sort)
 
-  for (const card of view) {
-    // skip to next if invisible
-    if(!filters.visible(card, query)) continue
-
+  for (const card of frontend.view) {
     const id = `${card.set}:${card.number}`
 
     if(config.combine == false || !frontend.duplicates[id]) {
       let div_card = document.createElement("div")
       div_card.setAttribute('id', 'card-dummy')
       div_card.data = card
-
 
       div_content.appendChild(div_card)
       observer.observe(div_card)
@@ -368,8 +353,10 @@ frontend.ui_lock = (state) => {
 }
 
 frontend.reload = () => {
+  // update or reset the current path
   frontend.path = frontend.db[frontend.path] ? frontend.path : "."
 
+  // disable certain ui elements if nothing is loaded
   if(!frontend.db[frontend.path]) {
     frontend.ui_lock(true)
     return
@@ -377,6 +364,10 @@ frontend.reload = () => {
     frontend.ui_lock(false)
   }
 
+  // apply filters to current view
+  frontend.view = filters.create_view(frontend.db[frontend.path])
+
+  // reload ui panels
   frontend.reload_sidebar()
   frontend.reload_statusbar()
   frontend.reload_view()
@@ -534,8 +525,6 @@ frontend.init = () => {
     open: document.getElementById('open-button'),
     import: document.getElementById('import-button'),
     metadata: document.getElementById('download-button'),
-    filter: document.getElementById('menu-filter'),
-    search: document.getElementById('card-search'),
   }
 
   frontend.dom.windowcontrols = {
