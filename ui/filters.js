@@ -41,10 +41,13 @@ filters.tags = {
     // is also a full match
     if(multicolor_enforced && mismatch) return false
     return atleast_one
-  }
+  },
+
+  // dummy to keep sort tag present
+  ["sort"]: () => { return true }
 }
 
-// create search object from given string
+// create search json object from given string
 filters.get_json = (str) => {
   // return cache if still valid
   if(filters.cache.str == str && filters.cache.object) {
@@ -83,6 +86,7 @@ filters.get_json = (str) => {
   return result
 }
 
+// create search string from given json object
 filters.get_string = (json) => {
   let string = ""
 
@@ -95,7 +99,8 @@ filters.get_string = (json) => {
   return string.trim()
 }
 
-filters.visible = (card, query) => {
+// check an individual card to be visible
+filters.check = (card, query) => {
   // iterate over all attributes and break on mismatch
   for (const [filter, values] of Object.entries(query)) {
     if(filters.tags[filter] && !filters.tags[filter](card, values)) {
@@ -116,6 +121,7 @@ filters.visible = (card, query) => {
   return false
 }
 
+// returns a filtered array based on search query
 filters.create_view = (db) => {
   // abort on invalid data
   if(!db) return false
@@ -128,9 +134,10 @@ filters.create_view = (db) => {
   const query = filters.get_json(str)
 
   // return filtered view
-  return db.filter(card => filters.visible(card, query))
+  return db.filter(card => filters.check(card, query))
 }
 
+// initial setup of dom caches and click events
 filters.ui_init = () => {
   // cache dom element shortcuts
   filters.dom = {
@@ -176,6 +183,7 @@ filters.ui_init = () => {
   }
 }
 
+// reload ui elements to match the current search string
 filters.ui_reload = () => {
   // get current string
   const query = filters.get_json(filters.dom.search.value)
@@ -193,4 +201,5 @@ filters.ui_reload = () => {
   frontend.reload()
 }
 
+// register the init function
 window.addEventListener('DOMContentLoaded', filters.ui_init)
