@@ -357,15 +357,18 @@ frontend.reload_preview = () => {
 }
 
 frontend.ui_lock = (state) => {
-  let ui_lock = [ "import", "search", "mana_w", "mana_u", "mana_b", "mana_r", "mana_g", "mana_c", "mana_m" ]
+  let ui_lock = [
+    "import-button", "menu-filter", "card-search", "button-color-w", "button-color-u",
+    "button-color-b", "button-color-r", "button-color-g", "button-color-c", "button-color-m",
+  ]
+
   for (const element of ui_lock) {
-    frontend.dom.headerbar[element].disabled = state
+    document.getElementById(element).disabled = state
   }
 }
 
 frontend.reload = () => {
   frontend.path = frontend.db[frontend.path] ? frontend.path : "."
-
 
   if(!frontend.db[frontend.path]) {
     frontend.ui_lock(true)
@@ -513,44 +516,6 @@ frontend.event = {
   }
 }
 
-frontend.update_text_filter = (e) => {
-  if (e.target.value == e.target.last_value) return
-  e.target.last_value = e.target.value
-  frontend.reload()
-}
-
-frontend.update_mana_filter = (e) => {
-  let colors = [ "w", "u", "b", "r", "g", "c", "m" ]
-  let current = frontend.dom.headerbar.search.value
-  let string = ""
-
-  if(e.target.classList.contains("checked")) {
-    e.target.classList.add("unchecked")
-    e.target.classList.remove("checked")
-  } else {
-    e.target.classList.add("checked")
-    e.target.classList.remove("unchecked")
-  }
-
-  for (const mana of colors) {
-    if(frontend.dom.headerbar["mana_" + mana].classList.contains("checked")) {
-      if(string.length == 0) {
-        string = "color=" + mana
-      } else {
-        string += "," + mana
-      }
-    }
-  }
-
-  string = string.length > 0 ? string + " " : string
-  current = current.replace(/\bcolor=([^ ]+)/i, "")
-
-  let new_string = string + current.trim()
-  if(new_string == current) return
-  frontend.dom.headerbar.search.value = string + current.trim()
-  frontend.reload()
-}
-
 frontend.init = () => {
   frontend.dom.preview = {
     panel: document.getElementById('preview'),
@@ -571,13 +536,6 @@ frontend.init = () => {
     metadata: document.getElementById('download-button'),
     filter: document.getElementById('menu-filter'),
     search: document.getElementById('card-search'),
-    mana_w: document.getElementById('button-color-w'),
-    mana_u: document.getElementById('button-color-u'),
-    mana_b: document.getElementById('button-color-b'),
-    mana_r: document.getElementById('button-color-r'),
-    mana_g: document.getElementById('button-color-g'),
-    mana_c: document.getElementById('button-color-c'),
-    mana_m: document.getElementById('button-color-m'),
   }
 
   frontend.dom.windowcontrols = {
@@ -604,16 +562,6 @@ frontend.init = () => {
   frontend.dom.preview.number.addEventListener("input", frontend.update_preview)
   frontend.dom.preview.foil.addEventListener("input", frontend.update_preview)
   frontend.dom.preview.language.addEventListener("input", frontend.update_preview)
-
-  // refresh collection on each search query change
-  frontend.dom.headerbar.search.onkeyup = frontend.update_text_filter
-  frontend.dom.headerbar.mana_w.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_u.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_b.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_r.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_g.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_c.onclick = frontend.update_mana_filter
-  frontend.dom.headerbar.mana_m.onclick = frontend.update_mana_filter
 
   frontend.dom.headerbar.open.addEventListener('click', async () => {
     frontend.invoke['open-folder']()

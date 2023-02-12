@@ -1,4 +1,4 @@
-let filters = { min: 1, cache: {} }
+let filters = { min: 1, cache: {}, dom: {} }
 
 // all tag based filter checks
 filters.tags = {
@@ -45,7 +45,7 @@ filters.tags = {
 }
 
 // create search object from given string
-filters.get_object = (str) => {
+filters.get_json = (str) => {
   // return cache if still valid
   if(filters.cache.str == str && filters.cache.object) {
     return filters.cache.object
@@ -83,12 +83,24 @@ filters.get_object = (str) => {
   return result
 }
 
+filters.get_string = (json) => {
+  let string = ""
+
+  for(const [tag, elements] of Object.entries(json)) {
+    if(tag != "search" && elements.length > 0) string += `${tag}=${elements.toString()} `
+  }
+
+  string += json.search
+
+  return string.trim()
+}
+
 filters.visible = (card, str) => {
   // always return true on empty strings
   if(str.length < filters.min) return true
 
   // obtain search object from string
-  const query = filters.get_object(str)
+  const query = filters.get_json(str)
 
   // iterate over all attributes and break on mismatch
   for (const [filter, values] of Object.entries(query)) {
@@ -109,3 +121,67 @@ filters.visible = (card, str) => {
 
   return false
 }
+
+filters.ui_init = () => {
+  // cache dom element shortcuts
+  filters.dom = {
+    search:
+      document.getElementById('card-search'),
+
+    color: {
+      w: document.getElementById('button-color-w'),
+      u: document.getElementById('button-color-u'),
+      b: document.getElementById('button-color-b'),
+      r: document.getElementById('button-color-r'),
+      g: document.getElementById('button-color-g'),
+      c: document.getElementById('button-color-c'),
+      m: document.getElementById('button-color-m'),
+    }
+  }
+
+  // add keyup handler to search bar
+  filters.dom.search.addEventListener('keyup', (e) => {
+    if (e.target.value == e.target.last_value) return
+    e.target.last_value = e.target.value
+    filters.ui_reload()
+  })
+
+  // add click handler to color buttons
+  for (const [color, button] of Object.entries(filters.dom.color)) {
+    button.addEventListener('click', (e) => {
+      let query = filters.get_json(filters.dom.search.value)
+
+      if(query.color && query.color.includes(color)) {
+        query.color.splice(query.color.indexOf(color), 1)
+      } else {
+        query.color = query.color || []
+        query.color.push(color)
+      }
+
+      // update search query
+      filters.dom.search.value = filters.get_string(query)
+
+      // update all ui buttons
+      filters.ui_reload()
+    })
+  }
+}
+
+filters.ui_reload = () => {
+  // get current string
+  const query = filters.get_json(filters.dom.search.value)
+
+  // update color filter buttons
+  for (const [name, button] of Object.entries(filters.dom.color)) {
+    if(query && query.color && query.color.includes(name)) {
+      button.classList.add("checked")
+    } else {
+      button.classList.remove("checked")
+    }
+  }
+
+  // reload whole frontend
+  frontend.reload()
+}
+
+window.addEventListener('DOMContentLoaded', filters.ui_init)
