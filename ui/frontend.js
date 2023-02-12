@@ -535,7 +535,7 @@ frontend.update_mana_filter = (e) => {
   for (const mana of colors) {
     if(frontend.dom.headerbar["mana_" + mana].classList.contains("checked")) {
       if(string.length == 0) {
-        string = "c=" + mana
+        string = "color=" + mana
       } else {
         string += "," + mana
       }
@@ -543,7 +543,7 @@ frontend.update_mana_filter = (e) => {
   }
 
   string = string.length > 0 ? string + " " : string
-  current = current.replace(/\bc=([^ ]+)/i, "")
+  current = current.replace(/\bcolor=([^ ]+)/i, "")
 
   let new_string = string + current.trim()
   if(new_string == current) return
