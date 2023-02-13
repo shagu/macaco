@@ -78,9 +78,7 @@ const delver = {
     core.utils.popup("Import DelverLens Backup", backup_file, null)
 
     // check for metadata
-    if(!fs.existsSync(path.join(core.data_directory, "db", "delverlens.sqlite"))) {
-      await delver.setup_metadata()
-    }
+    await delver.setup_metadata()
 
     // open and prepare backup database
     const backup = new sqlite3(backup_file)
