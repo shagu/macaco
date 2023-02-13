@@ -1,6 +1,6 @@
 {
   "name": "macaco",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A Magic Card Collection Software",
   "main": "index.js",
   "scripts": {
