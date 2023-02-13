@@ -10,6 +10,14 @@ filters.check_buttons = [
   "order",
 ]
 
+filters.rarity = [
+  "common",
+  "uncommon",
+  "rare",
+  "special",
+  "mythic",
+]
+
 // all tag based filter checks
 filters.tags = {
   ["cmc"]: (card, values) => {
@@ -80,10 +88,23 @@ filters.tags = {
 // generic sort function
 filters.sort = (attribute = "name", order = 1) => {
   return (a, b) => {
-    if((a[attribute] || 0) != (b[attribute] || 0)) {
-      return a[attribute] < b[attribute] ? order : -1*order
+
+    if(attribute == "rarity") {
+      // special sorting for card rarity
+      const a_val = filters.rarity.indexOf(a.rarity) + 1
+      const b_val = filters.rarity.indexOf(b.rarity) + 1
+
+      if(a_val != b_val) {
+        return a_val < b_val ? order : -1*order
+      }
+    } else {
+      // generic sorting algorithm
+      if((a[attribute] || 0) != (b[attribute] || 0)) {
+        return a[attribute] < b[attribute] ? order : -1*order
+      }
     }
 
+    // sort by name as fallback on identical values
     if(a["name"] && b["name"] && a["name"] != b["name"]) {
       return a["name"] < b["name"] ? order : -1*order
     }
