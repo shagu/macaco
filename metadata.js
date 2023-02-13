@@ -90,11 +90,11 @@ metadata.update_card = async (card) => {
   // flag as unknown
   card.unknown = true
 
-  const edition = card.set.toUpperCase()
-  const number = card.number.toString().toUpperCase()
+  const edition = card.set ? card.set.toUpperCase() : "Unknown"
+  const number = card.number ? card.number.toString().toUpperCase() : "Unknown"
 
   // check for existing metadata
-  if (metadata.data && metadata.data[edition][number]) {
+  if (metadata.data && metadata.data[edition] && metadata.data[edition][number]) {
     // get card data from json file
     const jsoncard = metadata.data[edition][number]
 
