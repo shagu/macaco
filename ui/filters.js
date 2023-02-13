@@ -3,6 +3,7 @@ let filters = { min: 1, cache: {}, dom: {} }
 // all clickable check buttons
 filters.check_buttons = [
   "color",
+  "cmc",
   "rarity",
 ]
 
@@ -188,6 +189,19 @@ filters.ui_init = () => {
       g: document.getElementById('button-color-g'),
       c: document.getElementById('button-color-c'),
       m: document.getElementById('button-color-m'),
+    },
+
+    cmc: {
+      "0": document.getElementById('filter-mana-0'),
+      "1": document.getElementById('filter-mana-1'),
+      "2": document.getElementById('filter-mana-2'),
+      "3": document.getElementById('filter-mana-3'),
+      "4": document.getElementById('filter-mana-4'),
+      "5": document.getElementById('filter-mana-5'),
+      "6": document.getElementById('filter-mana-6'),
+      "7": document.getElementById('filter-mana-7'),
+      "8": document.getElementById('filter-mana-8'),
+      "9+": document.getElementById('filter-mana-9'),
     },
 
     rarity: {
