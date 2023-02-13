@@ -227,43 +227,6 @@ frontend.dom_build_card = (div_card) => {
   }
 }
 
-frontend.sort_method = "colors"
-frontend.sort_fallback = "colors"
-frontend.sort_asc = false
-
-frontend.sort = (a, b) => {
-  const method = frontend.sort_method
-  const fallback = frontend.sort_fallback
-  const asc = frontend.sort_asc ? -1 : 1
-
-  if(a[method] && b[method] && a[method] != b[method]) {
-    return a[method] < b[method] ? asc : -1*asc
-  }
-
-  if(a[fallback] && b[fallback] && a[fallback] != b[fallback]) {
-    return a[fallback] < b[fallback] ? asc : -1*asc
-  }
-
-  if(a["name"] && b["name"] && a["name"] != b["name"]) {
-    return a["name"] < b["name"] ? asc : -1*asc
-  }
-
-  return 0
-}
-
-frontend.sort_from_query = (query) => {
-  const pattern = /\bsort=([^ ]+)/i
-  const match = pattern.exec(query)
-  if (match && match[1]) {
-    frontend.sort_method = match[1]
-    query = query.replace(pattern, "")
-  } else {
-    frontend.sort_method = "colors"
-  }
-
-  return query
-}
-
 frontend.reload_view = () => {
   let div_content = document.getElementById('content')
   const observer = new IntersectionObserver(function (entries, observer) {
@@ -289,7 +252,6 @@ frontend.reload_view = () => {
   frontend.duplicates = {}
 
   if(!frontend.view) return
-  frontend.view.sort(frontend.sort)
 
   for (const card of frontend.view) {
     const id = `${card.set}:${card.number}`

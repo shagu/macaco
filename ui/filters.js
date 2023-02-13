@@ -43,8 +43,24 @@ filters.tags = {
     return atleast_one
   },
 
-  // dummy to keep sort tag present
-  ["sort"]: () => { return true }
+  // dummy functions to keep sort tags present
+  ["sort"]: () => { return true },
+  ["order"]: () => { return true },
+}
+
+// generic sort function
+filters.sort = (attribute = "name", order = 1) => {
+  return (a, b) => {
+    if(a[attribute] && b[attribute] && a[attribute] != b[attribute]) {
+      return a[attribute] < b[attribute] ? order : -1*order
+    }
+
+    if(a["name"] && b["name"] && a["name"] != b["name"]) {
+      return a["name"] < b["name"] ? order : -1*order
+    }
+
+    return 0
+  }
 }
 
 // create search json object from given string
@@ -134,7 +150,13 @@ filters.create_view = (db) => {
   const query = filters.get_json(str)
 
   // return filtered view
-  return db.filter(card => filters.check(card, query))
+  const result = db.filter(card => filters.check(card, query))
+
+  // sort view
+  const order = query.order == "desc" ? -1 : 1
+  result.sort(filters.sort(query.sort, order))
+
+  return result
 }
 
 // initial setup of dom caches and click events
