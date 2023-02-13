@@ -30,8 +30,8 @@ frontend.get_locale = (card, entry) => {
   const lang_short = card.language
   for (const [language, abbreviations] of Object.entries(frontend.languages)) {
     if (abbreviations.includes(lang_short)) {
-      retval = card.locales[language] ? card.locales[language][entry] : false
-      retval = retval ? retval : card.locales["English"][entry]
+      retval = card.locales && card.locales[language] ? card.locales[language][entry] : false
+      retval = retval ? retval : card.locales && card.locales["English"][entry] || "Unknown"
     }
   }
 
