@@ -9,8 +9,16 @@ filters.check_buttons = [
 // all tag based filter checks
 filters.tags = {
   ["cmc"]: (card, values) => {
-    for (const entry of values)
-      if (card.cmc == entry) return true
+    for (const entry of values) {
+      if (entry.includes("+")) {
+        if (card.cmc >= entry.replaceAll("+","")) return true
+      } else if (entry.includes("-")) {
+        if (card.cmc <= entry.replaceAll("-","")) return true
+      } else {
+        if (card.cmc == entry) return true
+      }
+    }
+
     return false
   },
   ["rarity"]: (card, values) => {
