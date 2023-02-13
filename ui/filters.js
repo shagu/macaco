@@ -6,6 +6,8 @@ filters.check_buttons = [
   "cmc",
   "rarity",
   "type",
+  "sort",
+  "order",
 ]
 
 // all tag based filter checks
@@ -231,6 +233,20 @@ filters.ui_init = () => {
       artifact: document.getElementById('filter-type-artifact'),
       planeswalker: document.getElementById('filter-type-planeswalker'),
       land: document.getElementById('filter-type-land'),
+    },
+
+    sort: {
+      name: document.getElementById('sort-name'),
+      color: document.getElementById('sort-color'),
+      cmc: document.getElementById('sort-mana'),
+      rarity: document.getElementById('sort-rarity'),
+      price: document.getElementById('sort-price'),
+      set: document.getElementById('sort-set'),
+    },
+
+    order: {
+      asc: document.getElementById('sort-mode-asc'),
+      desc: document.getElementById('sort-mode-desc'),
     }
   }
 
@@ -247,11 +263,21 @@ filters.ui_init = () => {
       button.addEventListener('click', (e) => {
         let query = filters.get_json(filters.dom.search.value)
 
-        if(query[keyword] && query[keyword].includes(attribute)) {
-          query[keyword].splice(query[keyword].indexOf(attribute), 1)
+        if(keyword == "sort" || keyword == "order") {
+          // single-select buttons
+          if(query[keyword] && query[keyword].includes(attribute)) {
+            query[keyword] = []
+          } else {
+            query[keyword] = [attribute]
+          }
         } else {
-          query[keyword] = query[keyword] || []
-          query[keyword].push(attribute)
+          // multi-select buttons
+          if(query[keyword] && query[keyword].includes(attribute)) {
+            query[keyword].splice(query[keyword].indexOf(attribute), 1)
+          } else {
+            query[keyword] = query[keyword] || []
+            query[keyword].push(attribute)
+          }
         }
 
         // update search query
