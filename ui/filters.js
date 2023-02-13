@@ -5,6 +5,7 @@ filters.check_buttons = [
   "color",
   "cmc",
   "rarity",
+  "type",
 ]
 
 // all tag based filter checks
@@ -25,6 +26,17 @@ filters.tags = {
   ["rarity"]: (card, values) => {
     for (const entry of values)
       if (card.rarity == entry) return true
+    return false
+  },
+  ["type"]: (card, values) => {
+    for (const entry of values) {
+      const match = card.types && card.types.find(e => {
+        return e.toLowerCase() === entry.toLowerCase()
+      })
+
+      if (match) return true
+    }
+
     return false
   },
   ["color"]: (card, values) => {
@@ -209,6 +221,16 @@ filters.ui_init = () => {
       uncommon: document.getElementById('filter-rarity-uncommon'),
       rare: document.getElementById('filter-rarity-rare'),
       mythic: document.getElementById('filter-rarity-mythic'),
+    },
+
+    type: {
+      instant: document.getElementById('filter-type-instant'),
+      sorcery: document.getElementById('filter-type-sorcery'),
+      creature: document.getElementById('filter-type-creature'),
+      enchantment: document.getElementById('filter-type-enchantment'),
+      artifact: document.getElementById('filter-type-artifact'),
+      planeswalker: document.getElementById('filter-type-planeswalker'),
+      land: document.getElementById('filter-type-land'),
     }
   }
 
