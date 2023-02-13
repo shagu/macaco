@@ -102,7 +102,7 @@ const delver = {
       }
 
       count++
-      const percent = Math.ceil(count / sum)
+      const percent = Math.ceil(count / sum * 100)
       const caption = `backup_file<br>${count}/${sum} (${percent}%)`
       core.utils.popup("Import DelverLens Backup", caption, percent)
 
