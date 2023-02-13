@@ -78,7 +78,7 @@ filters.tags = {
 // generic sort function
 filters.sort = (attribute = "name", order = 1) => {
   return (a, b) => {
-    if(a[attribute] && b[attribute] && a[attribute] != b[attribute]) {
+    if((a[attribute] || 0) != (b[attribute] || 0)) {
       return a[attribute] < b[attribute] ? order : -1*order
     }
 
@@ -180,7 +180,7 @@ filters.create_view = (db) => {
   const result = db.filter(card => filters.check(card, query))
 
   // sort view
-  const order = query.order == "desc" ? -1 : 1
+  const order = query.order == "asc" ? -1 : 1
   result.sort(filters.sort(query.sort, order))
 
   return result
