@@ -1,7 +1,10 @@
 let filters = { min: 1, cache: {}, dom: {} }
 
 // all clickable check buttons
-filters.check_buttons = ["color"]
+filters.check_buttons = [
+  "color",
+  "rarity",
+]
 
 // all tag based filter checks
 filters.tags = {
@@ -177,6 +180,13 @@ filters.ui_init = () => {
       g: document.getElementById('button-color-g'),
       c: document.getElementById('button-color-c'),
       m: document.getElementById('button-color-m'),
+    },
+
+    rarity: {
+      common: document.getElementById('filter-rarity-common'),
+      uncommon: document.getElementById('filter-rarity-uncommon'),
+      rare: document.getElementById('filter-rarity-rare'),
+      mythic: document.getElementById('filter-rarity-mythic'),
     }
   }
 
