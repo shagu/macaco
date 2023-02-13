@@ -1,5 +1,8 @@
 let filters = { min: 1, cache: {}, dom: {} }
 
+// all clickable check buttons
+filters.check_buttons = ["color"]
+
 // all tag based filter checks
 filters.tags = {
   ["cmc"]: (card, values) => {
@@ -184,24 +187,26 @@ filters.ui_init = () => {
     filters.ui_reload()
   })
 
-  // add click handler to color buttons
-  for (const [color, button] of Object.entries(filters.dom.color)) {
-    button.addEventListener('click', (e) => {
-      let query = filters.get_json(filters.dom.search.value)
+  // add click handler to filter buttons
+  for (const keyword of filters.check_buttons) {
+    for (const [attribute, button] of Object.entries(filters.dom[keyword])) {
+      button.addEventListener('click', (e) => {
+        let query = filters.get_json(filters.dom.search.value)
 
-      if(query.color && query.color.includes(color)) {
-        query.color.splice(query.color.indexOf(color), 1)
-      } else {
-        query.color = query.color || []
-        query.color.push(color)
-      }
+        if(query[keyword] && query[keyword].includes(attribute)) {
+          query[keyword].splice(query[keyword].indexOf(attribute), 1)
+        } else {
+          query[keyword] = query[keyword] || []
+          query[keyword].push(attribute)
+        }
 
-      // update search query
-      filters.dom.search.value = filters.get_string(query)
+        // update search query
+        filters.dom.search.value = filters.get_string(query)
 
-      // update all ui buttons
-      filters.ui_reload()
-    })
+        // update all ui buttons
+        filters.ui_reload()
+      })
+    }
   }
 }
 
@@ -210,12 +215,14 @@ filters.ui_reload = () => {
   // get current string
   const query = filters.get_json(filters.dom.search.value)
 
-  // update color filter buttons
-  for (const [name, button] of Object.entries(filters.dom.color)) {
-    if(query && query.color && query.color.includes(name)) {
-      button.classList.add("checked")
-    } else {
-      button.classList.remove("checked")
+  // update clickable filter buttons
+  for (const attribute of filters.check_buttons) {
+    for (const [name, button] of Object.entries(filters.dom[attribute])) {
+      if(query && query[attribute] && query[attribute].includes(name)) {
+        button.classList.add("checked")
+      } else {
+        button.classList.remove("checked")
+      }
     }
   }
 
