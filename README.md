@@ -9,15 +9,21 @@
 ![language](https://img.shields.io/github/languages/top/shagu/macaco)
 ![funding](https://img.shields.io/github/sponsors/shagu)
 
-Macaco stands for **Ma**gic **Ca**rd **Co**llection and is a utility that helps you to digitalize and organize your [Magic: The Gathering](https://magic.wizards.com/) card collection. Each card in your collection is represented as a single file and is grouped by folders. This allows you to browse and sort your collection with any file manager of your choice.
+Macaco stands for **Ma**gic **Ca**rd **Co**llection and is a utility that helps you to digitalize and organize your [Magic: The Gathering](https://magic.wizards.com/) collection. Each card in your collection is represented as a single file and is grouped by folders. This allows you to browse, sort, backup and work with your collection using any file manager of your choice.
 
-Macaco allows you to add new cards to your library by simply typing the `set` and the `number` of the card into the side panel. It will then automatically begin to download an image of the card from [Scryfall](https://scryfall.com/) and saves it into your library. An alternative approach would be to scan your cards via [Delver Lens](https://www.delverlab.com/), create a backup and import it into your macaco library.
+Macaco can add new cards to your library by simply typing the `set` and the `number` of the card into the side panel. It will then automatically begin to download an image of the card from [Scryfall](https://scryfall.com/) and saves it into your library. An alternative approach would be to scan your cards via [Delver Lens](https://www.delverlab.com/), create a backup and import it into your macaco library.
+
+## Screenshot
+
+|     Main Window (Light)     |     Main Window (Dark)    |
+| :-------------------------: | :-----------------------: |
+| ![light](preview-light.png) | ![dark](preview-dark.png) |
 
 ## Download
 
-> **Not yet ready for public use. Use at your own risk.**
+> **This project is in early development. Use at your own risk.**
 
-All download links can be on the **[Release Page](https://github.com/shagu/macaco/releases/latest)** for the following platforms:
+All download links can be found on the **[Release Page](https://github.com/shagu/macaco/releases/latest)** for the following platforms:
 
 * Linux as AppImage (macaco-X.X.X-linux.AppImage)
 * MacOS as Apple Disk Image (macaco-X.X.X-mac.dmg)
