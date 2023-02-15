@@ -41,49 +41,37 @@ core.electron.app.whenReady().then(async () => {
   core.metadata   = require('./metadata.js')
   core.collection = require('./collection.js')
 
+  // custom minimize button
   core.electron.ipcMain.handle('window-minimize', () => {
     core.window.minimize()
   })
 
+  // custom maximize button
   let maximized = false
   core.electron.ipcMain.handle('window-maximize', () => {
     maximized ? core.window.unmaximize() : core.window.maximize()
     maximized = !maximized
   })
 
+  // custom close button
   core.electron.ipcMain.handle('window-close', () => {
     core.window.close()
   })
 
-  // electron doesn't update its window to the system's shouldUseDarkColors
-  // when the system colors get changed while the application is open.
-  // so let's instead do it manually in an extremly awkward way:
+  // update darkmode when the system theme is updated
   let last_theme_change = 0
   core.electron.nativeTheme.on('updated',  () => {
     // skip everything if not enough time has passed since the last change
+    // and set last_theme_change to ignore all events within the next 10ms
     if(Date.now() < last_theme_change) return
+    last_theme_change = Date.now() + 10
 
-    // set last_theme_change to ignore all events within the next 100ms
-    // otherwise all the themeSource changes below would trigger it again..
-    last_theme_change = Date.now() + 100
-
-    // for some reason, the first change to 'dark' and 'light' doesn't change
-    // anything in the electron window. So lets set both variants at least once
-    // before the real mode is set later to the value from "shouldUseDarkColors".
+    // setting the themeSource to 'system' will not update to the current
+    // system mode if the value wasn't set to 'dark' & 'light' before
     core.electron.nativeTheme.themeSource = 'dark'
     core.electron.nativeTheme.themeSource = 'light'
 
-    // now we can reset back to 'system' in order to read 'shouldUseDarkColors'
+    // now we can reset back to 'system' in order to refresh current mode
     core.electron.nativeTheme.themeSource = 'system'
-
-    // finally.. read the darkmode state and manually set electron accordingly
-    if (core.electron.nativeTheme.shouldUseDarkColors === true) {
-      core.electron.nativeTheme.themeSource = 'dark'
-    } else {
-      core.electron.nativeTheme.themeSource = 'light'
-    }
-
-    // great! these workarounds made it work.. i'm done here.. if you can do better, PR welcome.
-    console.log(`Electron colors are now: ${core.electron.nativeTheme.themeSource}`)
   })
 })
