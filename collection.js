@@ -107,11 +107,9 @@ const collection = {
           collection.library[folder].push(card)
 
           // update card counts
-          const count = collection.library[folder].filter((e) => e.set === card.set && e.number === card.number && e.foil === card.foil).length
-          for(const element of collection.library[folder]) {
-            if (element.set === card.set && element.number === card.number && element.foil === card.foil) {
-              element.count = count
-            }
+          const duplicates = collection.library[folder].filter((e) => e.set === card.set && e.number === card.number && e.foil === card.foil)
+          for (let dupe of duplicates) {
+            dupe.count = duplicates.length
           }
         }
       }
