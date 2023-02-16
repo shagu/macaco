@@ -162,18 +162,13 @@ core.electron.ipcMain.handle('load-card', async (event, card) => {
   suffix = card.foil ? `${suffix}.f` : suffix
 
   card.file = path.join(core.data_directory, "images", `preview_[${suffix}].jpg`)
+  await core.metadata.update_card(card)
 
-  if (!fs.existsSync(card.file)) {
+  if(!card.unknown && !fs.existsSync(card.file)) {
     await core.metadata.get_image(card, true)
   }
 
-  if (fs.existsSync(card.file)) {
-    await core.metadata.update_card(card)
-    core.window.webContents.send('add-card-update', card)
-  } else {
-    card.unknown = true
-    core.window.webContents.send('add-card-update', card)
-  }
+  core.window.webContents.send('add-card-update', card)
 })
 
 core.electron.ipcMain.handle('new-folder', async (event, folder) => {

@@ -141,7 +141,7 @@ metadata.get_image = async (card, preview) => {
   const fallback = path.join(core.data_directory, "images", `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
 
   // fetch image
-  if(!fs.existsSync(image)) {
+  if(!card.unknown && !fs.existsSync(image)) {
     await core.fetcher.queue(
       `https://api.scryfall.com/cards/${card.set}/${card.number}/${card.language}?format=image&version=${preview ? 'small' : 'border_crop'}`,
       image,
