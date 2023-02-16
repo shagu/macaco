@@ -214,11 +214,23 @@ frontend.reload_statusbar = () => {
   div_footer.innerHTML = `Collection with <b>${num_cards}</b> cards in <b>${num_lists}</b> folders worth <b>${price.toFixed(2)}€</b>.`
 }
 
+frontend.is_selection = (card, compare) => {
+  if (!compare) return false
+
+  if (config.combine == true && card.foil == compare.foil && card.number == compare.number && card.set == compare.set) {
+    return true
+  } else if (config.combine == false && card.file == compare.file) {
+    return true
+  } else {
+    return false
+  }
+}
+
 frontend.reload_view_selection = () => {
   if (!frontend.dom.cards) return
 
   for (const div of frontend.dom.cards) {
-    if (frontend.selection &&  div.data.file == frontend.selection.file) {
+    if (frontend.is_selection(div.data, frontend.selection)) {
       if (frontend.selection.current_file) {
         div.classList.add("selection")
       } else {
