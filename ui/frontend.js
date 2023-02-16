@@ -2,6 +2,7 @@ let frontend = { path: ".", db: {}, dom: {} }
 
 let config = {
   combine: false,
+  show_empty: true
 }
 
 frontend.languages = {
@@ -45,14 +46,13 @@ frontend.objcompare = (a, b, o) => {
   return true
 }
 
-let show_empty = true
 frontend.reload_sidebar = () => {
   let div_sidebar = document.getElementById('sidebar')
   div_sidebar.innerHTML = ""
 
   /* add folder buttons */
   for (const [folder, content] of Object.entries(frontend.db)) {
-    if (!show_empty && content.length == 0) continue
+    if (!config.show_empty && content.length == 0) continue
 
     let div_folder = document.createElement("div")
     const caption = "<b>🗀</b> " + (folder == "." ? "Library" : folder)
@@ -159,11 +159,11 @@ frontend.reload_sidebar = () => {
   show_empty_container.appendChild(show_empty_label)
 
   let show_empty_input = document.createElement("input")
-  show_empty_input.checked = show_empty
+  show_empty_input.checked = config.show_empty
   show_empty_input.type = "checkbox"
   show_empty_input.style.textAlign = "right"
   show_empty_input.onclick = () => {
-    show_empty = !show_empty
+    config.show_empty = !config.show_empty
     frontend.reload_sidebar()
   }
 
