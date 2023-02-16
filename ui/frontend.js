@@ -495,6 +495,10 @@ frontend.update_preview = () => {
   frontend.selection.foil = frontend.dom.preview.foil.checked ? true : false
   frontend.selection.path = frontend.path
 
+  // remove bad characters
+  frontend.selection.set = frontend.selection.set.replace(/[^a-z0-9]/gi, '')
+  frontend.selection.number = frontend.selection.number.replace(/[^a-z0-9]/gi, '')
+
   // change ui to loading mode and invoke a card update
   frontend.dom.preview.info.innerHTML = "Please Wait..."
   frontend.dom.preview.preview.src = "./img/card-background.jpg"
@@ -505,7 +509,6 @@ frontend.update_preview = () => {
 
 frontend.new_card = async () => {
   if(!frontend.selection) return
-  if(frontend.selection.unknown) return
 
   const ui_card = frontend.selection
   const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
