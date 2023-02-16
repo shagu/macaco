@@ -50,6 +50,42 @@ frontend.reload_sidebar = () => {
   let div_sidebar = document.getElementById('sidebar')
   div_sidebar.innerHTML = ""
 
+  /* add new folder button */
+  let folder_input = document.createElement("input")
+  folder_input.setAttribute('type', 'text')
+  folder_input.setAttribute('id', "folder-input")
+  div_sidebar.appendChild(folder_input)
+
+  const input_enable = function() {
+    folder_input.classList.add("active")
+    folder_input.value = ""
+  }
+
+  const input_disable = function() {
+    folder_input.classList.remove("active")
+    folder_input.value = "Create New Folder"
+    folder_input.blur()
+  }
+
+  folder_input.onfocus = input_enable
+  folder_input.onblur = input_disable
+  folder_input.onkeydown = function(e) {
+    if (e.key === 'Enter') {
+      frontend.invoke["new-folder"](folder_input.value)
+      input_disable()
+    }
+
+    if (e.key === 'Escape') {
+      input_disable()
+    }
+  }
+
+  input_disable()
+
+  /* add spacer */
+  let spacer_top = document.createElement("hr")
+  div_sidebar.appendChild(spacer_top)
+
   /* add folder buttons */
   for (const [folder, content] of Object.entries(frontend.db)) {
     if (!config.show_empty && content.length == 0) continue
@@ -112,40 +148,8 @@ frontend.reload_sidebar = () => {
   }
 
   /* add spacer */
-  let spacer = document.createElement("hr")
-  div_sidebar.appendChild(spacer)
-
-  /* add new folder button */
-  let folder_input = document.createElement("input")
-  folder_input.setAttribute('type', 'text')
-  folder_input.setAttribute('id', "folder-input")
-  div_sidebar.appendChild(folder_input)
-
-  const input_enable = function() {
-    folder_input.classList.add("active")
-    folder_input.value = ""
-  }
-
-  const input_disable = function() {
-    folder_input.classList.remove("active")
-    folder_input.value = "Create New Folder"
-    folder_input.blur()
-  }
-
-  folder_input.onfocus = input_enable
-  folder_input.onblur = input_disable
-  folder_input.onkeydown = function(e) {
-    if (e.key === 'Enter') {
-      frontend.invoke["new-folder"](folder_input.value)
-      input_disable()
-    }
-
-    if (e.key === 'Escape') {
-      input_disable()
-    }
-  }
-
-  input_disable()
+  let spacer_bottom = document.createElement("hr")
+  div_sidebar.appendChild(spacer_bottom)
 
   /* add show empty checkbox */
   let show_empty_container = document.createElement("div")
@@ -168,6 +172,28 @@ frontend.reload_sidebar = () => {
   }
 
   show_empty_container.appendChild(show_empty_input)
+
+  /* add combine same checkbox */
+  let combine_same_container = document.createElement("div")
+  combine_same_container.classList.add("hbox")
+  combine_same_container.setAttribute('id', "folder")
+  div_sidebar.appendChild(combine_same_container)
+
+  let combine_same_label = document.createElement("div")
+  combine_same_label.innerHTML = "Combine Same Cards"
+  combine_same_label.style.textAlign = "left"
+  combine_same_container.appendChild(combine_same_label)
+
+  let combine_same_input = document.createElement("input")
+  combine_same_input.checked = config.combine
+  combine_same_input.type = "checkbox"
+  combine_same_input.style.textAlign = "right"
+  combine_same_input.onclick = () => {
+    config.combine = !config.combine
+    frontend.reload()
+  }
+
+  combine_same_container.appendChild(combine_same_input)
 }
 
 frontend.reload_statusbar = () => {

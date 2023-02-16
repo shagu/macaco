@@ -540,7 +540,7 @@ div.vbox {
 
 #content #card #card-count {
   display: inline-block;
-  background-color: rgba(0, 0, 0, 0.50);
+  background-color: rgba(0, 0, 0, 0.75);
   position: absolute;
   font-size: large;
   padding: 5px 10px;
