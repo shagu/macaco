@@ -1,7 +1,7 @@
 let frontend = { path: ".", db: {}, dom: {} }
 
 let config = {
-  combine: false,
+  combine: true,
   show_empty: true
 }
 
@@ -311,7 +311,7 @@ frontend.reload_view = () => {
   if(!frontend.view) return
 
   for (const card of frontend.view) {
-    const id = `${card.set}:${card.number}`
+    const id = `${card.set}:${card.number}:${card.foil ? "f": ""}`
 
     if(config.combine == false || !frontend.duplicates[id]) {
       let div_card = document.createElement("div")
@@ -325,10 +325,6 @@ frontend.reload_view = () => {
 
       // write duplicate index
       frontend.duplicates[id] = div_card
-      frontend.duplicates[id].data.count = 1
-    } else {
-      // increase duplicate index
-      frontend.duplicates[id].data.count += 1
     }
   }
 
