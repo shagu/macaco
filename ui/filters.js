@@ -262,6 +262,7 @@ filters.ui_init = () => {
       cmc: document.getElementById('sort-mana'),
       rarity: document.getElementById('sort-rarity'),
       price: document.getElementById('sort-price'),
+      count: document.getElementById('sort-count'),
       set: document.getElementById('sort-set'),
     },
 
