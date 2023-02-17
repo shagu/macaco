@@ -15,9 +15,9 @@ Macaco can add new cards to your library by simply typing the `set` and the `num
 
 ## Screenshot
 
-|         Main Window (Light)          |         Main Window (Dark)         |
-| :----------------------------------: | :--------------------------------: |
-| ![light](preview-light.png?raw=true) | ![dark](preview-dark.png?raw=true) |
+|                   Main Window (Light)                     |                   Main Window (Dark)                   |
+| :-------------------------------------------------------: | :----------------------------------------------------: |
+| [![light](preview-light.png)](preview-light.png?raw=true) | [![dark](preview-dark.png)](preview-dark.png?raw=true) |
 
 ## Download
 
