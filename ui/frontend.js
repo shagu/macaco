@@ -246,6 +246,7 @@ frontend.reload_view_selection = () => {
 
 frontend.dom_build_card = (div_card) => {
   const card = div_card.data
+  const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
 
   div_card.setAttribute('id', 'card')
   div_card.setAttribute("draggable", true)
@@ -266,7 +267,7 @@ frontend.dom_build_card = (div_card) => {
 
   div_card.div_title = document.createElement("div")
   div_card.div_title.setAttribute('id', 'card-title')
-  div_card.div_title.innerHTML = frontend.get_locale(card, "name")
+  div_card.div_title.innerHTML = frontend.get_locale(card, "name") || identifier
   div_card.appendChild(div_card.div_title)
 
   div_card.div_pricetag = document.createElement("div")
@@ -415,17 +416,17 @@ frontend.set_preview = (card, existing) => {
   // write current file if preview is an existing one
   if (existing) card.current_file = card.file
 
-  if (card.unknown) {
+  if (card.unknown && !card.current_file) {
     // write a dummy card & disable button
     frontend.dom.preview.info.innerHTML = "Unknown Card"
     frontend.selection.file = "./img/card-background.jpg"
-    frontend.dom.preview.button.disabled = true
   } else {
-    const name = frontend.get_locale(card, "name")
+    const name = frontend.get_locale(card, "name") || `Unknown Card`
     const type = frontend.get_locale(card, "type")
     const flavor = frontend.get_locale(card, "flavor")
     const text = frontend.text_to_html(frontend.get_locale(card, "text"))
     const mana = frontend.text_to_html(card.mana)
+    if(!name) return
 
     frontend.dom.preview.info.innerHTML = `
       <span id="preview-metadata-mana">
@@ -436,8 +437,6 @@ frontend.set_preview = (card, existing) => {
       ${text}
       ${flavor ? `<div id=quote>${flavor}</div>` : ''}
     `
-
-    frontend.dom.preview.button.disabled = false
   }
 
   // adjust button label
@@ -446,6 +445,9 @@ frontend.set_preview = (card, existing) => {
   } else {
     frontend.dom.preview.button.innerHTML = "New Card"
   }
+
+  // enable card button
+  frontend.dom.preview.button.disabled = false
 
   // update preview
   frontend.dom.preview.edition.value  = frontend.selection.set
