@@ -158,12 +158,12 @@ metadata.get_image = async (card, preview) => {
     }
   }
 
-  // copy cached image to collection
+  // copy image to collection (or preview cache)
   if(fs.existsSync(image)) {
     fs.copyFileSync(image, card.file)
   } else if (fs.existsSync(fallback)) {
     fs.copyFileSync(fallback, card.file)
-  } else {
+  } else if (!preview) {
     fs.copyFileSync(path.join("ui", "img", "card-background.jpg"), card.file)
   }
 
