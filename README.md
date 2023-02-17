@@ -23,11 +23,11 @@ Macaco can add new cards to your library by simply typing the `set` and the `num
 
 > **This project is in early development. Use at your own risk.**
 
-All download links can be found on the **[Release Page](https://github.com/shagu/macaco/releases/latest)** for the following platforms:
+Files are provided on the **[Release & Download Page](https://github.com/shagu/macaco/releases/latest)** for the following platforms:
 
-* Linux as AppImage (macaco-X.X.X-linux.AppImage)
-* MacOS as Apple Disk Image (macaco-X.X.X-mac.dmg)
-* Windows as portable Executable (macaco-X.X.X-win.exe)
+* **Linux** as AppImage *(macaco-X.X.X-linux.AppImage)*
+* **MacOS** as Apple Disk Image *(macaco-X.X.X-mac.dmg)*
+* **Windows** as portable Executable *(macaco-X.X.X-win.exe)*
 
 ## Thanks
 
