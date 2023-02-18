@@ -61,6 +61,26 @@ const collection = {
     fs.renameSync(old_file, path.join(core.folder, dest, filename))
   },
 
+  count_cards: async () => {
+    for(const [folder, cards] of Object.entries(collection.library)) {
+      let duplicates = {}
+
+      // build duplicate arrays
+      for (const card of cards) {
+        const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
+        duplicates[identifier] = duplicates[identifier] || []
+        duplicates[identifier].push(card)
+      }
+
+      // set all count values
+      for (const [identifier, cards] of Object.entries(duplicates)) {
+        for(const card of cards) {
+          card.count = cards.length
+        }
+      }
+    }
+  },
+
   scan_cards: async (folder = ".") => {
     // abort if nothing was opened yet
     if(!core.folder) return
@@ -105,12 +125,6 @@ const collection = {
 
           // add card to folder
           collection.library[folder].push(card)
-
-          // update card counts
-          const duplicates = collection.library[folder].filter((e) => e.set === card.set && e.number === card.number && e.foil === card.foil)
-          for (let dupe of duplicates) {
-            dupe.count = duplicates.length
-          }
         }
       }
     }
@@ -152,6 +166,7 @@ const collection = {
   reload: async (with_progress) => {
     collection.library = {}
     await collection.scan_cards()
+    await collection.count_cards()
     await collection.reload_metadata(with_progress)
     core.window.webContents.send('update-collection', collection.library)
   }
