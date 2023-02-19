@@ -46,6 +46,51 @@ frontend.objcompare = (a, b, o) => {
   return true
 }
 
+frontend.get_color_icon = (folder) => {
+  let colors = {}
+  for (const card of folder) {
+    for(const color of card.color) {
+      colors[color] = colors[color] ? colors[color] + 1 : 1
+    }
+  }
+
+  let identity = []
+  for (const [color, count] of Object.entries(colors)) {
+    if(count/folder.length >= .15) {
+      identity.push(color)
+    }
+  }
+
+  const identity_str = identity.toString().toUpperCase()
+  if (identity.length == 0) {
+    return "C"
+  } else if (identity.length == 1) {
+    return identity_str
+  } else if(identity.length > 2) {
+    return "M"
+  } else if (identity_str.includes("B") && identity_str.includes("G")) {
+    return "BG"
+  } else if (identity_str.includes("B") && identity_str.includes("R")) {
+    return "BR"
+  } else if (identity_str.includes("G") && identity_str.includes("U")) {
+    return "GU"
+  } else if (identity_str.includes("G") && identity_str.includes("W")) {
+    return "GW"
+  } else if (identity_str.includes("R") && identity_str.includes("G")) {
+    return "RG"
+  } else if (identity_str.includes("R") && identity_str.includes("W")) {
+    return "RW"
+  } else if (identity_str.includes("U") && identity_str.includes("B")) {
+    return "UB"
+  } else if (identity_str.includes("U") && identity_str.includes("R")) {
+    return "UR"
+  } else if (identity_str.includes("W") && identity_str.includes("B")) {
+    return "WB"
+  } else if (identity_str.includes("W") && identity_str.includes("U")) {
+    return "WU"
+  }
+}
+
 frontend.reload_sidebar = () => {
   let div_sidebar = document.getElementById('sidebar')
   div_sidebar.innerHTML = ""
@@ -90,22 +135,28 @@ frontend.reload_sidebar = () => {
   for (const [folder, content] of Object.entries(frontend.db)) {
     if (!config.show_empty && content.length == 0) continue
 
+    const caption = (folder == "." ? "Library" : folder)
+
     let div_folder = document.createElement("div")
-    const caption = "<b>🗀</b> " + (folder == "." ? "Library" : folder)
-
     div_folder.setAttribute('id', "folder")
-
     if (folder == frontend.path) {
       div_folder.classList.add("active")
     }
-
     div_sidebar.appendChild(div_folder)
 
-    div_folder.div_title = document.createElement("div")
-    div_folder.div_title.setAttribute('id', 'folder-title')
+    div_folder.div_caption = document.createElement("div")
+    div_folder.div_caption.setAttribute("id", "folder-caption")
+    div_folder.appendChild(div_folder.div_caption)
 
-    div_folder.div_title.innerHTML = caption
-    div_folder.appendChild(div_folder.div_title)
+    div_folder.div_icon = document.createElement("img")
+    div_folder.div_icon.setAttribute("id", "folder-icon")
+    div_folder.div_icon.src = `img/icons/${frontend.get_color_icon(content)}.png`
+    div_folder.div_caption.appendChild(div_folder.div_icon)
+
+    div_folder.div_label = document.createElement("div")
+    div_folder.div_label.setAttribute('id', 'folder-label')
+    div_folder.div_label.innerHTML = caption
+    div_folder.div_caption.appendChild(div_folder.div_label)
 
     div_folder.div_count = document.createElement("div")
     div_folder.div_count.setAttribute('id', 'folder-count')
@@ -337,7 +388,7 @@ frontend.reload_view = () => {
       frontend.dom.cards.push(div_card)
 
       // write duplicate index
-      frontend.duplicates[id] = div_card
+      frontend.duplicates[id] = true
     }
   }
 

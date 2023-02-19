@@ -386,14 +386,16 @@ div.vbox {
 
 #sidebar #folder {
   margin: 1px;
-  padding: 4px 10px 2px 10px;
+  padding: 4px 6px;
   text-overflow: ellipsis;
   border: 1px var(--window-light) solid;
 
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas: 'title count';
+  align-items: center;
   white-space: nowrap;
+  height: 20px;
 }
 
 #sidebar #folder:hover {
@@ -411,10 +413,26 @@ div.vbox {
   border: 1px var(--color-accent) solid;
 }
 
-#sidebar #folder-title {
+#sidebar #folder-caption {
   grid-area: title;
-  font-size: small;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'icon label';
+  justify-content: center;
+  align-items: center;
   pointer-events: none;
+}
+
+#sidebar #folder-icon {
+  height: 16px;
+  aspect-ratio: 1/1;
+  margin-right: 4px;
+  grid-area: icon;
+}
+
+#sidebar #folder-label {
+  text-align: left;
+  grid-area: label;
 }
 
 #sidebar #folder-count {
