@@ -502,18 +502,6 @@ div.vbox {
   text-align: justify;
 }
 
-#content #card-dummy {
-  display: inline-block;
-  margin: 4px;
-  padding: 8px;
-  width: 128px;
-  height: 200px;
-  border: 1px rgba(0,0,0,0) solid;
-  position: relative;
-  z-index: 1;
-  background: var(--window-light);
-}
-
 #content #card {
   display: inline-block;
   margin: 4px;

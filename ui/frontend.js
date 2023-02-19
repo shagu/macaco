@@ -298,8 +298,6 @@ frontend.reload_view_selection = () => {
 frontend.dom_build_card = (div_card) => {
   const card = div_card.data
   const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-
-  div_card.setAttribute('id', 'card')
   div_card.setAttribute("draggable", true)
 
   div_card.onclick = function(e) {
@@ -379,7 +377,7 @@ frontend.reload_view = () => {
 
     if(config.combine == false || !frontend.duplicates[id]) {
       let div_card = document.createElement("div")
-      div_card.setAttribute('id', 'card-dummy')
+      div_card.setAttribute('id', 'card')
       div_card.data = card
 
       div_content.appendChild(div_card)
