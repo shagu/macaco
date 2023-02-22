@@ -44,6 +44,17 @@ export default class MButton extends HTMLElement {
       filter: grayscale(75%);
       color: var(--font-dark);
     }
+
+    ::slotted(svg) {
+      fill: var(--font-normal);
+      stroke: none;
+      pointer-events: none;
+      height: 100%;
+    }
+
+    ::slotted(svg path) {
+      fill: var(--font-normal);
+    }
   `
   get disabled() {
     return this.hasAttribute("disabled")
