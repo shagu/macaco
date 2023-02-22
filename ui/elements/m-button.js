@@ -5,36 +5,39 @@ export default class MButton extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <button>
-      <slot></slot>
-    </button>
+    <slot></slot>
   `
 
   static style = css`
-    button {
-      box-sizing: border-box !important;
+    :host {
+      display: inline-block;
+
+      width: fit-content;
+      height: fit-content;
+      box-sizing: border-box;
+
       background: var(--widget-light);
       border: 1px var(--border-normal) solid;
       padding: 6px;
     }
 
-    button:hover {
+    :host(:hover) {
       background: var(--widget-normal);
     }
 
-    button:active {
+    :host(:active) {
       background: var(--widget-dark);
     }
 
-    button:focus {
+    :host(:focus) {
       outline: none;
     }
 
-    button.checked {
+    :host(.checked) {
       background: var(--widget-dark);
     }
 
-    button:disabled, button[disabled] {
+    :host(:disabled), :host([disabled]) {
       pointer-events: none;
       background: var(--widget-dark);
       border: 1px var(--border-light) solid;
@@ -42,21 +45,20 @@ export default class MButton extends HTMLElement {
       color: var(--font-dark);
     }
   `
+  get disabled() {
+    return this.hasAttribute("disabled")
+  }
 
-  set disabled(state) {
-    this.button.setAttribute("disabled", state)
+  set disabled(disabled) {
+    disabled ? this.setAttribute("disabled", "") : this.removeAttribute("disabled")
   }
 
   set checked(state) {
     if (state) {
-      this.button.classList.add("checked")
+      this.classList.add("checked")
     } else {
-      this.button.classList.remove("checked")
+      this.classList.remove("checked")
     }
-  }
-
-  getBoundingClientRect = function() {
-    return this.button.getBoundingClientRect()
   }
 
   constructor() {
@@ -65,8 +67,6 @@ export default class MButton extends HTMLElement {
     this.shadow = this.attachShadow({ mode: "open" })
     this.shadow.adoptedStyleSheets = [MButton.style]
     this.shadow.append(document.importNode(MButton.template, true))
-
-    this.button = this.shadow.querySelector("button")
   }
 }
 
