@@ -56,7 +56,7 @@ frontend.get_color_icon = (folder) => {
 
   let identity = []
   for (const [color, count] of Object.entries(colors)) {
-    if(count/folder.length >= .15) {
+    if(count/folder.length >= .10) {
       identity.push(color)
     }
   }
