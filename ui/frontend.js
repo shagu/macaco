@@ -47,14 +47,20 @@ frontend.objcompare = (a, b, o) => {
 }
 
 frontend.get_color_icon = (folder) => {
+  const icons = [
+    "BG", "BR", "GU", "GW", "RG",
+    "RW", "UB", "UR", "WB", "WU"
+  ]
+
   let colors = {}
+  let identity = []
+
   for (const card of folder) {
     for(const color of card.color) {
       colors[color] = colors[color] ? colors[color] + 1 : 1
     }
   }
 
-  let identity = []
   for (const [color, count] of Object.entries(colors)) {
     if(count/folder.length >= .10) {
       identity.push(color)
@@ -62,32 +68,18 @@ frontend.get_color_icon = (folder) => {
   }
 
   const identity_str = identity.toString().toUpperCase()
-  if (identity.length == 0) {
-    return "C"
-  } else if (identity.length == 1) {
+  if (identity.length == 1) {
     return identity_str
+  } else if (identity.length == 2) {
+    for (const icon of icons) {
+      if (identity_str.includes(icon.charAt(0)) && identity_str.includes(icon.charAt(1))) {
+        return icon
+      }
+    }
   } else if(identity.length > 2) {
     return "M"
-  } else if (identity_str.includes("B") && identity_str.includes("G")) {
-    return "BG"
-  } else if (identity_str.includes("B") && identity_str.includes("R")) {
-    return "BR"
-  } else if (identity_str.includes("G") && identity_str.includes("U")) {
-    return "GU"
-  } else if (identity_str.includes("G") && identity_str.includes("W")) {
-    return "GW"
-  } else if (identity_str.includes("R") && identity_str.includes("G")) {
-    return "RG"
-  } else if (identity_str.includes("R") && identity_str.includes("W")) {
-    return "RW"
-  } else if (identity_str.includes("U") && identity_str.includes("B")) {
-    return "UB"
-  } else if (identity_str.includes("U") && identity_str.includes("R")) {
-    return "UR"
-  } else if (identity_str.includes("W") && identity_str.includes("B")) {
-    return "WB"
-  } else if (identity_str.includes("W") && identity_str.includes("U")) {
-    return "WU"
+  } else {
+    return "C"
   }
 }
 
