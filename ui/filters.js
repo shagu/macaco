@@ -49,6 +49,11 @@ filters.tags = {
 
     return false
   },
+  ["set"]: (card, values) => {
+    for (const entry of values)
+      if (card.set == entry.toLowerCase()) return true
+    return false
+  },
   ["color"]: (card, values) => {
     let multicolor_enforced = false
     let atleast_one = false
