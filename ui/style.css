@@ -58,30 +58,24 @@ input[type=checkbox]:focus {
   outline: none;
 }
 
-button, select {
+select {
   background: var(--widget-light);
   border: 1px var(--border-normal) solid;
   padding: 6px;
 }
 
-button:hover, select:hover {
+select:hover {
   background: var(--widget-normal);
 }
 
-button:active, select:active {
+select:active {
   background: var(--widget-dark);
 }
 
-button:focus, select:focus {
+select:focus {
   outline: none;
 }
 
-button.checked {
-  background: var(--widget-dark);
-}
-
-button:disabled,
-button[disabled],
 input[type=text]:disabled {
   pointer-events: none;
   background: var(--widget-dark);
@@ -134,25 +128,15 @@ div.menu div.menu-multi-entry {
   margin: 1px;
 }
 
-div.menu button {
+div.menu m-button svg {
+  height: 14px;
+  aspect-ratio: 1/1;
+}
+
+div.menu m-button {
   margin: 1px;
   white-space: nowrap;
   min-width: 100%;
-}
-
-div.menu button.icon {
-  height: 100%;
-}
-
-div.menu button.icon svg {
-  fill: var(--font-normal);
-  stroke: none;
-  pointer-events: none;
-  height: 16px;
-}
-
-div.menu button.icon svg path {
-  fill: var(--font-normal);
 }
 
 div.menu hr {
@@ -261,7 +245,7 @@ div.vbox {
   -webkit-app-region: drag;
 }
 
-#header input, #header button {
+#header * {
   -webkit-app-region: no-drag;
 }
 
@@ -274,20 +258,9 @@ div.vbox {
   height: 34px;
 }
 
-#header button {
+#header m-button {
   height: 100%;
   aspect-ratio: 1/1;
-}
-
-#header button svg {
-  fill: var(--font-normal);
-  stroke: none;
-  pointer-events: none;
-  margin: 1px;
-}
-
-#header button svg path {
-  fill: var(--font-normal);
 }
 
 #header #button-color-w.checked { background: #f8f6d8; }
@@ -297,7 +270,7 @@ div.vbox {
 #header #button-color-g.checked { background: #a3c095; }
 #header #button-color-c.checked { background: #ccc2c0; }
 #header #button-color-m.checked { background: #CFAC5E; }
-#header button.mana.checked svg path { fill: #000 !important; }
+#header .mana.checked svg path { fill: #000 !important; }
 
 #header #window-buttons {
   grid-template-columns: auto auto auto;
@@ -306,7 +279,7 @@ div.vbox {
   align-items: center;
 }
 
-#header #window-buttons button {
+#header #window-buttons m-button {
   height: 26px !important;
   width: 26px !important;
 
@@ -315,12 +288,6 @@ div.vbox {
   align-items: center;
   margin: auto 4px;
 }
-
-#header #window-buttons button svg {
-  height: 100%;
-  width: 100%;
-}
-
 
 /* Side Bar (Folder View) */
 #sidebar {
@@ -628,10 +595,6 @@ div.vbox {
   line-height: 20px;
 }
 
-#cardview #preview-buttons button {
-  width: 100%;
-  box-sizing: border-box;
-}
 
 /* Footer (Bottom Panel) */
 #footer {
