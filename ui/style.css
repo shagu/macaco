@@ -92,31 +92,19 @@ hr {
 }
 
 /* Dropdown Menus */
-div.menu {
-  display: none;
-  position: fixed;
-  width: min-content;
-  max-height: max-content;
-  background: var(--window-light);
-  border: 1px var(--border-normal) solid;
-  box-shadow: 0px 0px 5px var(--border-dark);
-  padding: 5px;
-  z-index: 16;
-}
-
-div.menu div.hbox {
+m-menu div.hbox {
   margin: 2px;
   padding: 4px;
   background-color: var(--widget-normal);
   border: 1px var(--border-normal) solid;
 }
 
-div.menu div.menu-segment-title {
+m-menu div.menu-segment-title {
   padding: 4px;
   color: var(--font-dark);
 }
 
-div.menu div.menu-multi-label {
+m-menu div.menu-multi-label {
   text-align: left;
   white-space: nowrap;
   font-weight: bold;
@@ -124,22 +112,22 @@ div.menu div.menu-multi-label {
   margin: 4px;
 }
 
-div.menu div.menu-multi-entry {
+m-menu div.menu-multi-entry {
   margin: 1px;
 }
 
-div.menu m-button svg {
+m-menu m-button svg {
   height: 14px;
   aspect-ratio: 1/1;
 }
 
-div.menu m-button {
+m-menu m-button {
   margin: 1px;
   white-space: nowrap;
   min-width: 100%;
 }
 
-div.menu hr {
+m-menu hr {
   height: 0px;
   background-color: var(--border-light);
   border: none;
