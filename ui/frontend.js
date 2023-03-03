@@ -275,82 +275,19 @@ frontend.reload_view_selection = () => {
   for (const div of frontend.dom.cards) {
     if (frontend.is_selection(div.data, frontend.selection)) {
       if (frontend.selection.current_file) {
-        div.classList.add("selection")
+        div.state("active")
       } else {
-        div.classList.add("new")
+        div.state("new")
         document.getElementById('content').scrollTop = div.offsetTop - 100
       }
     } else {
-      div.classList.remove("selection")
-      div.classList.remove("new")
+      div.state("normal")
     }
-  }
-}
-
-frontend.dom_build_card = (div_card) => {
-  const card = div_card.data
-  const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-  div_card.setAttribute("draggable", true)
-
-  div_card.onclick = function(e) {
-    frontend.set_preview(this.data, true)
-    frontend.reload_view_selection()
-    e.stopPropagation()
-  }
-
-  div_card.ondragstart = function(e) {
-    e.dataTransfer.setData("text/plain", JSON.stringify(e.target.data))
-  }
-
-  div_card.image = document.createElement("img")
-  div_card.image.setAttribute('src', card.file)
-  div_card.appendChild(div_card.image)
-
-  div_card.div_title = document.createElement("div")
-  div_card.div_title.setAttribute('id', 'card-title')
-  div_card.div_title.innerHTML = frontend.get_locale(card, "name") || identifier
-  div_card.appendChild(div_card.div_title)
-
-  div_card.div_pricetag = document.createElement("div")
-  div_card.div_pricetag.setAttribute('id', 'card-pricetag')
-  div_card.appendChild(div_card.div_pricetag)
-
-  if (config.combine) {
-    div_card.div_count = document.createElement("div")
-    div_card.div_count.setAttribute('id', 'card-count')
-    div_card.div_count.innerHTML = `${card.count}x`
-    div_card.appendChild(div_card.div_count)
-  }
-
-  if ( card.price ) {
-    div_card.div_pricetag.innerHTML = `${card.price.toFixed(2)}€`
-
-    if ( card.price > 10.0 ) {
-      div_card.div_pricetag.style = "color: #f55;"
-    } else if ( card.price > 1.0 ) {
-      div_card.div_pricetag.style = "color: #fa5;"
-    } else {
-      div_card.div_pricetag.style = "color: #fff;"
-    }
-  } else {
-    div_card.div_pricetag.innerHTML = `N/A`
-    div_card.div_pricetag.style = "color: #555;"
   }
 }
 
 frontend.reload_view = () => {
   let div_content = document.getElementById('content')
-  const observer = new IntersectionObserver(function (entries, observer) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        frontend.dom_build_card(entry.target)
-        observer.unobserve(entry.target)
-      }
-    })
-  }, {
-    root: div_content,
-    rootMargin: "1080px",
-  })
 
   div_content.onclick = function(e) {
     frontend.reset_preview()
@@ -368,14 +305,12 @@ frontend.reload_view = () => {
     const id = `${card.set}:${card.number}:${card.foil ? "f": ""}`
 
     if(config.combine == false || !frontend.duplicates[id]) {
-      let div_card = document.createElement("div")
-      div_card.setAttribute('id', 'card')
-      div_card.data = card
+      let mcard = document.createElement("m-card")
+      mcard.combine = config.combine
+      mcard.data = card
 
-      div_content.appendChild(div_card)
-      observer.observe(div_card)
-
-      frontend.dom.cards.push(div_card)
+      div_content.appendChild(mcard)
+      frontend.dom.cards.push(mcard)
 
       // write duplicate index
       frontend.duplicates[id] = true
