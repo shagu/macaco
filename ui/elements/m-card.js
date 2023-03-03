@@ -97,6 +97,18 @@ export default class MCard extends HTMLElement {
   }
 
   connectedCallback() {
+    MCard.observer = MCard.observer || new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.populate()
+          observer.unobserve(entry.target)
+        }
+      })
+    }, {
+      root: this.parentNode,
+      rootMargin: "1080px",
+    })
+
     MCard.observer.observe(this)
   }
 
@@ -153,18 +165,6 @@ export default class MCard extends HTMLElement {
     this.shadow = this.attachShadow({ mode: "open" })
     this.shadow.adoptedStyleSheets = [MCard.style]
     this.shadow.append(document.importNode(MCard.template, true))
-
-    MCard.observer = MCard.observer || new IntersectionObserver(function (entries, observer) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.populate()
-          observer.unobserve(entry.target)
-        }
-      })
-    }, {
-      root: this.parentNode,
-      rootMargin: "1080px",
-    })
   }
 }
 
