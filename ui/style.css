@@ -92,13 +92,6 @@ hr {
 }
 
 /* Dropdown Menus */
-m-menu div.hbox {
-  margin: 2px;
-  padding: 4px;
-  background-color: var(--widget-normal);
-  border: 1px var(--border-normal) solid;
-}
-
 m-menu div.menu-segment-title {
   padding: 4px;
   color: var(--font-dark);
@@ -132,24 +125,6 @@ m-menu hr {
   background-color: var(--border-light);
   border: none;
   margin: 5px;
-}
-
-div.hbox {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto auto auto auto auto auto auto;
-  grid-template-rows: 1fr;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-div.vbox {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto auto auto auto auto auto auto auto auto auto auto;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
 }
 
 /* Popups (OSD Notify) */

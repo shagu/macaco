@@ -24,6 +24,13 @@ export default class MMenu extends HTMLElement {
       padding: 5px;
       z-index: 16;
     }
+
+    ::slotted(m-grid) {
+      margin: 2px;
+      padding: 4px;
+      background-color: var(--widget-normal);
+      border: 1px var(--border-normal) solid;
+    }
   `
 
   static backgroundStyle = `

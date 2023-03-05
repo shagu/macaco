@@ -195,8 +195,8 @@ frontend.reload_sidebar = () => {
   div_sidebar.appendChild(spacer_bottom)
 
   /* add show empty checkbox */
-  let show_empty_container = document.createElement("div")
-  show_empty_container.classList.add("hbox")
+  let show_empty_container = document.createElement("m-grid")
+  show_empty_container.setAttribute('horizontal', "")
   show_empty_container.setAttribute('id', "folder")
   div_sidebar.appendChild(show_empty_container)
 
@@ -218,7 +218,8 @@ frontend.reload_sidebar = () => {
 
   /* add combine same checkbox */
   let combine_same_container = document.createElement("div")
-  combine_same_container.classList.add("hbox")
+  combine_same_container.classList.add("m-grid")
+  combine_same_container.setAttribute("horizontal", "")
   combine_same_container.setAttribute('id', "folder")
   div_sidebar.appendChild(combine_same_container)
 

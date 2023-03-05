@@ -23,7 +23,7 @@
   <m-menu class="menu" id="menu-filter-frame" name="filter-menu">
     <div class="menu-segment-title">Filter</div>
 
-    <div class="hbox">
+    <m-grid horizontal>
       <div class="menu-multi-label">Manacost</div>
       <div class="menu-multi-entry"><m-button id="filter-mana-0">0</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-mana-1">1</m-button></div>
@@ -35,17 +35,17 @@
       <div class="menu-multi-entry"><m-button id="filter-mana-7">7</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-mana-8">8</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-mana-9">9+</m-button></div>
-    </div>
+    </m-grid>
 
-    <div class="hbox">
+    <m-grid horizontal>
       <div class="menu-multi-label">Rarity</div>
       <div class="menu-multi-entry"><m-button id="filter-rarity-common">Common</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-rarity-uncommon">Uncommon</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-rarity-rare">Rare</m-button></div>
       <div class="menu-multi-entry"><m-button id="filter-rarity-mythic">Mythic</m-button></div>
-    </div>
+    </m-grid>
 
-    <div class="hbox">
+    <m-grid horizontal>
       <div class="menu-multi-label">Type</div>
       <div class="menu-multi-entry"><m-button title="Instant" id="filter-type-instant">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 798.29 798.29">
@@ -88,13 +88,13 @@
           <path d="M219.06 533.379c-82.101-7.902-162.8-28.983-196.57-51.352-35.431-23.469-29.968-47.962 23.264-104.28 47.797-50.572 69.786-92.95 100.82-194.3 20.38-66.56 39.187-108.4 51.901-115.47 19.634-10.914 33.197 4.882 59.186 68.934 27.624 68.081 51.284 109.37 80.491 140.46 8.817 9.386 17.39 15.774 21.172 15.774 7.472 0 18.422-13.086 38.063-45.489 15.901-26.232 28.052-34.478 46.56-31.593 17.139 2.671 30.08 19.694 45.289 59.576 7.138 18.717 17.377 42.82 22.754 53.561 10.088 20.151 35.724 57.038 39.718 57.15 4.604.129 39.132 34.821 43.896 44.105 14.445 28.15-6.889 53.008-61.484 71.642-65.618 22.396-124.92 31.36-217.51 32.883-38.008.625-81.905-.096-97.55-1.601z"/>
         </svg>
       </m-button></div>
-    </div>
+    </m-grid>
 
     <hr/>
 
     <div class="menu-segment-title">Sort</div>
 
-    <div class="hbox">
+    <m-grid horizontal>
       <div class="menu-multi-label">Sort by</div>
       <div class="menu-multi-entry"><m-button id="sort-name">Name</m-button></div>
       <div class="menu-multi-entry"><m-button id="sort-color">Color</m-button></div>
@@ -103,13 +103,13 @@
       <div class="menu-multi-entry"><m-button id="sort-price">Price</m-button></div>
       <div class="menu-multi-entry"><m-button id="sort-count">Count</m-button></div>
       <div class="menu-multi-entry"><m-button id="sort-set">Set</m-button></div>
-    </div>
+    </m-grid>
 
-    <div class="hbox">
+    <m-grid horizontal>
       <div class="menu-multi-label">Sort order</div>
       <div class="menu-multi-entry"><m-button id="sort-mode-asc">▲ Ascending</m-button></div>
       <div class="menu-multi-entry"><m-button id="sort-mode-desc">▼ Descending</m-button></div>
-    </div>
+    </m-grid>
   </m-menu>
 
   <div id="window">
