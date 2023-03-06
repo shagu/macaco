@@ -55,7 +55,7 @@ export default class MMenu extends HTMLElement {
     })
   }
 
-  show(button) {
+  toggle(button) {
     if (this.style.display == "block") {
       this.visible(false)
       return
@@ -63,11 +63,15 @@ export default class MMenu extends HTMLElement {
 
     for(const menu of MMenu.menus) { menu.visible(false) }
 
+    this.anchor = button
     this.visible(true)
+    this.position()
+  }
 
-    if(button) {
-      // move menu to toggle button
-      const toggle_rect = button.getBoundingClientRect()
+  position() {
+    if(this.anchor) {
+      // move menu to last anchor
+      const toggle_rect = this.anchor.getBoundingClientRect()
       const menu_rect = this.getBoundingClientRect()
 
       const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? "left" : "right"
@@ -97,10 +101,13 @@ export default class MMenu extends HTMLElement {
     this.shadow.append(document.importNode(MMenu.template, true))
     MMenu.menus.push(this)
 
+    // reload position on resize
+    window.addEventListener("resize", () => { this.position() })
+
     // attach menu to buttons
     this.buttons = document.querySelectorAll(`[m-menu="${this.getAttribute("name")}"]`)
     this.buttons.forEach((button) => {
-      button.addEventListener("click", (ev) => this.show(button))
+      button.addEventListener("click", (ev) => this.toggle(button))
       button.style.position = button.style.position || "relative"
       button.style.zIndex = "32"
     })
