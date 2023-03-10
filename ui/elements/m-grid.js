@@ -1,7 +1,7 @@
 import { html, css } from './m-template.js'
 
 export default class MGrid extends HTMLElement {
-  static observedAttributes = [ "horizontal", "vertical" ]
+  static observedAttributes = [ "horizontal", "vertical", "gap" ]
   static shadow = null
 
   static template = html`
@@ -15,10 +15,16 @@ export default class MGrid extends HTMLElement {
       align-items: center;
       text-align: center;
     }
-
-    ::slotted(div) {
-    }
   `
+
+  get gap() {
+    return this.getAttribute("gap")
+  }
+
+  set gap(size) {
+    this.setAttribute("gap", size)
+    this.style.gap = size
+  }
 
   get horizontal() {
     return this.getAttribute("horizontal")
@@ -30,7 +36,8 @@ export default class MGrid extends HTMLElement {
       this.removeAttribute("horizontal")
     } else {
       this.setAttribute("horizontal", index)
-      this.style.gridTemplateColumns = `${"auto ".repeat(position - 1)}1fr${" auto".repeat(20)}`
+      this.style.gridTemplateColumns = `${"auto ".repeat(position - 1)}1fr`
+      this.style.gridAutoFlow = "column"
     }
   }
 
@@ -44,11 +51,16 @@ export default class MGrid extends HTMLElement {
       this.removeAttribute("vertical")
     } else {
       this.setAttribute("vertical", index)
-      this.style.gridTemplateRows = `${"auto ".repeat(position - 1)}1fr${" auto".repeat(20)}`
+      this.style.gridTemplateRows = `${"auto ".repeat(position - 1)}1fr`
+      this.style.gridAutoFlow = "row"
     }
   }
 
   connectedCallback() {
+    if (this.hasAttribute("gap")) {
+      this.gap = this.getAttribute("gap")
+    }
+
     if (this.hasAttribute("horizontal")) {
       this.horizontal = this.getAttribute("horizontal")
     }
