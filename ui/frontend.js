@@ -56,6 +56,8 @@ frontend.get_color_icon = (folder) => {
   let identity = []
 
   for (const card of folder) {
+    if(!card.color) continue
+
     for(const color of card.color) {
       colors[color] = colors[color] ? colors[color] + 1 : 1
     }
