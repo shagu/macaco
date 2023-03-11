@@ -133,7 +133,12 @@ export default class MCard extends HTMLElement {
 
     const price = document.createElement('div')
     price.setAttribute("id", "price")
-    price.innerHTML = `${card.price.toFixed(2) || "??"}€`
+    if(card.price) {
+      price.innerHTML = `${card.price.toFixed(2)}€`
+    } else {
+      price.innerHTML = `N/A`
+    }
+
     this.shadow.appendChild(price)
 
     if ( this.combine ) {
