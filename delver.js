@@ -64,7 +64,7 @@ const delver = {
           notify, false, "delver-apk-fetch"
         )
 
-        delver.unpack_apk()
+        await delver.unpack_apk()
         delver.prepare = null
         resolve(true)
       })
