@@ -1,9 +1,9 @@
 import { html, css } from './m-template.js'
 
-export default class MMenu extends HTMLElement {
+export default class MPopover extends HTMLElement {
   static shadow = null
   static background = null
-  static menus = []
+  static popovers = []
 
   static template = html`
     <slot></slot>
@@ -47,7 +47,7 @@ export default class MMenu extends HTMLElement {
   `
 
   visible = (state) => {
-    MMenu.background.style.display = state ? "block" : "none"
+    MPopover.background.style.display = state ? "block" : "none"
     this.style.display = state ? "block" : "none"
 
     this.buttons.forEach((button) => {
@@ -61,7 +61,7 @@ export default class MMenu extends HTMLElement {
       return
     }
 
-    for(const menu of MMenu.menus) { menu.visible(false) }
+    for(const popover of MPopover.popovers) { popover.visible(false) }
 
     this.anchor = button
     this.visible(true)
@@ -70,23 +70,23 @@ export default class MMenu extends HTMLElement {
 
   position() {
     if(this.anchor) {
-      // move menu to last anchor
+      // move popover to last anchor
       const toggle_rect = this.anchor.getBoundingClientRect()
-      const menu_rect = this.getBoundingClientRect()
+      const popover_rect = this.getBoundingClientRect()
 
       const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? "left" : "right"
       const vertical = (toggle_rect.top + toggle_rect.bottom) / 2 < window.innerHeight / 2 ? "top" : "bottom"
 
-      const left = horizontal == "left" ? toggle_rect.left : toggle_rect.left + toggle_rect.width - menu_rect.width
-      const top = vertical == "top" ? toggle_rect.top + toggle_rect.height : toggle_rect.top - menu_rect.height
+      const left = horizontal == "left" ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
+      const top = vertical == "top" ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`
     } else {
-      // center menu on screen
-      const menu_rect = this.getBoundingClientRect()
-      const top = window.innerHeight / 2 - menu_rect.height / 2
-      const left = window.innerWidth / 2 - menu_rect.width / 2
+      // center popover on screen
+      const popover_rect = this.getBoundingClientRect()
+      const top = window.innerHeight / 2 - popover_rect.height / 2
+      const left = window.innerWidth / 2 - popover_rect.width / 2
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`
@@ -97,15 +97,15 @@ export default class MMenu extends HTMLElement {
     super()
 
     this.shadow = this.attachShadow({ mode: "open" })
-    this.shadow.adoptedStyleSheets = [MMenu.style]
-    this.shadow.append(document.importNode(MMenu.template, true))
-    MMenu.menus.push(this)
+    this.shadow.adoptedStyleSheets = [MPopover.style]
+    this.shadow.append(document.importNode(MPopover.template, true))
+    MPopover.popovers.push(this)
 
     // reload position on resize
     window.addEventListener("resize", () => { this.position() })
 
-    // attach menu to buttons
-    this.buttons = document.querySelectorAll(`[m-menu="${this.getAttribute("name")}"]`)
+    // attach popover to button
+    this.buttons = document.querySelectorAll(`[m-popover="${this.getAttribute("name")}"]`)
     this.buttons.forEach((button) => {
       button.addEventListener("click", (ev) => this.toggle(button))
       button.style.position = button.style.position || "relative"
@@ -113,17 +113,16 @@ export default class MMenu extends HTMLElement {
     })
 
     // create clickable background
-    if (MMenu.background) return
-    MMenu.background = document.createElement("div")
-    MMenu.background.setAttribute("id", "m-menu-background")
-    MMenu.background.style.cssText = MMenu.backgroundStyle
-    document.body.appendChild(MMenu.background)
+    if (MPopover.background) return
+    MPopover.background = document.createElement("div")
+    MPopover.background.style.cssText = MPopover.backgroundStyle
+    document.body.appendChild(MPopover.background)
 
-    MMenu.background.addEventListener("click", (ev) => {
-      for(const menu of MMenu.menus) { menu.visible(false) }
+    MPopover.background.addEventListener("click", (ev) => {
+      for(const popover of MPopover.popovers) { popover.visible(false) }
       ev.stopPropagation()
     })
   }
 }
 
-customElements.define("m-menu", MMenu)
+customElements.define("m-popover", MPopover)

@@ -15,12 +15,12 @@
 <body>
   <div id="popups"></div>
 
-  <m-menu class="menu" id="menu-main-frame" name="main-menu">
+  <m-popover id="menu-main-frame" name="main-menu">
     <m-button id="download-button">Update Macaco Metadata</m-button>
     <m-button id="import-button" disabled>Import DelverLens Backup</m-button>
-  </m-menu>
+  </m-popover>
 
-  <m-menu class="menu" id="menu-filter-frame" name="filter-menu">
+  <m-popover id="menu-filter-frame" name="filter-menu">
     <div class="menu-segment-title">Filter</div>
 
     <m-grid horizontal="1" gap="1px">
@@ -122,7 +122,7 @@
       <div><m-button id="sort-mode-asc">▲ Ascending</m-button></div>
       <div><m-button id="sort-mode-desc">▼ Descending</m-button></div>
     </m-grid>
-  </m-menu>
+  </m-popover>
 
   <div id="window">
     <div id="header">
@@ -181,13 +181,13 @@
 
       <!-- toolbar menu buttons -->
       <div>
-        <m-button m-menu="filter-menu" class="menu-button" id="menu-filter" disabled>
+        <m-button m-popover="filter-menu" class="menu-button" id="menu-filter" disabled>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
             <path d="M 5 3 L 4 4 L 4 5 L 4 5.3046875 L 9 12.367188 L 9 16 L 9 16.039062 L 12.990234 19 L 13 19 L 13 12.367188 L 18 5.3046875 L 18 4 L 17 3 L 5 3 z M 5 4 L 17 4 L 17 4.9882812 L 12.035156 12 L 12 12 L 12 12.048828 L 12 13 L 12 17.019531 L 10 15.535156 L 10 13 L 10 12.048828 L 10 12 L 9.9648438 12 L 5 4.9882812 L 5 4 z M 6 5 L 8 8 L 8 6 L 10 5 L 6 5 z "/>
           </svg>
         </m-button>
 
-        <m-button m-menu="main-menu" class="menu-button" id="menu-main" menu="menu-main-frame">
+        <m-button m-popover="main-menu" class="menu-button" id="menu-main">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
             <path d="m3 5v2h16v-2h-16m0 5v2h16v-2h-16m0 5v2h16v-2h-16" />
           </svg>

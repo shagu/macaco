@@ -91,13 +91,13 @@ hr {
   margin: 5px;
 }
 
-/* Dropdown Menus */
-m-menu div.menu-segment-title {
+/* Popover Menus */
+m-popover div.menu-segment-title {
   padding: 4px;
   color: var(--font-dark);
 }
 
-m-menu div.menu-multi-label {
+m-popover div.menu-multi-label {
   text-align: left;
   white-space: nowrap;
   font-weight: bold;
@@ -105,22 +105,22 @@ m-menu div.menu-multi-label {
   margin: 4px;
 }
 
-m-menu div.menu-multi-entry {
+m-popover div.menu-multi-entry {
   margin: 1px;
 }
 
-m-menu m-button svg {
+m-popover m-button svg {
   height: 14px;
   aspect-ratio: 1/1;
 }
 
-m-menu m-button {
+m-popover m-button {
   margin: 1px;
   white-space: nowrap;
   min-width: 100%;
 }
 
-m-menu hr {
+m-popover hr {
   height: 0px;
   background-color: var(--border-light);
   border: none;
