@@ -73,6 +73,28 @@ fetcher.get = (url, path, notify, force, original_url) => {
         resolve()
       })
     })
+
+    request.on('error', function(err) {
+      if(notify) {
+        // show error in notification
+        let status = {
+          url: err, path: path,
+          percent: 0, finished: false
+        }
+
+        // hide after 5 seconds
+        notify(status)
+        setTimeout(() => {
+          status.percent = 100
+          status.finished = true
+          notify(status)
+        }, 5000)
+      } else {
+        console.log(original_url, url, err)
+      }
+
+      resolve(err)
+    })
   })
 }
 
