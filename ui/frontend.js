@@ -46,6 +46,50 @@ frontend.objcompare = (a, b, o) => {
   return true
 }
 
+frontend.get_folder_details = (content, details) => {
+  for (const card of content) {
+    if(card.price) {
+      details.price = details.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+      details.price.num ++
+      details.price.sum += card.price
+      details.price.min = Math.min(details.price.min, card.price)
+      details.price.max = Math.max(details.price.max, card.price)
+      details.price.avg = (details.price.sum / details.price.num).toFixed(2)
+    }
+
+    if(card.cmc && card.cmc > 0) {
+      details.mana = details.mana || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+      details.mana.num ++
+      details.mana.sum += card.cmc
+      details.mana.min = Math.min(details.mana.min, card.cmc)
+      details.mana.max = Math.max(details.mana.max, card.cmc)
+      details.mana.avg = (details.mana.sum / details.mana.num).toFixed(2)
+    }
+
+    details.cards = details.cards || 0
+    details.cards++
+  }
+}
+
+frontend.get_collection_details = () => {
+  let details = { collection: {}, current: {}, view: {} }
+
+  // scan library
+  for (const [folder, content] of Object.entries(frontend.db)) {
+    frontend.get_folder_details(content, details.collection)
+    details.collection.lists = details.collection.lists || 0
+    if(content.length > 0) details.collection.lists++
+  }
+
+  // scan current folder
+  frontend.get_folder_details(frontend.db[frontend.path], details.current)
+
+  // scan current view
+  frontend.get_folder_details(frontend.view, details.view)
+
+  return details
+}
+
 frontend.get_color_icon = (folder) => {
   const icons = [
     "BG", "BR", "GU", "GW", "RG",
@@ -243,21 +287,10 @@ frontend.reload_sidebar = () => {
 }
 
 frontend.reload_statusbar = () => {
-  let [num_cards, num_lists, price] = [0, 0, 0]
+  let details = frontend.get_collection_details()
   let div_footer = document.getElementById('footer')
 
-  for (const [folder, content] of Object.entries(frontend.db)) {
-    for (const card of content) {
-      price += card.price || 0
-      num_cards++
-    }
-
-    if(content.length > 0) {
-      num_lists++
-    }
-  }
-
-  div_footer.innerHTML = `Collection with <b>${num_cards}</b> cards in <b>${num_lists}</b> folders worth <b>${price.toFixed(2)}€</b>.`
+  div_footer.innerHTML = `Collection with <b>${details.collection.cards}</b> cards in <b>${details.collection.lists}</b> folders worth <b>${details.collection.price.sum.toFixed(2)}€</b>.`
 }
 
 frontend.is_selection = (card, compare) => {
@@ -373,6 +406,7 @@ frontend.reload = () => {
 
   // apply filters to current view
   frontend.view = filters.create_view(frontend.db[frontend.path])
+  frontend.details = frontend.get_collection_details()
 
   // reload ui panels
   frontend.reload_sidebar()
