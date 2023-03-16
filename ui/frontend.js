@@ -47,9 +47,11 @@ frontend.objcompare = (a, b, o) => {
 }
 
 frontend.get_folder_details = (content, details) => {
+  details.price = details.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+  details.mana  = details.mana  || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+
   for (const card of content) {
     if(card.price) {
-      details.price = details.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
       details.price.num ++
       details.price.sum += card.price
       details.price.min = Math.min(details.price.min, card.price)
@@ -58,7 +60,6 @@ frontend.get_folder_details = (content, details) => {
     }
 
     if(card.cmc && card.cmc > 0) {
-      details.mana = details.mana || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
       details.mana.num ++
       details.mana.sum += card.cmc
       details.mana.min = Math.min(details.mana.min, card.cmc)
