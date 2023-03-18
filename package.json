@@ -22,6 +22,9 @@
     "jimp": "^0.16.2",
     "jszip": "^3.10.1"
   },
+  "standard": {
+    "globals": [ "core", "frontend", "filters", "popups", "customElements", "HTMLElement", "IntersectionObserver", "CSSStyleSheet" ]
+  },
   "build": {
     "appId": "shagu.macaco",
     "productName": "Macaco",
