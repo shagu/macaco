@@ -46,29 +46,37 @@ frontend.objcompare = (a, b, o) => {
   return true
 }
 
-frontend.get_folder_details = (content, details) => {
-  details.price = details.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
-  details.mana  = details.mana  || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+frontend.get_folder_details = (content, stats) => {
+  stats.types = stats.types || { /* creature: 0, enchantment: 0, .. */ }
+  stats.price = stats.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
+  stats.mana  = stats.mana  || { num: 0, sum: 0, min: 0, max: 0, avg: 0}
 
   for (const card of content) {
+    if(card.types) {
+      for (const type of card.types) {
+        stats.types[type] = stats.types[type] || 0
+        stats.types[type] = stats.types[type]++
+      }
+    }
+
     if(card.price) {
-      details.price.num ++
-      details.price.sum += card.price
-      details.price.min = Math.min(details.price.min, card.price)
-      details.price.max = Math.max(details.price.max, card.price)
-      details.price.avg = (details.price.sum / details.price.num).toFixed(2)
+      stats.price.num ++
+      stats.price.sum += card.price
+      stats.price.min = Math.min(stats.price.min, card.price)
+      stats.price.max = Math.max(stats.price.max, card.price)
+      stats.price.avg = (stats.price.sum / stats.price.num).toFixed(2)
     }
 
     if(card.cmc && card.cmc > 0) {
-      details.mana.num ++
-      details.mana.sum += card.cmc
-      details.mana.min = Math.min(details.mana.min, card.cmc)
-      details.mana.max = Math.max(details.mana.max, card.cmc)
-      details.mana.avg = (details.mana.sum / details.mana.num).toFixed(2)
+      stats.mana.num ++
+      stats.mana.sum += card.cmc
+      stats.mana.min = Math.min(stats.mana.min, card.cmc)
+      stats.mana.max = Math.max(stats.mana.max, card.cmc)
+      stats.mana.avg = (stats.mana.sum / stats.mana.num).toFixed(2)
     }
 
-    details.cards = details.cards || 0
-    details.cards++
+    stats.cards = stats.cards || 0
+    stats.cards++
   }
 }
 
