@@ -7,60 +7,59 @@
 // <div id="popups"></div>
 //
 
-let popups = { ui_elements: [] }
+const popups = { ui_elements: [] }
 
 popups.create = (id) => {
   // return existing popup with id
   for (const popup of popups.ui_elements) {
-    if(popup.id == id) return popup
+    if (popup.id == id) return popup
   }
 
   // build new popup element
-  let parent = document.getElementById("popups")
+  const parent = document.getElementById('popups')
 
-  let box = document.createElement("div")
+  const box = document.createElement('div')
   box.setAttribute('id', 'popup-box')
   parent.appendChild(box)
 
-  let title = document.createElement("div")
+  const title = document.createElement('div')
   title.setAttribute('id', 'popup-title')
   box.appendChild(title)
 
-  let subtext = document.createElement("div")
+  const subtext = document.createElement('div')
   subtext.setAttribute('id', 'popup-subtext')
   box.appendChild(subtext)
 
-  let progress = document.createElement("progress")
+  const progress = document.createElement('progress')
   progress.setAttribute('id', 'popup-progress')
   box.appendChild(progress)
 
   // add popup to array
   popups.ui_elements.push({
-    id: id,
-    box: box,
-    title: title,
-    subtext: subtext,
-    progress: progress,
+    id,
+    box,
+    title,
+    subtext,
+    progress
   })
 
   // return new popup
   for (const popup of popups.ui_elements) {
-    if(popup.id == id) return popup
+    if (popup.id == id) return popup
   }
 }
 
 popups.show = (title, subtext, progress) => {
-  let popup = popups.create(title)
+  const popup = popups.create(title)
   popup.title.innerHTML = title
   popup.subtext.innerHTML = subtext
   popup.progress.value = progress
 
-  if(!progress)
-    popup.progress.removeAttribute('value')
+  if (!progress) { popup.progress.removeAttribute('value') }
 
-  popup.box.style = "display: inline-block;"
+  popup.box.style = 'display: inline-block;'
 
-  if(progress && progress >= 1) {
+  if (progress && progress >= 1) {
     // progress is finished, hide after 2 seconds
     popup.timeout = Date.now() + 2000
   } else if (progress) {
@@ -74,8 +73,8 @@ popups.show = (title, subtext, progress) => {
 
 popups.cleanup = () => {
   for (const popup of popups.ui_elements) {
-    if(popup.timeout < Date.now()) {
-      popup.box.style = "display: none"
+    if (popup.timeout < Date.now()) {
+      popup.box.style = 'display: none'
     }
   }
 }

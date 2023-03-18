@@ -1,11 +1,11 @@
-export let html = (data) => {
-  let template = document.createElement("template")
+export const html = (data) => {
+  const template = document.createElement('template')
   template.innerHTML = data
   return template.content
 }
 
-export let css = (data) => {
-  let stylesheet = new CSSStyleSheet()
+export const css = (data) => {
+  const stylesheet = new CSSStyleSheet()
   stylesheet.replaceSync(data)
   return stylesheet
 }

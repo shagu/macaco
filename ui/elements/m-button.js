@@ -1,7 +1,7 @@
 import { html, css } from './m-template.js'
 
 export default class MButton extends HTMLElement {
-  static observedAttributes = [ "disabled", "checked" ]
+  static observedAttributes = ['disabled', 'checked']
   static shadow = null
 
   static template = html`
@@ -56,29 +56,29 @@ export default class MButton extends HTMLElement {
       fill: var(--font-normal);
     }
   `
-  get disabled() {
-    return this.hasAttribute("disabled")
+  get disabled () {
+    return this.hasAttribute('disabled')
   }
 
-  set disabled(disabled) {
-    disabled ? this.setAttribute("disabled", "") : this.removeAttribute("disabled")
+  set disabled (disabled) {
+    disabled ? this.setAttribute('disabled', '') : this.removeAttribute('disabled')
   }
 
-  set checked(state) {
+  set checked (state) {
     if (state) {
-      this.classList.add("checked")
+      this.classList.add('checked')
     } else {
-      this.classList.remove("checked")
+      this.classList.remove('checked')
     }
   }
 
-  constructor() {
+  constructor () {
     super()
 
-    this.shadow = this.attachShadow({ mode: "open" })
+    this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.adoptedStyleSheets = [MButton.style]
     this.shadow.append(document.importNode(MButton.template, true))
   }
 }
 
-customElements.define("m-button", MButton)
+customElements.define('m-button', MButton)

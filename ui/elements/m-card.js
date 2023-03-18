@@ -78,25 +78,25 @@ export default class MCard extends HTMLElement {
     }
   `
 
-  static click(ev) {
+  static click (ev) {
     frontend.set_preview(this.data, true)
     frontend.reload_view_selection()
     ev.stopPropagation()
   }
 
-  static dragstart(ev) {
-    ev.dataTransfer.setData("text/plain", JSON.stringify(ev.target.data))
+  static dragstart (ev) {
+    ev.dataTransfer.setData('text/plain', JSON.stringify(ev.target.data))
   }
 
-  state(state) {
-    this.className = state || "normal"
+  state (state) {
+    this.className = state || 'normal'
   }
 
-  disconnectedCallback() {
+  disconnectedCallback () {
     MCard.observer.unobserve(this)
   }
 
-  connectedCallback() {
+  connectedCallback () {
     MCard.observer = MCard.observer || new IntersectionObserver(function (entries, observer) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -106,71 +106,71 @@ export default class MCard extends HTMLElement {
       })
     }, {
       root: this.parentNode,
-      rootMargin: "1080px",
+      rootMargin: '1080px'
     })
 
     MCard.observer.observe(this)
   }
 
-  populate() {
+  populate () {
     const card = this.data
     const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
 
     const image = document.createElement('img')
-    image.setAttribute("id", "image")
+    image.setAttribute('id', 'image')
     image.setAttribute('src', card.file)
     this.shadow.appendChild(image)
 
     const title = document.createElement('div')
-    title.setAttribute("id", "title")
-    title.innerHTML = frontend.get_locale(card, "name") || identifier
+    title.setAttribute('id', 'title')
+    title.innerHTML = frontend.get_locale(card, 'name') || identifier
     this.shadow.appendChild(title)
 
     const count = document.createElement('div')
-    count.setAttribute("id", "count")
+    count.setAttribute('id', 'count')
     count.innerHTML = `${card.count}x`
     this.shadow.appendChild(count)
 
     const price = document.createElement('div')
-    price.setAttribute("id", "price")
-    if(card.price) {
+    price.setAttribute('id', 'price')
+    if (card.price) {
       price.innerHTML = `${card.price.toFixed(2)}€`
     } else {
-      price.innerHTML = `N/A`
+      price.innerHTML = 'N/A'
     }
 
     this.shadow.appendChild(price)
 
-    if ( this.combine ) {
-      count.style.display = "inline-block"
+    if (this.combine) {
+      count.style.display = 'inline-block'
     } else {
-      count.style.display = "none"
+      count.style.display = 'none'
     }
 
-    if ( card.price ) {
-      if ( card.price > 10.0 ) {
-        price.style = "color: #f55;"
-      } else if ( card.price > 1.0 ) {
-        price.style = "color: #fa5;"
+    if (card.price) {
+      if (card.price > 10.0) {
+        price.style = 'color: #f55;'
+      } else if (card.price > 1.0) {
+        price.style = 'color: #fa5;'
       } else {
-        price.style = "color: #fff;"
+        price.style = 'color: #fff;'
       }
     } else {
-      price.style = "color: #555;"
+      price.style = 'color: #555;'
     }
 
-    this.setAttribute("draggable", true)
+    this.setAttribute('draggable', true)
     this.ondragstart = MCard.dragstart
     this.onclick = MCard.click
   }
 
-  constructor() {
+  constructor () {
     super()
 
-    this.shadow = this.attachShadow({ mode: "open" })
+    this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.adoptedStyleSheets = [MCard.style]
     this.shadow.append(document.importNode(MCard.template, true))
   }
 }
 
-customElements.define("m-card", MCard)
+customElements.define('m-card', MCard)

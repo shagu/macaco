@@ -2,14 +2,14 @@ const fs = require('fs')
 const http = require('https')
 const spath = require('path')
 
-let fetcher = {
+const fetcher = {
   processes: {}
 }
 
 // core download function
 fetcher.get = (url, path, notify, force, original_url) => {
   return new Promise((resolve, reject) => {
-    let request = http.get(url, async (response) => {
+    const request = http.get(url, async (response) => {
       // handle http status codes
       if (response.statusCode === 301 || response.statusCode === 302) {
         // recursive call on redirect, call self again
@@ -22,7 +22,7 @@ fetcher.get = (url, path, notify, force, original_url) => {
       }
 
       // fetch it
-      let size = parseInt(response.headers['content-length'], 10)
+      const size = parseInt(response.headers['content-length'], 10)
       let downloaded = 0
 
       // create directory
@@ -31,25 +31,25 @@ fetcher.get = (url, path, notify, force, original_url) => {
 
       // skip download of existing file with same size
       if (!force && fs.existsSync(path) && size == fs.statSync(path).size) {
-        console.log("Skipping (same size)", path)
+        console.log('Skipping (same size)', path)
         resolve()
         return
       }
 
       // build default notify status object
-      let status = { url: (original_url || url), path: path, size: size }
+      const status = { url: (original_url || url), path, size }
 
       // notify goes here
-      response.on("data", function(chunk) {
+      response.on('data', function (chunk) {
         downloaded += chunk.length
 
         // update notify status
-        status.current  = downloaded
-        status.percent  = (100.0 * downloaded / size).toFixed()
+        status.current = downloaded
+        status.percent = (100.0 * downloaded / size).toFixed()
         status.finished = false
 
         // call notify function
-        if(notify) notify(status)
+        if (notify) notify(status)
       })
 
       // open file
@@ -61,12 +61,12 @@ fetcher.get = (url, path, notify, force, original_url) => {
       // close file and resolve promise when done
       file.on('finish', () => {
         // update notify status
-        status.current  = downloaded
-        status.percent  = (100.0 * downloaded / size).toFixed()
+        status.current = downloaded
+        status.percent = (100.0 * downloaded / size).toFixed()
         status.finished = true
 
         // call notify function
-        if(notify) notify(status)
+        if (notify) notify(status)
 
         // close file
         file.close()
@@ -74,12 +74,14 @@ fetcher.get = (url, path, notify, force, original_url) => {
       })
     })
 
-    request.on('error', function(err) {
-      if(notify) {
+    request.on('error', function (err) {
+      if (notify) {
         // show error in notification
-        let status = {
-          url: err, path: path,
-          percent: 0, finished: false
+        const status = {
+          url: err,
+          path,
+          percent: 0,
+          finished: false
         }
 
         // hide after 5 seconds
@@ -102,22 +104,22 @@ fetcher.get = (url, path, notify, force, original_url) => {
 // of the same queue-name (options.name) have been finished.
 fetcher.queue = (url, path, notify, force, queue_name) => {
   // initialize empty process list by name
-  if (!fetcher.processes[queue_name]){
+  if (!fetcher.processes[queue_name]) {
     fetcher.processes[queue_name] = { count: 0, tasks: [] }
   }
 
   // add new task to the process list
   fetcher.processes[queue_name].tasks.push({
-    url: url, path: path, notify: notify, force: force
+    url, path, notify, force
   })
 
-  let process = fetcher.processes[queue_name]
+  const process = fetcher.processes[queue_name]
 
   // runner
   if (!process.promise) {
     process.promise = new Promise(async (resolve, reject) => {
-      while(process.tasks[0]) {
-        let current = process.tasks.shift()
+      while (process.tasks[0]) {
+        const current = process.tasks.shift()
         await fetcher.get(current.url, current.path, current.notify, current.force)
       }
 

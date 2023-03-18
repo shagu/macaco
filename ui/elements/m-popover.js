@@ -47,38 +47,38 @@ export default class MPopover extends HTMLElement {
   `
 
   visible = (state) => {
-    MPopover.background.style.display = state ? "block" : "none"
-    this.style.display = state ? "block" : "none"
+    MPopover.background.style.display = state ? 'block' : 'none'
+    this.style.display = state ? 'block' : 'none'
 
     this.buttons.forEach((button) => {
-      button.checked = state ? true : false
+      button.checked = !!state
     })
   }
 
-  toggle(button) {
-    if (this.style.display == "block") {
+  toggle (button) {
+    if (this.style.display == 'block') {
       this.visible(false)
       return
     }
 
-    for(const popover of MPopover.popovers) { popover.visible(false) }
+    for (const popover of MPopover.popovers) { popover.visible(false) }
 
     this.anchor = button
     this.visible(true)
     this.position()
   }
 
-  position() {
-    if(this.anchor) {
+  position () {
+    if (this.anchor) {
       // move popover to last anchor
       const toggle_rect = this.anchor.getBoundingClientRect()
       const popover_rect = this.getBoundingClientRect()
 
-      const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? "left" : "right"
-      const vertical = (toggle_rect.top + toggle_rect.bottom) / 2 < window.innerHeight / 2 ? "top" : "bottom"
+      const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? 'left' : 'right'
+      const vertical = (toggle_rect.top + toggle_rect.bottom) / 2 < window.innerHeight / 2 ? 'top' : 'bottom'
 
-      const left = horizontal == "left" ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
-      const top = vertical == "top" ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
+      const left = horizontal == 'left' ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
+      const top = vertical == 'top' ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`
@@ -93,36 +93,36 @@ export default class MPopover extends HTMLElement {
     }
   }
 
-  constructor() {
+  constructor () {
     super()
 
-    this.shadow = this.attachShadow({ mode: "open" })
+    this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.adoptedStyleSheets = [MPopover.style]
     this.shadow.append(document.importNode(MPopover.template, true))
     MPopover.popovers.push(this)
 
     // reload position on resize
-    window.addEventListener("resize", () => { this.position() })
+    window.addEventListener('resize', () => { this.position() })
 
     // attach popover to button
-    this.buttons = document.querySelectorAll(`[m-popover="${this.getAttribute("name")}"]`)
+    this.buttons = document.querySelectorAll(`[m-popover="${this.getAttribute('name')}"]`)
     this.buttons.forEach((button) => {
-      button.addEventListener("click", (ev) => this.toggle(button))
-      button.style.position = button.style.position || "relative"
-      button.style.zIndex = "32"
+      button.addEventListener('click', (ev) => this.toggle(button))
+      button.style.position = button.style.position || 'relative'
+      button.style.zIndex = '32'
     })
 
     // create clickable background
     if (MPopover.background) return
-    MPopover.background = document.createElement("div")
+    MPopover.background = document.createElement('div')
     MPopover.background.style.cssText = MPopover.backgroundStyle
     document.body.appendChild(MPopover.background)
 
-    MPopover.background.addEventListener("click", (ev) => {
-      for(const popover of MPopover.popovers) { popover.visible(false) }
+    MPopover.background.addEventListener('click', (ev) => {
+      for (const popover of MPopover.popovers) { popover.visible(false) }
       ev.stopPropagation()
     })
   }
 }
 
-customElements.define("m-popover", MPopover)
+customElements.define('m-popover', MPopover)

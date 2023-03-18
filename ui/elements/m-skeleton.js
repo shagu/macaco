@@ -11,13 +11,13 @@ export default class MSkeleton extends HTMLElement {
     :host { }
   `
 
-  constructor() {
+  constructor () {
     super()
 
-    this.shadow = this.attachShadow({ mode: "open" })
+    this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.adoptedStyleSheets = [MSkeleton.style]
     this.shadow.append(document.importNode(MSkeleton.template, true))
   }
 }
 
-customElements.define("m-skeleton", MSkeleton)
+customElements.define('m-skeleton', MSkeleton)

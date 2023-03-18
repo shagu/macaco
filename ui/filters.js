@@ -1,31 +1,31 @@
-let filters = { min: 1, cache: {}, dom: {} }
+const filters = { min: 1, cache: {}, dom: {} }
 
 // all clickable check buttons
 filters.check_buttons = [
-  "color",
-  "cmc",
-  "rarity",
-  "type",
-  "sort",
-  "order",
+  'color',
+  'cmc',
+  'rarity',
+  'type',
+  'sort',
+  'order'
 ]
 
 filters.rarity = [
-  "common",
-  "uncommon",
-  "rare",
-  "special",
-  "mythic",
+  'common',
+  'uncommon',
+  'rare',
+  'special',
+  'mythic'
 ]
 
 // all tag based filter checks
 filters.tags = {
-  ["cmc"]: (card, values) => {
+  cmc: (card, values) => {
     for (const entry of values) {
-      if (entry.includes("+")) {
-        if (card.cmc >= entry.replaceAll("+","")) return true
-      } else if (entry.includes("-")) {
-        if (card.cmc <= entry.replaceAll("-","")) return true
+      if (entry.includes('+')) {
+        if (card.cmc >= entry.replaceAll('+', '')) return true
+      } else if (entry.includes('-')) {
+        if (card.cmc <= entry.replaceAll('-', '')) return true
       } else {
         if (card.cmc == entry) return true
       }
@@ -33,12 +33,11 @@ filters.tags = {
 
     return false
   },
-  ["rarity"]: (card, values) => {
-    for (const entry of values)
-      if (card.rarity == entry) return true
+  rarity: (card, values) => {
+    for (const entry of values) { if (card.rarity == entry) return true }
     return false
   },
-  ["type"]: (card, values) => {
+  type: (card, values) => {
     for (const entry of values) {
       const match = card.types && card.types.find(e => {
         return e.toLowerCase() === entry.toLowerCase()
@@ -49,28 +48,27 @@ filters.tags = {
 
     return false
   },
-  ["set"]: (card, values) => {
-    for (const entry of values)
-      if (card.set == entry.toLowerCase()) return true
+  set: (card, values) => {
+    for (const entry of values) { if (card.set == entry.toLowerCase()) return true }
     return false
   },
-  ["color"]: (card, values) => {
+  color: (card, values) => {
     let multicolor_enforced = false
     let atleast_one = false
     let mismatch = false
 
     for (const entry of values) {
-      if(entry == "m") {
-        if(card.color && card.color.length > 1) {
+      if (entry == 'm') {
+        if (card.color && card.color.length > 1) {
           multicolor_enforced = true
           atleast_one = true
         } else {
           return false
         }
-      } else if (entry=="c") {
+      } else if (entry == 'c') {
         if (!card.color || card.color.length == 0) atleast_one = true
       } else {
-        if(card.color && card.color.includes(entry.toUpperCase())) {
+        if (card.color && card.color.includes(entry.toUpperCase())) {
           atleast_one = true
         } else {
           mismatch = true
@@ -81,37 +79,36 @@ filters.tags = {
     // special case if multicolor search is enforced
     // only return multicolor cards if the color selection
     // is also a full match
-    if(multicolor_enforced && mismatch) return false
+    if (multicolor_enforced && mismatch) return false
     return atleast_one
   },
 
   // dummy functions to keep sort tags present
-  ["sort"]: () => { return true },
-  ["order"]: () => { return true },
+  sort: () => { return true },
+  order: () => { return true }
 }
 
 // generic sort function
-filters.sort = (attribute = "name", order = 1) => {
+filters.sort = (attribute = 'name', order = 1) => {
   return (a, b) => {
-
-    if(attribute == "rarity") {
+    if (attribute == 'rarity') {
       // special sorting for card rarity
       const a_val = filters.rarity.indexOf(a.rarity) + 1
       const b_val = filters.rarity.indexOf(b.rarity) + 1
 
-      if(a_val != b_val) {
-        return a_val < b_val ? order : -1*order
+      if (a_val != b_val) {
+        return a_val < b_val ? order : -1 * order
       }
     } else {
       // generic sorting algorithm
-      if((a[attribute] || 0) != (b[attribute] || 0)) {
-        return a[attribute] < b[attribute] ? order : -1*order
+      if ((a[attribute] || 0) != (b[attribute] || 0)) {
+        return a[attribute] < b[attribute] ? order : -1 * order
       }
     }
 
     // sort by name as fallback on identical values
-    if(a["name"] && b["name"] && a["name"] != b["name"]) {
-      return a["name"] < b["name"] ? order : -1*order
+    if (a.name && b.name && a.name != b.name) {
+      return a.name < b.name ? order : -1 * order
     }
 
     return 0
@@ -121,7 +118,7 @@ filters.sort = (attribute = "name", order = 1) => {
 // create search json object from given string
 filters.get_json = (str) => {
   // return cache if still valid
-  if(filters.cache.str == str && filters.cache.object) {
+  if (filters.cache.str == str && filters.cache.object) {
     return filters.cache.object
   }
 
@@ -136,7 +133,7 @@ filters.get_json = (str) => {
 
     if (!match) continue
 
-    for(const entry of match[1].split(",")) {
+    for (const entry of match[1].split(',')) {
       entries.push(entry)
     }
 
@@ -144,25 +141,25 @@ filters.get_json = (str) => {
   }
 
   // clear all tags from string
-  let pattern = /\b([^ ]+)=([^ ]+)/gi
-  let search  = str.replace(pattern, "")
+  const pattern = /\b([^ ]+)=([^ ]+)/gi
+  const search = str.replace(pattern, '')
 
   // add fulltext search attribute
-  result["search"] = search.trim()
+  result.search = search.trim()
 
   // save cache
-  filters.cache["str"] = str
-  filters.cache["object"] = result
+  filters.cache.str = str
+  filters.cache.object = result
 
   return result
 }
 
 // create search string from given json object
 filters.get_string = (json) => {
-  let string = ""
+  let string = ''
 
-  for(const [tag, elements] of Object.entries(json)) {
-    if(tag != "search" && elements.length > 0) string += `${tag}=${elements.toString()} `
+  for (const [tag, elements] of Object.entries(json)) {
+    if (tag != 'search' && elements.length > 0) string += `${tag}=${elements.toString()} `
   }
 
   string += json.search
@@ -174,7 +171,7 @@ filters.get_string = (json) => {
 filters.check = (card, query) => {
   // iterate over all attributes and break on mismatch
   for (const [filter, values] of Object.entries(query)) {
-    if(filters.tags[filter] && !filters.tags[filter](card, values)) {
+    if (filters.tags[filter] && !filters.tags[filter](card, values)) {
       return false
     }
   }
@@ -184,9 +181,9 @@ filters.check = (card, query) => {
   if (!card.locales) return false
 
   for (const [language, locale] of Object.entries(card.locales)) {
-    if(locale.name && locale.name.toLowerCase().includes(query.search)) return true
-    if(locale.text && locale.text.toLowerCase().includes(query.search)) return true
-    if(locale.type && locale.type.toLowerCase().includes(query.search)) return true
+    if (locale.name && locale.name.toLowerCase().includes(query.search)) return true
+    if (locale.text && locale.text.toLowerCase().includes(query.search)) return true
+    if (locale.type && locale.type.toLowerCase().includes(query.search)) return true
   }
 
   return false
@@ -195,11 +192,11 @@ filters.check = (card, query) => {
 // returns a filtered array based on search query
 filters.create_view = (db) => {
   // abort on invalid data
-  if(!db) return false
+  if (!db) return false
 
   // always return unfiltered on empty strings
-  let str = filters.dom.search.value
-  if(str.length < filters.min) return db
+  const str = filters.dom.search.value
+  if (str.length < filters.min) return db
 
   // obtain search query object from string
   const query = filters.get_json(str)
@@ -208,7 +205,7 @@ filters.create_view = (db) => {
   const result = db.filter(card => filters.check(card, query))
 
   // sort view
-  const order = query.order == "asc" ? -1 : 1
+  const order = query.order == 'asc' ? -1 : 1
   result.sort(filters.sort(query.sort, order))
 
   return result
@@ -228,27 +225,27 @@ filters.ui_init = () => {
       r: document.getElementById('button-color-r'),
       g: document.getElementById('button-color-g'),
       c: document.getElementById('button-color-c'),
-      m: document.getElementById('button-color-m'),
+      m: document.getElementById('button-color-m')
     },
 
     cmc: {
-      "0": document.getElementById('filter-mana-0'),
-      "1": document.getElementById('filter-mana-1'),
-      "2": document.getElementById('filter-mana-2'),
-      "3": document.getElementById('filter-mana-3'),
-      "4": document.getElementById('filter-mana-4'),
-      "5": document.getElementById('filter-mana-5'),
-      "6": document.getElementById('filter-mana-6'),
-      "7": document.getElementById('filter-mana-7'),
-      "8": document.getElementById('filter-mana-8'),
-      "9+": document.getElementById('filter-mana-9'),
+      0: document.getElementById('filter-mana-0'),
+      1: document.getElementById('filter-mana-1'),
+      2: document.getElementById('filter-mana-2'),
+      3: document.getElementById('filter-mana-3'),
+      4: document.getElementById('filter-mana-4'),
+      5: document.getElementById('filter-mana-5'),
+      6: document.getElementById('filter-mana-6'),
+      7: document.getElementById('filter-mana-7'),
+      8: document.getElementById('filter-mana-8'),
+      '9+': document.getElementById('filter-mana-9')
     },
 
     rarity: {
       common: document.getElementById('filter-rarity-common'),
       uncommon: document.getElementById('filter-rarity-uncommon'),
       rare: document.getElementById('filter-rarity-rare'),
-      mythic: document.getElementById('filter-rarity-mythic'),
+      mythic: document.getElementById('filter-rarity-mythic')
     },
 
     type: {
@@ -258,7 +255,7 @@ filters.ui_init = () => {
       enchantment: document.getElementById('filter-type-enchantment'),
       artifact: document.getElementById('filter-type-artifact'),
       planeswalker: document.getElementById('filter-type-planeswalker'),
-      land: document.getElementById('filter-type-land'),
+      land: document.getElementById('filter-type-land')
     },
 
     sort: {
@@ -268,12 +265,12 @@ filters.ui_init = () => {
       rarity: document.getElementById('sort-rarity'),
       price: document.getElementById('sort-price'),
       count: document.getElementById('sort-count'),
-      set: document.getElementById('sort-set'),
+      set: document.getElementById('sort-set')
     },
 
     order: {
       asc: document.getElementById('sort-mode-asc'),
-      desc: document.getElementById('sort-mode-desc'),
+      desc: document.getElementById('sort-mode-desc')
     }
   }
 
@@ -288,18 +285,18 @@ filters.ui_init = () => {
   for (const keyword of filters.check_buttons) {
     for (const [attribute, button] of Object.entries(filters.dom[keyword])) {
       button.addEventListener('click', (e) => {
-        let query = filters.get_json(filters.dom.search.value)
+        const query = filters.get_json(filters.dom.search.value)
 
-        if(keyword == "sort" || keyword == "order") {
+        if (keyword == 'sort' || keyword == 'order') {
           // single-select buttons
-          if(query[keyword] && query[keyword].includes(attribute)) {
+          if (query[keyword] && query[keyword].includes(attribute)) {
             query[keyword] = []
           } else {
             query[keyword] = [attribute]
           }
         } else {
           // multi-select buttons
-          if(query[keyword] && query[keyword].includes(attribute)) {
+          if (query[keyword] && query[keyword].includes(attribute)) {
             query[keyword].splice(query[keyword].indexOf(attribute), 1)
           } else {
             query[keyword] = query[keyword] || []
@@ -325,10 +322,10 @@ filters.ui_reload = () => {
   // update clickable filter buttons
   for (const attribute of filters.check_buttons) {
     for (const [name, button] of Object.entries(filters.dom[attribute])) {
-      if(query && query[attribute] && query[attribute].includes(name)) {
-        button.classList.add("checked")
+      if (query && query[attribute] && query[attribute].includes(name)) {
+        button.classList.add('checked')
       } else {
-        button.classList.remove("checked")
+        button.classList.remove('checked')
       }
     }
   }

@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // frontend handler:
   ipcRenderer.on('update-collection', frontend.event['update-collection'])
-  ipcRenderer.on('add-card-update',   frontend.event['add-card-update'])
+  ipcRenderer.on('add-card-update', frontend.event['add-card-update'])
 
   frontend.invoke['add-card'] = (card) => ipcRenderer.invoke('add-card', card)
   frontend.invoke['load-card'] = (card) => ipcRenderer.invoke('load-card', card)
