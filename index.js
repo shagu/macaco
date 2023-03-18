@@ -35,7 +35,7 @@ core.electron.app.whenReady().then(async () => {
   }
 
   // setup default vars
-  core.data_directory = core.electron.app.getPath('userData')
+  core.dataDirectory = core.electron.app.getPath('userData')
 
   // import components
   core.fetcher = require('./fetcher.js')
@@ -61,12 +61,12 @@ core.electron.app.whenReady().then(async () => {
   })
 
   // update darkmode when the system theme is updated
-  let last_theme_change = 0
+  let lastThemeChange = 0
   core.electron.nativeTheme.on('updated', () => {
     // skip everything if not enough time has passed since the last change
-    // and set last_theme_change to ignore all events within the next 10ms
-    if (Date.now() < last_theme_change) return
-    last_theme_change = Date.now() + 10
+    // and set lastThemeChange to ignore all events within the next 10ms
+    if (Date.now() < lastThemeChange) return
+    lastThemeChange = Date.now() + 10
 
     // setting the themeSource to 'system' will not update to the current
     // system mode if the value wasn't set to 'dark' & 'light' before

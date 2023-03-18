@@ -5,7 +5,7 @@ module.exports = {
     })
   },
 
-  byte_units: (bytes) => {
+  byteUnits: (bytes) => {
     if (bytes === 0 || !bytes) return 'n/a'
 
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']

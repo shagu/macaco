@@ -2,37 +2,37 @@ const frontend = { path: '.', db: {}, dom: {} }
 
 const config = {
   combine: true,
-  show_empty: true
+  showEmpty: true
 }
 
 frontend.languages = {
   'Ancient Greek': ['grc'],
-  'Arabic': ['ar'],
+  Arabic: ['ar'],
   'Chinese Simplified': ['zhs', 'cs'],
   'Chinese Traditional': ['zht', 'ct'],
-  'English': ['en'],
-  'French': ['fr'],
-  'German': ['de'],
-  'Hebrew': ['he'],
-  'Italian': ['it'],
-  'Japanese': ['ja', 'jp'],
-  'Korean': ['ko', 'kr'],
-  'Latin': ['la'],
-  'Phyrexian': ['ph'],
+  English: ['en'],
+  French: ['fr'],
+  German: ['de'],
+  Hebrew: ['he'],
+  Italian: ['it'],
+  Japanese: ['ja', 'jp'],
+  Korean: ['ko', 'kr'],
+  Latin: ['la'],
+  Phyrexian: ['ph'],
   'Portuguese (Brazil)': ['pt'],
-  'Russian': ['ru'],
-  'Sanskrit': ['sa'],
-  'Spanish': ['es', 'sp']
+  Russian: ['ru'],
+  Sanskrit: ['sa'],
+  Spanish: ['es', 'sp']
 }
 
-frontend.get_locale = (card, entry) => {
+frontend.getLocale = (card, entry) => {
   let retval = ''
 
   const langShort = card.language
   for (const [language, abbreviations] of Object.entries(frontend.languages)) {
     if (abbreviations.includes(langShort)) {
       retval = card.locales && card.locales[language] ? card.locales[language][entry] : false
-      retval = retval || card.locales && card.locales.English[entry]
+      retval = retval || (card.locales && card.locales.English[entry])
     }
   }
 
@@ -46,7 +46,7 @@ frontend.objcompare = (a, b, o) => {
   return true
 }
 
-frontend.get_folder_details = (content, stats) => {
+frontend.getFolderDetails = (content, stats) => {
   stats.types = stats.types || { /* creature: 0, enchantment: 0, .. */ }
   stats.price = stats.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0 }
   stats.mana = stats.mana || { num: 0, sum: 0, min: 0, max: 0, avg: 0 }
@@ -80,26 +80,26 @@ frontend.get_folder_details = (content, stats) => {
   }
 }
 
-frontend.get_collection_details = () => {
+frontend.getCollectionDetails = () => {
   const details = { collection: {}, current: {}, view: {} }
 
   // scan library
-  for (const [folder, content] of Object.entries(frontend.db)) {
-    frontend.get_folder_details(content, details.collection)
+  for (const [, content] of Object.entries(frontend.db)) {
+    frontend.getFolderDetails(content, details.collection)
     details.collection.lists = details.collection.lists || 0
     if (content.length > 0) details.collection.lists++
   }
 
   // scan current folder
-  frontend.get_folder_details(frontend.db[frontend.path], details.current)
+  frontend.getFolderDetails(frontend.db[frontend.path], details.current)
 
   // scan current view
-  frontend.get_folder_details(frontend.view, details.view)
+  frontend.getFolderDetails(frontend.view, details.view)
 
   return details
 }
 
-frontend.get_color_icon = (folder) => {
+frontend.getColorIcon = (folder) => {
   const icons = [
     'BG', 'BR', 'GU', 'GW', 'RG',
     'RW', 'UB', 'UR', 'WB', 'WU'
@@ -122,12 +122,12 @@ frontend.get_color_icon = (folder) => {
     }
   }
 
-  const identity_str = identity.toString().toUpperCase()
+  const identityStr = identity.toString().toUpperCase()
   if (identity.length === 1) {
-    return identity_str
+    return identityStr
   } else if (identity.length === 2) {
     for (const icon of icons) {
-      if (identity_str.includes(icon.charAt(0)) && identity_str.includes(icon.charAt(1))) {
+      if (identityStr.includes(icon.charAt(0)) && identityStr.includes(icon.charAt(1))) {
         return icon
       }
     }
@@ -138,93 +138,93 @@ frontend.get_color_icon = (folder) => {
   }
 }
 
-frontend.reload_sidebar = () => {
-  const div_sidebar = document.getElementById('sidebar')
-  div_sidebar.innerHTML = ''
+frontend.reloadSidebar = () => {
+  const divSidebar = document.getElementById('sidebar')
+  divSidebar.innerHTML = ''
 
   /* add new folder button */
-  const folder_input = document.createElement('input')
-  folder_input.setAttribute('type', 'text')
-  folder_input.setAttribute('id', 'folder-input')
-  div_sidebar.appendChild(folder_input)
+  const folderInput = document.createElement('input')
+  folderInput.setAttribute('type', 'text')
+  folderInput.setAttribute('id', 'folder-input')
+  divSidebar.appendChild(folderInput)
 
-  const input_enable = function () {
-    folder_input.classList.add('active')
-    folder_input.value = ''
+  const inputEnable = function () {
+    folderInput.classList.add('active')
+    folderInput.value = ''
   }
 
-  const input_disable = function () {
-    folder_input.classList.remove('active')
-    folder_input.value = 'Create New Folder'
-    folder_input.blur()
+  const inputDisable = function () {
+    folderInput.classList.remove('active')
+    folderInput.value = 'Create New Folder'
+    folderInput.blur()
   }
 
-  folder_input.onfocus = input_enable
-  folder_input.onblur = input_disable
-  folder_input.onkeydown = function (e) {
+  folderInput.onfocus = inputEnable
+  folderInput.onblur = inputDisable
+  folderInput.onkeydown = function (e) {
     if (e.key === 'Enter') {
-      frontend.invoke['new-folder'](folder_input.value)
-      input_disable()
+      frontend.invoke['new-folder'](folderInput.value)
+      inputDisable()
     }
 
     if (e.key === 'Escape') {
-      input_disable()
+      inputDisable()
     }
   }
 
-  input_disable()
+  inputDisable()
 
   /* add spacer */
-  const spacer_top = document.createElement('hr')
-  div_sidebar.appendChild(spacer_top)
+  const spacerTop = document.createElement('hr')
+  divSidebar.appendChild(spacerTop)
 
   /* add folder buttons */
   for (const [folder, content] of Object.entries(frontend.db)) {
-    if (!config.show_empty && content.length === 0) continue
+    if (!config.showEmpty && content.length === 0) continue
 
     const caption = (folder === '.' ? 'Library' : folder)
 
-    const div_folder = document.createElement('div')
-    div_folder.setAttribute('id', 'folder')
+    const divFolder = document.createElement('div')
+    divFolder.setAttribute('id', 'folder')
     if (folder === frontend.path) {
-      div_folder.classList.add('active')
+      divFolder.classList.add('active')
     }
-    div_sidebar.appendChild(div_folder)
+    divSidebar.appendChild(divFolder)
 
-    div_folder.div_caption = document.createElement('div')
-    div_folder.div_caption.setAttribute('id', 'folder-caption')
-    div_folder.appendChild(div_folder.div_caption)
+    divFolder.divCaption = document.createElement('div')
+    divFolder.divCaption.setAttribute('id', 'folder-caption')
+    divFolder.appendChild(divFolder.divCaption)
 
-    div_folder.div_icon = document.createElement('img')
-    div_folder.div_icon.setAttribute('id', 'folder-icon')
-    div_folder.div_icon.src = `img/icons/${frontend.get_color_icon(content)}.png`
-    div_folder.div_caption.appendChild(div_folder.div_icon)
+    divFolder.divIcon = document.createElement('img')
+    divFolder.divIcon.setAttribute('id', 'folder-icon')
+    divFolder.divIcon.src = `img/icons/${frontend.getColorIcon(content)}.png`
+    divFolder.divCaption.appendChild(divFolder.divIcon)
 
-    div_folder.div_label = document.createElement('div')
-    div_folder.div_label.setAttribute('id', 'folder-label')
-    div_folder.div_label.innerHTML = caption
-    div_folder.div_caption.appendChild(div_folder.div_label)
+    divFolder.divLabel = document.createElement('div')
+    divFolder.divLabel.setAttribute('id', 'folder-label')
+    divFolder.divLabel.innerHTML = caption
+    divFolder.divCaption.appendChild(divFolder.divLabel)
 
-    div_folder.div_count = document.createElement('div')
-    div_folder.div_count.setAttribute('id', 'folder-count')
-    div_folder.div_count.innerHTML = content ? filters.create_view(content).length : 0
-    div_folder.appendChild(div_folder.div_count)
+    divFolder.divCount = document.createElement('div')
+    divFolder.divCount.setAttribute('id', 'folder-count')
+    divFolder.divCount.innerHTML = content ? filters.createView(content).length : 0
+    divFolder.appendChild(divFolder.divCount)
 
-    div_folder.ondragenter = function (e) {
+    divFolder.ondragenter = function (e) {
       e.preventDefault()
       e.target.classList.add('drag')
     }
 
-    div_folder.ondragover = function (e) {
+    divFolder.ondragover = function (e) {
       e.preventDefault()
     }
 
-    div_folder.ondragleave = function (e) {
+    divFolder.ondragleave = function (e) {
       e.preventDefault()
       e.target.classList.remove('drag')
     }
 
-    div_folder.ondrop = function (e) {
+    divFolder.ondrop = function (e) {
       e.preventDefault()
       e.target.classList.remove('drag')
 
@@ -238,70 +238,70 @@ frontend.reload_sidebar = () => {
       }
     }
 
-    div_folder.onclick = function () {
+    divFolder.onclick = function () {
       frontend.path = folder
       frontend.reload()
     }
   }
 
   /* add spacer */
-  const spacer_bottom = document.createElement('hr')
-  div_sidebar.appendChild(spacer_bottom)
+  const spacerBottom = document.createElement('hr')
+  divSidebar.appendChild(spacerBottom)
 
   /* add show empty checkbox */
-  const show_empty_container = document.createElement('m-grid')
-  show_empty_container.setAttribute('horizontal', '')
-  show_empty_container.setAttribute('id', 'folder')
-  div_sidebar.appendChild(show_empty_container)
+  const showEmptyContainer = document.createElement('m-grid')
+  showEmptyContainer.setAttribute('horizontal', '')
+  showEmptyContainer.setAttribute('id', 'folder')
+  divSidebar.appendChild(showEmptyContainer)
 
-  const show_empty_label = document.createElement('div')
-  show_empty_label.innerHTML = 'Show Empty Folders'
-  show_empty_label.style.textAlign = 'left'
-  show_empty_container.appendChild(show_empty_label)
+  const showEmptyLabel = document.createElement('div')
+  showEmptyLabel.innerHTML = 'Show Empty Folders'
+  showEmptyLabel.style.textAlign = 'left'
+  showEmptyContainer.appendChild(showEmptyLabel)
 
-  const show_empty_input = document.createElement('input')
-  show_empty_input.checked = config.show_empty
-  show_empty_input.type = 'checkbox'
-  show_empty_input.style.textAlign = 'right'
-  show_empty_input.onclick = () => {
-    config.show_empty = !config.show_empty
-    frontend.reload_sidebar()
+  const showEmptyInput = document.createElement('input')
+  showEmptyInput.checked = config.showEmpty
+  showEmptyInput.type = 'checkbox'
+  showEmptyInput.style.textAlign = 'right'
+  showEmptyInput.onclick = () => {
+    config.showEmpty = !config.showEmpty
+    frontend.reloadSidebar()
   }
 
-  show_empty_container.appendChild(show_empty_input)
+  showEmptyContainer.appendChild(showEmptyInput)
 
   /* add combine same checkbox */
-  const combine_same_container = document.createElement('div')
-  combine_same_container.classList.add('m-grid')
-  combine_same_container.setAttribute('horizontal', '')
-  combine_same_container.setAttribute('id', 'folder')
-  div_sidebar.appendChild(combine_same_container)
+  const combineSameContainer = document.createElement('div')
+  combineSameContainer.classList.add('m-grid')
+  combineSameContainer.setAttribute('horizontal', '')
+  combineSameContainer.setAttribute('id', 'folder')
+  divSidebar.appendChild(combineSameContainer)
 
-  const combine_same_label = document.createElement('div')
-  combine_same_label.innerHTML = 'Combine Same Cards'
-  combine_same_label.style.textAlign = 'left'
-  combine_same_container.appendChild(combine_same_label)
+  const combineSameLabel = document.createElement('div')
+  combineSameLabel.innerHTML = 'Combine Same Cards'
+  combineSameLabel.style.textAlign = 'left'
+  combineSameContainer.appendChild(combineSameLabel)
 
-  const combine_same_input = document.createElement('input')
-  combine_same_input.checked = config.combine
-  combine_same_input.type = 'checkbox'
-  combine_same_input.style.textAlign = 'right'
-  combine_same_input.onclick = () => {
+  const combineSameInput = document.createElement('input')
+  combineSameInput.checked = config.combine
+  combineSameInput.type = 'checkbox'
+  combineSameInput.style.textAlign = 'right'
+  combineSameInput.onclick = () => {
     config.combine = !config.combine
     frontend.reload()
   }
 
-  combine_same_container.appendChild(combine_same_input)
+  combineSameContainer.appendChild(combineSameInput)
 }
 
-frontend.reload_statusbar = () => {
-  const details = frontend.get_collection_details()
-  const div_footer = document.getElementById('footer')
+frontend.reloadStatusbar = () => {
+  const details = frontend.getCollectionDetails()
+  const divFooter = document.getElementById('footer')
 
-  div_footer.innerHTML = `Collection with <b>${details.collection.cards}</b> cards in <b>${details.collection.lists}</b> folders worth <b>${details.collection.price.sum.toFixed(2)}€</b>.`
+  divFooter.innerHTML = `Collection with <b>${details.collection.cards}</b> cards in <b>${details.collection.lists}</b> folders worth <b>${details.collection.price.sum.toFixed(2)}€</b>.`
 }
 
-frontend.is_selection = (card, compare) => {
+frontend.isSelection = (card, compare) => {
   if (!compare) return false
 
   if (config.combine === true && card.foil === compare.foil && card.number === compare.number && card.set === compare.set) {
@@ -313,12 +313,12 @@ frontend.is_selection = (card, compare) => {
   }
 }
 
-frontend.reload_view_selection = () => {
+frontend.reloadViewSelection = () => {
   if (!frontend.dom.cards) return
 
   for (const div of frontend.dom.cards) {
-    if (frontend.is_selection(div.data, frontend.selection)) {
-      if (frontend.selection.current_file) {
+    if (frontend.isSelection(div.data, frontend.selection)) {
+      if (frontend.selection.currentFile) {
         div.state('active')
       } else {
         div.state('new')
@@ -330,16 +330,16 @@ frontend.reload_view_selection = () => {
   }
 }
 
-frontend.reload_view = () => {
-  const div_content = document.getElementById('content')
+frontend.reloadView = () => {
+  const divContent = document.getElementById('content')
 
-  div_content.onclick = function (e) {
-    frontend.reset_preview()
-    frontend.reload_view_selection()
+  divContent.onclick = function (e) {
+    frontend.resetPreview()
+    frontend.reloadViewSelection()
     e.stopPropagation()
   }
 
-  div_content.innerHTML = ''
+  divContent.innerHTML = ''
   frontend.dom.cards = []
   frontend.duplicates = {}
 
@@ -353,7 +353,7 @@ frontend.reload_view = () => {
       mcard.combine = config.combine
       mcard.data = card
 
-      div_content.appendChild(mcard)
+      divContent.appendChild(mcard)
       frontend.dom.cards.push(mcard)
 
       // write duplicate index
@@ -361,10 +361,10 @@ frontend.reload_view = () => {
     }
   }
 
-  frontend.reload_view_selection()
+  frontend.reloadViewSelection()
 }
 
-frontend.text_to_html = (str) => {
+frontend.textToHtml = (str) => {
   if (!str) return ''
 
   // multicolor icons, separated by "/"
@@ -384,18 +384,18 @@ frontend.text_to_html = (str) => {
   return str
 }
 
-frontend.reload_preview = () => {
+frontend.reloadPreview = () => {
   frontend.dom.preview.panel.style = 'display: grid;'
-  if (!frontend.selection) frontend.reset_preview()
+  if (!frontend.selection) frontend.resetPreview()
 }
 
-frontend.ui_lock = (state) => {
-  const ui_lock = [
+frontend.uiLock = (state) => {
+  const uiLock = [
     'import-button', 'menu-filter', 'card-search', 'button-color-w', 'button-color-u',
     'button-color-b', 'button-color-r', 'button-color-g', 'button-color-c', 'button-color-m'
   ]
 
-  for (const element of ui_lock) {
+  for (const element of uiLock) {
     document.getElementById(element).disabled = state
   }
 }
@@ -406,25 +406,25 @@ frontend.reload = () => {
 
   // disable certain ui elements if nothing is loaded
   if (!frontend.db[frontend.path]) {
-    frontend.ui_lock(true)
+    frontend.uiLock(true)
     return
   } else {
-    frontend.ui_lock(false)
+    frontend.uiLock(false)
   }
 
   // apply filters to current view
-  frontend.view = filters.create_view(frontend.db[frontend.path])
-  frontend.details = frontend.get_collection_details()
+  frontend.view = filters.createView(frontend.db[frontend.path])
+  frontend.details = frontend.getCollectionDetails()
 
   // reload ui panels
-  frontend.reload_sidebar()
-  frontend.reload_statusbar()
-  frontend.reload_view()
-  frontend.reload_preview()
+  frontend.reloadSidebar()
+  frontend.reloadStatusbar()
+  frontend.reloadView()
+  frontend.reloadPreview()
 }
 
-frontend.reset_preview = () => {
-  frontend.set_preview({
+frontend.resetPreview = () => {
+  frontend.setPreview({
     set: '',
     number: '',
     foil: false,
@@ -434,22 +434,22 @@ frontend.reset_preview = () => {
   })
 }
 
-frontend.set_preview = (card, existing) => {
+frontend.setPreview = (card, existing) => {
   frontend.selection = card
 
   // write current file if preview is an existing one
-  if (existing) card.current_file = card.file
+  if (existing) card.currentFile = card.file
 
-  if (card.unknown && !card.current_file) {
+  if (card.unknown && !card.currentFile) {
     // write a dummy card & disable button
     frontend.dom.preview.info.innerHTML = 'Unknown Card'
     frontend.selection.file = './img/card-background.jpg'
   } else {
-    const name = frontend.get_locale(card, 'name') || 'Unknown Card'
-    const type = frontend.get_locale(card, 'type')
-    const flavor = frontend.get_locale(card, 'flavor')
-    const text = frontend.text_to_html(frontend.get_locale(card, 'text'))
-    const mana = frontend.text_to_html(card.mana)
+    const name = frontend.getLocale(card, 'name') || 'Unknown Card'
+    const type = frontend.getLocale(card, 'type')
+    const flavor = frontend.getLocale(card, 'flavor')
+    const text = frontend.textToHtml(frontend.getLocale(card, 'text'))
+    const mana = frontend.textToHtml(card.mana)
     if (!name) return
 
     frontend.dom.preview.info.innerHTML = `
@@ -464,7 +464,7 @@ frontend.set_preview = (card, existing) => {
   }
 
   // adjust button label
-  if (card.current_file) {
+  if (card.currentFile) {
     frontend.dom.preview.button.innerHTML = 'Update Card'
   } else {
     frontend.dom.preview.button.innerHTML = 'New Card'
@@ -512,7 +512,7 @@ frontend.set_preview = (card, existing) => {
   }, 1)
 }
 
-frontend.update_preview = () => {
+frontend.updatePreview = () => {
   // read available data from input fields
   frontend.selection = frontend.selection || { }
   frontend.selection.set = frontend.dom.preview.edition.value.toLowerCase()
@@ -533,15 +533,15 @@ frontend.update_preview = () => {
   frontend.invoke['load-card'](frontend.selection)
 }
 
-frontend.new_card = async () => {
+frontend.newCard = async () => {
   if (!frontend.selection) return
 
-  const ui_card = frontend.selection
-  const identifier = `[${ui_card.set}.${ui_card.number}.${ui_card.language}${ui_card.foil ? '.f' : ''}]`
+  const card = frontend.selection
+  const identifier = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
 
-  popups.show(`${frontend.get_locale(ui_card, 'name')}`, identifier, 0)
-  const new_card = await frontend.invoke['add-card'](ui_card)
-  popups.show(`${frontend.get_locale(ui_card, 'name')}`, identifier, 1)
+  popups.show(`${frontend.getLocale(card, 'name')}`, identifier, 0)
+  await frontend.invoke['add-card'](card)
+  popups.show(`${frontend.getLocale(card, 'name')}`, identifier, 1)
 }
 
 frontend.invoke = {
@@ -556,9 +556,9 @@ frontend.event = {
   },
   'add-card-update': (event, card) => {
     // only update if current selection is still the same
-    const ui_card = frontend.selection
-    if (frontend.objcompare(ui_card, card, ['set', 'number', 'foil', 'language'])) {
-      frontend.set_preview(card)
+    const uiCard = frontend.selection
+    if (frontend.objcompare(uiCard, card, ['set', 'number', 'foil', 'language'])) {
+      frontend.setPreview(card)
     }
   }
 }
@@ -591,22 +591,22 @@ frontend.init = () => {
 
   // add current card to library
   frontend.dom.preview.edition.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') frontend.new_card()
+    if (e.key === 'Enter') frontend.newCard()
   })
 
   frontend.dom.preview.number.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') frontend.new_card()
+    if (e.key === 'Enter') frontend.newCard()
   })
 
   frontend.dom.preview.button.addEventListener('click', async () => {
-    frontend.new_card()
+    frontend.newCard()
   })
 
   // refresh card (metadata and artwork) on each keypress
-  frontend.dom.preview.edition.addEventListener('input', frontend.update_preview)
-  frontend.dom.preview.number.addEventListener('input', frontend.update_preview)
-  frontend.dom.preview.foil.addEventListener('input', frontend.update_preview)
-  frontend.dom.preview.language.addEventListener('input', frontend.update_preview)
+  frontend.dom.preview.edition.addEventListener('input', frontend.updatePreview)
+  frontend.dom.preview.number.addEventListener('input', frontend.updatePreview)
+  frontend.dom.preview.foil.addEventListener('input', frontend.updatePreview)
+  frontend.dom.preview.language.addEventListener('input', frontend.updatePreview)
 
   frontend.dom.headerbar.open.addEventListener('click', async () => {
     frontend.invoke['open-folder']()

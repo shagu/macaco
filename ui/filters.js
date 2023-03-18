@@ -1,7 +1,7 @@
 const filters = { min: 1, cache: {}, dom: {} }
 
 // all clickable check buttons
-filters.check_buttons = [
+filters.checkButtons = [
   'color',
   'cmc',
   'rarity',
@@ -53,23 +53,23 @@ filters.tags = {
     return false
   },
   color: (card, values) => {
-    let multicolor_enforced = false
-    let atleast_one = false
+    let multicolorEnforced = false
+    let atleastOne = false
     let mismatch = false
 
     for (const entry of values) {
       if (entry === 'm') {
         if (card.color && card.color.length > 1) {
-          multicolor_enforced = true
-          atleast_one = true
+          multicolorEnforced = true
+          atleastOne = true
         } else {
           return false
         }
       } else if (entry === 'c') {
-        if (!card.color || card.color.length === 0) atleast_one = true
+        if (!card.color || card.color.length === 0) atleastOne = true
       } else {
         if (card.color && card.color.includes(entry.toUpperCase())) {
-          atleast_one = true
+          atleastOne = true
         } else {
           mismatch = true
         }
@@ -79,8 +79,8 @@ filters.tags = {
     // special case if multicolor search is enforced
     // only return multicolor cards if the color selection
     // is also a full match
-    if (multicolor_enforced && mismatch) return false
-    return atleast_one
+    if (multicolorEnforced && mismatch) return false
+    return atleastOne
   },
 
   // dummy functions to keep sort tags present
@@ -93,11 +93,11 @@ filters.sort = (attribute = 'name', order = 1) => {
   return (a, b) => {
     if (attribute === 'rarity') {
       // special sorting for card rarity
-      const a_val = filters.rarity.indexOf(a.rarity) + 1
-      const b_val = filters.rarity.indexOf(b.rarity) + 1
+      const aVal = filters.rarity.indexOf(a.rarity) + 1
+      const bVal = filters.rarity.indexOf(b.rarity) + 1
 
-      if (a_val !== b_val) {
-        return a_val < b_val ? order : -1 * order
+      if (aVal !== bVal) {
+        return aVal < bVal ? order : -1 * order
       }
     } else {
       // generic sorting algorithm
@@ -116,7 +116,7 @@ filters.sort = (attribute = 'name', order = 1) => {
 }
 
 // create search json object from given string
-filters.get_json = (str) => {
+filters.getJson = (str) => {
   // return cache if still valid
   if (filters.cache.str === str && filters.cache.object) {
     return filters.cache.object
@@ -126,7 +126,7 @@ filters.get_json = (str) => {
   const result = {}
 
   // build keyword attributes from string
-  for (const [pattern, check] of Object.entries(filters.tags)) {
+  for (const [pattern] of Object.entries(filters.tags)) {
     const entries = []
     const regex = new RegExp(`\\b${pattern}=([^ ]+)`, 'i')
     const match = regex.exec(str)
@@ -155,7 +155,7 @@ filters.get_json = (str) => {
 }
 
 // create search string from given json object
-filters.get_string = (json) => {
+filters.getString = (json) => {
   let string = ''
 
   for (const [tag, elements] of Object.entries(json)) {
@@ -180,7 +180,7 @@ filters.check = (card, query) => {
   if (card.name && card.name.toLowerCase().includes(query.search)) return true
   if (!card.locales) return false
 
-  for (const [language, locale] of Object.entries(card.locales)) {
+  for (const [, locale] of Object.entries(card.locales)) {
     if (locale.name && locale.name.toLowerCase().includes(query.search)) return true
     if (locale.text && locale.text.toLowerCase().includes(query.search)) return true
     if (locale.type && locale.type.toLowerCase().includes(query.search)) return true
@@ -190,7 +190,7 @@ filters.check = (card, query) => {
 }
 
 // returns a filtered array based on search query
-filters.create_view = (db) => {
+filters.createView = (db) => {
   // abort on invalid data
   if (!db) return false
 
@@ -199,7 +199,7 @@ filters.create_view = (db) => {
   if (str.length < filters.min) return db
 
   // obtain search query object from string
-  const query = filters.get_json(str)
+  const query = filters.getJson(str)
 
   // return filtered view
   const result = db.filter(card => filters.check(card, query))
@@ -212,7 +212,7 @@ filters.create_view = (db) => {
 }
 
 // initial setup of dom caches and click events
-filters.ui_init = () => {
+filters.uiInit = () => {
   // cache dom element shortcuts
   filters.dom = {
     search:
@@ -276,16 +276,16 @@ filters.ui_init = () => {
 
   // add keyup handler to search bar
   filters.dom.search.addEventListener('keyup', (e) => {
-    if (e.target.value === e.target.last_value) return
-    e.target.last_value = e.target.value
-    filters.ui_reload()
+    if (e.target.value === e.target.lastValue) return
+    e.target.lastValue = e.target.value
+    filters.uiReload()
   })
 
   // add click handler to filter buttons
-  for (const keyword of filters.check_buttons) {
+  for (const keyword of filters.checkButtons) {
     for (const [attribute, button] of Object.entries(filters.dom[keyword])) {
       button.addEventListener('click', (e) => {
-        const query = filters.get_json(filters.dom.search.value)
+        const query = filters.getJson(filters.dom.search.value)
 
         if (keyword === 'sort' || keyword === 'order') {
           // single-select buttons
@@ -305,22 +305,22 @@ filters.ui_init = () => {
         }
 
         // update search query
-        filters.dom.search.value = filters.get_string(query)
+        filters.dom.search.value = filters.getString(query)
 
         // update all ui buttons
-        filters.ui_reload()
+        filters.uiReload()
       })
     }
   }
 }
 
 // reload ui elements to match the current search string
-filters.ui_reload = () => {
+filters.uiReload = () => {
   // get current string
-  const query = filters.get_json(filters.dom.search.value)
+  const query = filters.getJson(filters.dom.search.value)
 
   // update clickable filter buttons
-  for (const attribute of filters.check_buttons) {
+  for (const attribute of filters.checkButtons) {
     for (const [name, button] of Object.entries(filters.dom[attribute])) {
       if (query && query[attribute] && query[attribute].includes(name)) {
         button.classList.add('checked')
@@ -335,4 +335,4 @@ filters.ui_reload = () => {
 }
 
 // register the init function
-window.addEventListener('DOMContentLoaded', filters.ui_init)
+window.addEventListener('DOMContentLoaded', filters.uiInit)

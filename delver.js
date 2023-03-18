@@ -1,12 +1,12 @@
 const fs = require('fs')
 const path = require('path')
-const jszip = require('jszip')
-const sqlite3 = require('better-sqlite3')
+const Jszip = require('jszip')
+const Sqlite3 = require('better-sqlite3')
 
-const query_attach = `ATTACH DATABASE '${path.join(core.data_directory, 'db', 'delverlens.sqlite')}' AS delver;`
-const query_cards = 'SELECT * FROM backup_cards;'
-const query_cards_sum = 'SELECT COUNT(*) AS count FROM backup_cards;'
-const query_view = `
+const queryAttach = `ATTACH DATABASE '${path.join(core.dataDirectory, 'db', 'delverlens.sqlite')}' AS delver;`
+const queryCards = 'SELECT * FROM backup_cards;'
+const queryCardsSum = 'SELECT COUNT(*) AS count FROM backup_cards;'
+const queryView = `
   CREATE TEMP VIEW backup_cards AS
     SELECT
       cards.image AS image,
@@ -21,28 +21,28 @@ const query_view = `
       LEFT JOIN delver.editions AS delver_editions ON delver_cards.edition = delver_editions._id;
 `
 
-const language_map = {
+const languageMap = {
   English: 'en',
   German: 'de'
 }
 
 const notify = (status) => {
-  const current = core.utils.byte_units(status.current)
-  const maxsize = core.utils.byte_units(status.size)
+  const current = core.utils.byteUnits(status.current)
+  const maxsize = core.utils.byteUnits(status.size)
   const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
   core.utils.popup('DelverLens Metadata', caption, status.percent / 100)
 }
 
 const delver = {
   /* unpack the card-association sqlite file from the delver APK file */
-  unpack_apk: async () => {
+  unpackApk: async () => {
     // show popup
     core.utils.popup('DelverLens Metadata', 'Unpacking APK', null)
 
-    const apk = fs.readFileSync(path.join(core.data_directory, 'db', 'delverlens.apk'))
-    const extractor = new jszip()
+    const extractor = new Jszip()
+    const apk = fs.readFileSync(path.join(core.dataDirectory, 'db', 'delverlens.apk'))
     const result = await extractor.loadAsync(apk)
-    const output = path.join(core.data_directory, 'db', 'delverlens.sqlite')
+    const output = path.join(core.dataDirectory, 'db', 'delverlens.sqlite')
     const data = result.files['res/ut.db'].async('arraybuffer')
 
     fs.writeFileSync(output, Buffer.from(await data))
@@ -52,7 +52,7 @@ const delver = {
   },
 
   /* fetch and unpack latest delver APK file */
-  setup_metadata: async (force) => {
+  setupMetadata: async (force) => {
     if (delver.prepare) {
       return delver.prepare
     } else {
@@ -60,11 +60,11 @@ const delver = {
         // fetch delver apk if required
         await core.fetcher.queue(
           'https://delver-public.s3.us-west-1.amazonaws.com/app-release.apk',
-          path.join(core.data_directory, 'db', 'delverlens.apk'),
+          path.join(core.dataDirectory, 'db', 'delverlens.apk'),
           notify, false, 'delver-apk-fetch'
         )
 
-        await delver.unpack_apk()
+        await delver.unpackApk()
         delver.prepare = null
         resolve(true)
       })
@@ -74,39 +74,39 @@ const delver = {
   },
 
   /* import cards */
-  import_backup: async (backup_file, current_path) => {
-    core.utils.popup('Import DelverLens Backup', backup_file, null)
+  importBackup: async (backupFile, currentPath) => {
+    core.utils.popup('Import DelverLens Backup', backupFile, null)
 
     // check for metadata
-    await delver.setup_metadata()
+    await delver.setupMetadata()
 
     // open and prepare backup database
-    const backup = new sqlite3(backup_file)
-    backup.prepare(query_attach).run()
-    backup.prepare(query_view).run()
+    const backup = new Sqlite3(backupFile)
+    backup.prepare(queryAttach).run()
+    backup.prepare(queryView).run()
 
     // get statistics for popup notifier
-    const sum = backup.prepare(query_cards_sum).get().count
+    const sum = backup.prepare(queryCardsSum).get().count
     let count = 0
 
     // read through all results in merged backup table
-    const result = backup.prepare(query_cards).all()
+    const result = backup.prepare(queryCards).all()
     for (const row of result) {
       const card = {
         image: row.image,
         foil: row.foil !== 0,
-        language: row.language === '' || !language_map[row.language] ? language_map.English : language_map[row.language],
+        language: row.language === '' || !languageMap[row.language] ? languageMap.English : languageMap[row.language],
         set: row.edition,
         number: row.number,
-        path: path.join(current_path, row.list.replaceAll('/', '-'))
+        path: path.join(currentPath, row.list.replaceAll('/', '-'))
       }
 
       count++
       const percent = Math.ceil(count / sum * 100)
-      const caption = `backup_file<br>${count}/${sum} (${percent}%)`
+      const caption = `${backupFile}<br>${count}/${sum} (${percent}%)`
       core.utils.popup('Import DelverLens Backup', caption, percent)
 
-      await core.collection.add_card(card)
+      await core.collection.addCard(card)
     }
 
     backup.close()
@@ -115,8 +115,8 @@ const delver = {
 }
 
 // attach self to several download events
-core.electron.ipcMain.handle('import-backup', async (event, current_path) => {
-  const dialog_options = {
+core.electron.ipcMain.handle('import-backup', async (event, currentPath) => {
+  const dialogOptions = {
     properties: ['openFile'],
     filters: [
       { name: 'DelverLens Backup Files', extensions: ['dlens.bin', 'dlens', 'sqlite'] },
@@ -124,9 +124,9 @@ core.electron.ipcMain.handle('import-backup', async (event, current_path) => {
     ]
   }
 
-  const file = await core.electron.dialog.showOpenDialog(dialog_options)
+  const file = await core.electron.dialog.showOpenDialog(dialogOptions)
   if (file.filePaths && !file.canceled) {
-    delver.import_backup(file.filePaths[0], current_path)
+    delver.importBackup(file.filePaths[0], currentPath)
   }
 })
 

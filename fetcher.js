@@ -7,13 +7,13 @@ const fetcher = {
 }
 
 // core download function
-fetcher.get = (url, path, notify, force, original_url) => {
+fetcher.get = (url, path, notify, force, originalUrl) => {
   return new Promise((resolve, reject) => {
     const request = http.get(url, async (response) => {
       // handle http status codes
       if (response.statusCode === 301 || response.statusCode === 302) {
         // recursive call on redirect, call self again
-        await fetcher.get(response.headers.location, path, notify, force, (original_url || url))
+        await fetcher.get(response.headers.location, path, notify, force, (originalUrl || url))
         resolve()
         return
       } else if (response.statusCode !== 200) {
@@ -37,7 +37,7 @@ fetcher.get = (url, path, notify, force, original_url) => {
       }
 
       // build default notify status object
-      const status = { url: (original_url || url), path, size }
+      const status = { url: (originalUrl || url), path, size }
 
       // notify goes here
       response.on('data', function (chunk) {
@@ -92,7 +92,7 @@ fetcher.get = (url, path, notify, force, original_url) => {
           notify(status)
         }, 5000)
       } else {
-        console.log(original_url, url, err)
+        console.log(originalUrl, url, err)
       }
 
       resolve(err)
@@ -102,18 +102,18 @@ fetcher.get = (url, path, notify, force, original_url) => {
 
 // returns a promise that will resolve when all downloads
 // of the same queue-name (options.name) have been finished.
-fetcher.queue = (url, path, notify, force, queue_name) => {
+fetcher.queue = (url, path, notify, force, queueName) => {
   // initialize empty process list by name
-  if (!fetcher.processes[queue_name]) {
-    fetcher.processes[queue_name] = { count: 0, tasks: [] }
+  if (!fetcher.processes[queueName]) {
+    fetcher.processes[queueName] = { count: 0, tasks: [] }
   }
 
   // add new task to the process list
-  fetcher.processes[queue_name].tasks.push({
+  fetcher.processes[queueName].tasks.push({
     url, path, notify, force
   })
 
-  const process = fetcher.processes[queue_name]
+  const process = fetcher.processes[queueName]
 
   // runner
   if (!process.promise) {

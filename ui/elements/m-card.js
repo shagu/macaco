@@ -79,8 +79,8 @@ export default class MCard extends HTMLElement {
   `
 
   static click (ev) {
-    frontend.set_preview(this.data, true)
-    frontend.reload_view_selection()
+    frontend.setPreview(this.data, true)
+    frontend.reloadViewSelection()
     ev.stopPropagation()
   }
 
@@ -123,7 +123,7 @@ export default class MCard extends HTMLElement {
 
     const title = document.createElement('div')
     title.setAttribute('id', 'title')
-    title.innerHTML = frontend.get_locale(card, 'name') || identifier
+    title.innerHTML = frontend.getLocale(card, 'name') || identifier
     this.shadow.appendChild(title)
 
     const count = document.createElement('div')

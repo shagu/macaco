@@ -71,22 +71,22 @@ export default class MPopover extends HTMLElement {
   position () {
     if (this.anchor) {
       // move popover to last anchor
-      const toggle_rect = this.anchor.getBoundingClientRect()
-      const popover_rect = this.getBoundingClientRect()
+      const toggleRect = this.anchor.getBoundingClientRect()
+      const popoverRect = this.getBoundingClientRect()
 
-      const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? 'left' : 'right'
-      const vertical = (toggle_rect.top + toggle_rect.bottom) / 2 < window.innerHeight / 2 ? 'top' : 'bottom'
+      const horizontal = (toggleRect.left + toggleRect.right) / 2 < window.innerWidth / 2 ? 'left' : 'right'
+      const vertical = (toggleRect.top + toggleRect.bottom) / 2 < window.innerHeight / 2 ? 'top' : 'bottom'
 
-      const left = horizontal === 'left' ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
-      const top = vertical === 'top' ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
+      const left = horizontal === 'left' ? toggleRect.left : toggleRect.left + toggleRect.width - popoverRect.width
+      const top = vertical === 'top' ? toggleRect.top + toggleRect.height : toggleRect.top - popoverRect.height
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`
     } else {
       // center popover on screen
-      const popover_rect = this.getBoundingClientRect()
-      const top = window.innerHeight / 2 - popover_rect.height / 2
-      const left = window.innerWidth / 2 - popover_rect.width / 2
+      const popoverRect = this.getBoundingClientRect()
+      const top = window.innerHeight / 2 - popoverRect.height / 2
+      const left = window.innerWidth / 2 - popoverRect.width / 2
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`

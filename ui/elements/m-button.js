@@ -64,6 +64,10 @@ export default class MButton extends HTMLElement {
     disabled ? this.setAttribute('disabled', '') : this.removeAttribute('disabled')
   }
 
+  get checked () {
+    return this.classList.contains('checked')
+  }
+
   set checked (state) {
     if (state) {
       this.classList.add('checked')

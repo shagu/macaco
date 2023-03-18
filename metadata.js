@@ -3,74 +3,66 @@ const path = require('path')
 const jimp = require('jimp')
 const zlib = require('zlib')
 
-const data_file = path.join(core.data_directory, 'db', 'macaco-data.json.gz')
-const locales_file = path.join(core.data_directory, 'db', 'macaco-locales.json.gz')
+const dataFile = path.join(core.dataDirectory, 'db', 'macaco-data.json.gz')
+const localesFile = path.join(core.dataDirectory, 'db', 'macaco-locales.json.gz')
 
 const metadata = { }
 
-metadata.fetch_data = (force) => {
-  return new Promise(async (resolve, reject) => {
-    const notify = (status) => {
-      const current = core.utils.byte_units(status.current)
-      const maxsize = core.utils.byte_units(status.size)
-      const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
-      core.utils.popup('Macaco Card Data', caption, status.percent / 100)
-    }
+metadata.fetchData = async (force) => {
+  const notify = (status) => {
+    const current = core.utils.byteUnits(status.current)
+    const maxsize = core.utils.byteUnits(status.size)
+    const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
+    core.utils.popup('Macaco Card Data', caption, status.percent / 100)
+  }
 
-    if (!fs.existsSync(data_file) || force) {
-      console.log('Downloading', 'Macaco Card Data')
-      await core.fetcher.queue(
-        'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
-        data_file,
-        notify, force, 'macaco-locales'
-      )
-    }
-
-    resolve(true)
-  })
+  if (!fs.existsSync(dataFile) || force) {
+    console.log('Downloading', 'Macaco Card Data')
+    await core.fetcher.queue(
+      'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
+      dataFile,
+      notify, force, 'macaco-locales'
+    )
+  }
 }
 
-metadata.fetch_locales = (force) => {
-  return new Promise(async (resolve, reject) => {
-    const notify = (status) => {
-      const current = core.utils.byte_units(status.current)
-      const maxsize = core.utils.byte_units(status.size)
-      const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
-      core.utils.popup('Macaco Card Locales', caption, status.percent / 100)
-    }
+metadata.fetchLocales = async (force) => {
+  const notify = (status) => {
+    const current = core.utils.byteUnits(status.current)
+    const maxsize = core.utils.byteUnits(status.size)
+    const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
+    core.utils.popup('Macaco Card Locales', caption, status.percent / 100)
+  }
 
-    if (!fs.existsSync(locales_file) || force) {
-      console.log('Downloading', 'Macaco Card Locales')
-      await core.fetcher.queue(
-        'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
-        locales_file,
-        notify, force, 'macaco-locales'
-      )
-    }
-
-    resolve(true)
-  })
+  if (!fs.existsSync(localesFile) || force) {
+    console.log('Downloading', 'Macaco Card Locales')
+    await core.fetcher.queue(
+      'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
+      localesFile,
+      notify, force, 'macaco-locales'
+    )
+  }
 }
 
-metadata.setup_metadata = async (force) => {
-  if (metadata.prepare || (metadata.data && metadata.locales) && !force) {
+metadata.setupMetadata = async (force) => {
+  if (metadata.prepare || (metadata.data && metadata.locales && !force)) {
     // if already initialized or preparing return here
     return metadata.prepare
   } else {
     // if uninitialized return a new promise that takes care of setting up things
     metadata.prepare = new Promise(async (resolve, reject) => {
-      await Promise.all([metadata.fetch_data(force), metadata.fetch_locales(force)])
+      await Promise.all([metadata.fetchData(force), metadata.fetchLocales(force)])
 
       // load macaco-metadata
       core.utils.popup('Macaco Card Data', 'Reading File...', null)
-      let rawdata = fs.readFileSync(data_file)
+      let rawdata = fs.readFileSync(dataFile)
       rawdata = zlib.gunzipSync(rawdata)
       metadata.data = JSON.parse(rawdata)
       core.utils.popup('Macaco Card Data', 'Complete!', 1)
 
       // load macaco-metadata
       core.utils.popup('Macaco Card Locales', 'Reading File...', null)
-      let rawlocales = fs.readFileSync(locales_file)
+      let rawlocales = fs.readFileSync(localesFile)
       rawlocales = zlib.gunzipSync(rawlocales)
       metadata.locales = JSON.parse(rawlocales)
       core.utils.popup('Macaco Card Locales', 'Complete!', 1)
@@ -83,9 +75,9 @@ metadata.setup_metadata = async (force) => {
   }
 }
 
-metadata.update_card = async (card) => {
+metadata.updateCard = async (card) => {
   // make sure metadata database is initialized
-  await metadata.setup_metadata()
+  await metadata.setupMetadata()
 
   // flag as unknown
   card.unknown = true
@@ -106,15 +98,15 @@ metadata.update_card = async (card) => {
       const locale = metadata.locales[card.name][language]
 
       if (locale) {
-        const name_id = card.locales[language].name
-        const text_id = card.locales[language].text
-        const type_id = card.locales[language].type
-        const flavor_id = card.locales[language].flavor
+        const nameId = card.locales[language].name
+        const textId = card.locales[language].text
+        const typeId = card.locales[language].type
+        const flavorId = card.locales[language].flavor
 
-        card.locales[language].name = locale.name[name_id] || locale.name[0]
-        card.locales[language].text = locale.text[text_id] || locale.text[0]
-        card.locales[language].type = locale.type[type_id] || locale.type[0]
-        card.locales[language].flavor = locale.flavor[flavor_id] || locale.flavor[0]
+        card.locales[language].name = locale.name[nameId] || locale.name[0]
+        card.locales[language].text = locale.text[textId] || locale.text[0]
+        card.locales[language].type = locale.type[typeId] || locale.type[0]
+        card.locales[language].flavor = locale.flavor[flavorId] || locale.flavor[0]
       }
     }
 
@@ -128,17 +120,17 @@ metadata.update_card = async (card) => {
   }
 }
 
-metadata.get_image = async (card, preview) => {
+metadata.getImage = async (card, preview) => {
   const notify = (status) => {
     if (preview) return
-    const current = core.utils.byte_units(status.current)
-    const maxsize = core.utils.byte_units(status.size)
+    const current = core.utils.byteUnits(status.current)
+    const maxsize = core.utils.byteUnits(status.size)
     const caption = `${status.url}<br>${current} of ${maxsize} (${status.percent}%)`
     core.utils.popup(`Scryfall Download: ${card.set}:${card.number}`, caption, status.percent / 100)
   }
 
-  const image = path.join(core.data_directory, 'images', `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
-  const fallback = path.join(core.data_directory, 'images', `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
+  const image = path.join(core.dataDirectory, 'images', `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
+  const fallback = path.join(core.dataDirectory, 'images', `${preview ? 'preview' : 'full'}_[${card.set}.${card.number}.en${card.foil ? '.f' : ''}].jpg`)
 
   // fetch image
   if (!card.unknown && !fs.existsSync(image)) {
@@ -171,9 +163,9 @@ metadata.get_image = async (card, preview) => {
   if (card.foil === true && fs.existsSync(card.file)) {
     const image = await jimp.read(card.file)
 
-    const foil_dev = path.join(__dirname, 'foil.png')
-    const foil_prod = path.join(process.resourcesPath, 'foil.png')
-    let foil = await jimp.read(fs.existsSync(foil_dev) ? foil_dev : foil_prod)
+    const foilDev = path.join(__dirname, 'foil.png')
+    const foilProd = path.join(process.resourcesPath, 'foil.png')
+    let foil = await jimp.read(fs.existsSync(foilDev) ? foilDev : foilProd)
 
     foil = foil.resize(image.bitmap.width, image.bitmap.height)
 

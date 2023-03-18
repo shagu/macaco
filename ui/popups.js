@@ -7,11 +7,11 @@
 // <div id="popups"></div>
 //
 
-const popups = { ui_elements: [] }
+const popups = { boxes: [] }
 
 popups.create = (id) => {
   // return existing popup with id
-  for (const popup of popups.ui_elements) {
+  for (const popup of popups.boxes) {
     if (popup.id === id) return popup
   }
 
@@ -35,7 +35,7 @@ popups.create = (id) => {
   box.appendChild(progress)
 
   // add popup to array
-  popups.ui_elements.push({
+  popups.boxes.push({
     id,
     box,
     title,
@@ -44,7 +44,7 @@ popups.create = (id) => {
   })
 
   // return new popup
-  for (const popup of popups.ui_elements) {
+  for (const popup of popups.boxes) {
     if (popup.id === id) return popup
   }
 }
@@ -72,7 +72,7 @@ popups.show = (title, subtext, progress) => {
 }
 
 popups.cleanup = () => {
-  for (const popup of popups.ui_elements) {
+  for (const popup of popups.boxes) {
     if (popup.timeout < Date.now()) {
       popup.box.style = 'display: none'
     }
