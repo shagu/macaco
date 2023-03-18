@@ -94,8 +94,8 @@ const delver = {
     for (const row of result) {
       const card = {
         image: row.image,
-        foil: row.foil != 0,
-        language: row.language == '' || !language_map[row.language] ? language_map.English : language_map[row.language],
+        foil: row.foil !== 0,
+        language: row.language === '' || !language_map[row.language] ? language_map.English : language_map[row.language],
         set: row.edition,
         number: row.number,
         path: path.join(current_path, row.list.replaceAll('/', '-'))

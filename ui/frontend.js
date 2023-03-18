@@ -28,9 +28,9 @@ frontend.languages = {
 frontend.get_locale = (card, entry) => {
   let retval = ''
 
-  const lang_short = card.language
+  const langShort = card.language
   for (const [language, abbreviations] of Object.entries(frontend.languages)) {
-    if (abbreviations.includes(lang_short)) {
+    if (abbreviations.includes(langShort)) {
       retval = card.locales && card.locales[language] ? card.locales[language][entry] : false
       retval = retval || card.locales && card.locales.English[entry]
     }
@@ -41,8 +41,8 @@ frontend.get_locale = (card, entry) => {
 
 frontend.objcompare = (a, b, o) => {
   if (!a || !b) return false
-  if (!o) return a == b
-  for (const e of o) if (a[e] != b[e]) return false
+  if (!o) return a === b
+  for (const e of o) if (a[e] !== b[e]) return false
   return true
 }
 
@@ -123,9 +123,9 @@ frontend.get_color_icon = (folder) => {
   }
 
   const identity_str = identity.toString().toUpperCase()
-  if (identity.length == 1) {
+  if (identity.length === 1) {
     return identity_str
-  } else if (identity.length == 2) {
+  } else if (identity.length === 2) {
     for (const icon of icons) {
       if (identity_str.includes(icon.charAt(0)) && identity_str.includes(icon.charAt(1))) {
         return icon
@@ -180,13 +180,13 @@ frontend.reload_sidebar = () => {
 
   /* add folder buttons */
   for (const [folder, content] of Object.entries(frontend.db)) {
-    if (!config.show_empty && content.length == 0) continue
+    if (!config.show_empty && content.length === 0) continue
 
-    const caption = (folder == '.' ? 'Library' : folder)
+    const caption = (folder === '.' ? 'Library' : folder)
 
     const div_folder = document.createElement('div')
     div_folder.setAttribute('id', 'folder')
-    if (folder == frontend.path) {
+    if (folder === frontend.path) {
       div_folder.classList.add('active')
     }
     div_sidebar.appendChild(div_folder)
@@ -304,9 +304,9 @@ frontend.reload_statusbar = () => {
 frontend.is_selection = (card, compare) => {
   if (!compare) return false
 
-  if (config.combine == true && card.foil == compare.foil && card.number == compare.number && card.set == compare.set) {
+  if (config.combine === true && card.foil === compare.foil && card.number === compare.number && card.set === compare.set) {
     return true
-  } else if (config.combine == false && card.file == compare.file) {
+  } else if (config.combine === false && card.file === compare.file) {
     return true
   } else {
     return false
@@ -348,7 +348,7 @@ frontend.reload_view = () => {
   for (const card of frontend.view) {
     const id = `${card.set}:${card.number}:${card.foil ? 'f' : ''}`
 
-    if (config.combine == false || !frontend.duplicates[id]) {
+    if (config.combine === false || !frontend.duplicates[id]) {
       const mcard = document.createElement('m-card')
       mcard.combine = config.combine
       mcard.data = card

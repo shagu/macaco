@@ -27,14 +27,14 @@ filters.tags = {
       } else if (entry.includes('-')) {
         if (card.cmc <= entry.replaceAll('-', '')) return true
       } else {
-        if (card.cmc == entry) return true
+        if (card.cmc === entry) return true
       }
     }
 
     return false
   },
   rarity: (card, values) => {
-    for (const entry of values) { if (card.rarity == entry) return true }
+    for (const entry of values) { if (card.rarity === entry) return true }
     return false
   },
   type: (card, values) => {
@@ -49,7 +49,7 @@ filters.tags = {
     return false
   },
   set: (card, values) => {
-    for (const entry of values) { if (card.set == entry.toLowerCase()) return true }
+    for (const entry of values) { if (card.set === entry.toLowerCase()) return true }
     return false
   },
   color: (card, values) => {
@@ -58,15 +58,15 @@ filters.tags = {
     let mismatch = false
 
     for (const entry of values) {
-      if (entry == 'm') {
+      if (entry === 'm') {
         if (card.color && card.color.length > 1) {
           multicolor_enforced = true
           atleast_one = true
         } else {
           return false
         }
-      } else if (entry == 'c') {
-        if (!card.color || card.color.length == 0) atleast_one = true
+      } else if (entry === 'c') {
+        if (!card.color || card.color.length === 0) atleast_one = true
       } else {
         if (card.color && card.color.includes(entry.toUpperCase())) {
           atleast_one = true
@@ -91,23 +91,23 @@ filters.tags = {
 // generic sort function
 filters.sort = (attribute = 'name', order = 1) => {
   return (a, b) => {
-    if (attribute == 'rarity') {
+    if (attribute === 'rarity') {
       // special sorting for card rarity
       const a_val = filters.rarity.indexOf(a.rarity) + 1
       const b_val = filters.rarity.indexOf(b.rarity) + 1
 
-      if (a_val != b_val) {
+      if (a_val !== b_val) {
         return a_val < b_val ? order : -1 * order
       }
     } else {
       // generic sorting algorithm
-      if ((a[attribute] || 0) != (b[attribute] || 0)) {
+      if ((a[attribute] || 0) !== (b[attribute] || 0)) {
         return a[attribute] < b[attribute] ? order : -1 * order
       }
     }
 
     // sort by name as fallback on identical values
-    if (a.name && b.name && a.name != b.name) {
+    if (a.name && b.name && a.name !== b.name) {
       return a.name < b.name ? order : -1 * order
     }
 
@@ -118,7 +118,7 @@ filters.sort = (attribute = 'name', order = 1) => {
 // create search json object from given string
 filters.get_json = (str) => {
   // return cache if still valid
-  if (filters.cache.str == str && filters.cache.object) {
+  if (filters.cache.str === str && filters.cache.object) {
     return filters.cache.object
   }
 
@@ -159,7 +159,7 @@ filters.get_string = (json) => {
   let string = ''
 
   for (const [tag, elements] of Object.entries(json)) {
-    if (tag != 'search' && elements.length > 0) string += `${tag}=${elements.toString()} `
+    if (tag !== 'search' && elements.length > 0) string += `${tag}=${elements.toString()} `
   }
 
   string += json.search
@@ -205,7 +205,7 @@ filters.create_view = (db) => {
   const result = db.filter(card => filters.check(card, query))
 
   // sort view
-  const order = query.order == 'asc' ? -1 : 1
+  const order = query.order === 'asc' ? -1 : 1
   result.sort(filters.sort(query.sort, order))
 
   return result
@@ -276,7 +276,7 @@ filters.ui_init = () => {
 
   // add keyup handler to search bar
   filters.dom.search.addEventListener('keyup', (e) => {
-    if (e.target.value == e.target.last_value) return
+    if (e.target.value === e.target.last_value) return
     e.target.last_value = e.target.value
     filters.ui_reload()
   })
@@ -287,7 +287,7 @@ filters.ui_init = () => {
       button.addEventListener('click', (e) => {
         const query = filters.get_json(filters.dom.search.value)
 
-        if (keyword == 'sort' || keyword == 'order') {
+        if (keyword === 'sort' || keyword === 'order') {
           // single-select buttons
           if (query[keyword] && query[keyword].includes(attribute)) {
             query[keyword] = []

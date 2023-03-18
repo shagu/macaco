@@ -102,7 +102,7 @@ const collection = {
         // parse files
         const parse = file.match(/(.*?) ?\[(.*)\]/i)
         if (parse && parse[2]) {
-          let name = parse[1] == '' ? 'Unknown' : parse[1]
+          let name = parse[1] === '' ? 'Unknown' : parse[1]
           const meta = parse[2].split('.')
 
           // don't proceed on invalid files'

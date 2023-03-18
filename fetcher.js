@@ -30,7 +30,7 @@ fetcher.get = (url, path, notify, force, original_url) => {
       fs.mkdirSync(destfolder, { recursive: true })
 
       // skip download of existing file with same size
-      if (!force && fs.existsSync(path) && size == fs.statSync(path).size) {
+      if (!force && fs.existsSync(path) && size === fs.statSync(path).size) {
         console.log('Skipping (same size)', path)
         resolve()
         return

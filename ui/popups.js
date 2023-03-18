@@ -12,7 +12,7 @@ const popups = { ui_elements: [] }
 popups.create = (id) => {
   // return existing popup with id
   for (const popup of popups.ui_elements) {
-    if (popup.id == id) return popup
+    if (popup.id === id) return popup
   }
 
   // build new popup element
@@ -45,7 +45,7 @@ popups.create = (id) => {
 
   // return new popup
   for (const popup of popups.ui_elements) {
-    if (popup.id == id) return popup
+    if (popup.id === id) return popup
   }
 }
 

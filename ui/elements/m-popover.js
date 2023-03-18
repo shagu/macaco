@@ -56,7 +56,7 @@ export default class MPopover extends HTMLElement {
   }
 
   toggle (button) {
-    if (this.style.display == 'block') {
+    if (this.style.display === 'block') {
       this.visible(false)
       return
     }
@@ -77,8 +77,8 @@ export default class MPopover extends HTMLElement {
       const horizontal = (toggle_rect.left + toggle_rect.right) / 2 < window.innerWidth / 2 ? 'left' : 'right'
       const vertical = (toggle_rect.top + toggle_rect.bottom) / 2 < window.innerHeight / 2 ? 'top' : 'bottom'
 
-      const left = horizontal == 'left' ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
-      const top = vertical == 'top' ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
+      const left = horizontal === 'left' ? toggle_rect.left : toggle_rect.left + toggle_rect.width - popover_rect.width
+      const top = vertical === 'top' ? toggle_rect.top + toggle_rect.height : toggle_rect.top - popover_rect.height
 
       this.style.top = `${top}px`
       this.style.left = `${left}px`

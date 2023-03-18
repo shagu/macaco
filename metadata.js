@@ -168,7 +168,7 @@ metadata.get_image = async (card, preview) => {
   }
 
   // make foil
-  if (card.foil == true && fs.existsSync(card.file)) {
+  if (card.foil === true && fs.existsSync(card.file)) {
     const image = await jimp.read(card.file)
 
     const foil_dev = path.join(__dirname, 'foil.png')
