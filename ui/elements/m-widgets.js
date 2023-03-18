@@ -8,5 +8,6 @@ import './m-popover.js'
 
 // load site elements
 import './m-card.js'
+import './m-folder-details.js'
 
 export default {}

@@ -49,30 +49,33 @@ frontend.objcompare = (a, b, o) => {
 frontend.getFolderDetails = (content, stats) => {
   stats.types = stats.types || { /* creature: 0, enchantment: 0, .. */ }
   stats.price = stats.price || { num: 0, sum: 0, min: 0, max: 0, avg: 0 }
-  stats.mana = stats.mana || { num: 0, sum: 0, min: 0, max: 0, avg: 0 }
+  stats.mana = stats.mana || { num: 0, sum: 0, min: 0, max: 0, avg: 0, values: {} }
 
   for (const card of content) {
     if (card.types) {
       for (const type of card.types) {
         stats.types[type] = stats.types[type] || 0
-        stats.types[type] = stats.types[type]++
+        stats.types[type]++
       }
     }
 
     if (card.price) {
       stats.price.num++
       stats.price.sum += card.price
-      stats.price.min = Math.min(stats.price.min, card.price)
+      stats.price.min = stats.price.min === 0 ? card.price : Math.min(stats.price.min, card.price)
       stats.price.max = Math.max(stats.price.max, card.price)
-      stats.price.avg = (stats.price.sum / stats.price.num).toFixed(2)
+      stats.price.avg = stats.price.sum / stats.price.num
     }
 
     if (card.cmc && card.cmc > 0) {
       stats.mana.num++
       stats.mana.sum += card.cmc
-      stats.mana.min = Math.min(stats.mana.min, card.cmc)
+      stats.mana.min = stats.price.min === 0 ? card.cmc : Math.min(stats.mana.min, card.cmc)
       stats.mana.max = Math.max(stats.mana.max, card.cmc)
-      stats.mana.avg = (stats.mana.sum / stats.mana.num).toFixed(2)
+      stats.mana.avg = stats.mana.sum / stats.mana.num
+
+      stats.mana.values[card.cmc] = stats.mana.values[card.cmc] || 0
+      stats.mana.values[card.cmc]++
     }
 
     stats.cards = stats.cards || 0
@@ -81,20 +84,27 @@ frontend.getFolderDetails = (content, stats) => {
 }
 
 frontend.getCollectionDetails = () => {
-  const details = { collection: {}, current: {}, view: {} }
+  const details = { collection: { }, current: { }, view: { } }
 
   // scan library
-  for (const [, content] of Object.entries(frontend.db)) {
+  for (const [folder, content] of Object.entries(frontend.db)) {
     frontend.getFolderDetails(content, details.collection)
+    details.collection.title = (folder === '.' ? 'Library' : folder)
+    details.collection.icon = frontend.getColorIcon(folder)
+
     details.collection.lists = details.collection.lists || 0
     if (content.length > 0) details.collection.lists++
   }
 
   // scan current folder
   frontend.getFolderDetails(frontend.db[frontend.path], details.current)
+  details.current.title = (frontend.path === '.' ? 'Library' : frontend.path)
+  details.current.icon = frontend.getColorIcon(frontend.db[frontend.path])
 
   // scan current view
   frontend.getFolderDetails(frontend.view, details.view)
+  details.view.title = 'Current View'
+  details.view.icon = frontend.getColorIcon(frontend.view)
 
   return details
 }
@@ -294,11 +304,16 @@ frontend.reloadSidebar = () => {
   combineSameContainer.appendChild(combineSameInput)
 }
 
-frontend.reloadStatusbar = () => {
-  const details = frontend.getCollectionDetails()
+frontend.reloadDetails = () => {
   const divFooter = document.getElementById('footer')
+  const divDetails = document.getElementById('folder-details')
 
-  divFooter.innerHTML = `Collection with <b>${details.collection.cards}</b> cards in <b>${details.collection.lists}</b> folders worth <b>${details.collection.price.sum.toFixed(2)}€</b>.`
+  const details = frontend.details
+  const collection = details.collection
+  const current = details.current
+
+  divDetails.setDetails(current)
+  divFooter.innerHTML = `Collection with <b>${collection.cards}</b> cards in <b>${collection.lists}</b> folders worth <b>${collection.price.sum.toFixed(2)}€</b>.`
 }
 
 frontend.isSelection = (card, compare) => {
@@ -392,7 +407,8 @@ frontend.reloadPreview = () => {
 frontend.uiLock = (state) => {
   const uiLock = [
     'import-button', 'menu-filter', 'card-search', 'button-color-w', 'button-color-u',
-    'button-color-b', 'button-color-r', 'button-color-g', 'button-color-c', 'button-color-m'
+    'button-color-b', 'button-color-r', 'button-color-g', 'button-color-c', 'button-color-m',
+    'menu-folder-details'
   ]
 
   for (const element of uiLock) {
@@ -418,7 +434,7 @@ frontend.reload = () => {
 
   // reload ui panels
   frontend.reloadSidebar()
-  frontend.reloadStatusbar()
+  frontend.reloadDetails()
   frontend.reloadView()
   frontend.reloadPreview()
 }
