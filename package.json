@@ -7,7 +7,8 @@
     "postinstall": "install-app-deps",
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --publish always"
+    "dist": "electron-builder --publish always",
+    "test": "standard; DEV=1 npm start"
   },
   "author": "Eric Mauser",
   "license": "MIT",
