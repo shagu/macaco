@@ -37,6 +37,7 @@ export default class MGrid extends HTMLElement {
     } else {
       this.setAttribute('horizontal', index)
       this.style.gridTemplateColumns = `${'auto '.repeat(position - 1)}1fr`
+      this.style.gridTemplateRows = '1fr'
       this.style.gridAutoFlow = 'column'
     }
   }
@@ -52,6 +53,7 @@ export default class MGrid extends HTMLElement {
     } else {
       this.setAttribute('vertical', index)
       this.style.gridTemplateRows = `${'auto '.repeat(position - 1)}1fr`
+      this.style.gridTemplateColumns = '1fr'
       this.style.gridAutoFlow = 'row'
     }
   }
