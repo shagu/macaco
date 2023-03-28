@@ -207,7 +207,7 @@ filters.createView = (db) => {
   const result = db.filter(card => filters.check(card, query))
 
   // sort view
-  const order = query.order === 'asc' ? -1 : 1
+  const order = query.order && query.order.includes('asc') ? -1 : 1
   result.sort(filters.sort(query.sort, order))
 
   return result
