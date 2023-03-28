@@ -89,7 +89,9 @@ filters.tags = {
 }
 
 // generic sort function
-filters.sort = (attribute = 'name', order = 1) => {
+filters.sort = (attributes, order = 1) => {
+  const attribute = attributes && attributes[0] || 'name'
+
   return (a, b) => {
     if (attribute === 'rarity') {
       // special sorting for card rarity
