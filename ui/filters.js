@@ -23,11 +23,11 @@ filters.tags = {
   cmc: (card, values) => {
     for (const entry of values) {
       if (entry.includes('+')) {
-        if (card.cmc >= entry.replaceAll('+', '')) return true
+        if (card.cmc >= parseInt(entry.replaceAll('+', ''))) return true
       } else if (entry.includes('-')) {
-        if (card.cmc <= entry.replaceAll('-', '')) return true
+        if (card.cmc <= parseInt(entry.replaceAll('-', ''))) return true
       } else {
-        if (card.cmc === entry) return true
+        if (card.cmc === parseInt(entry)) return true
       }
     }
 
