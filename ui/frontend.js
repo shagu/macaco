@@ -2,6 +2,7 @@ const frontend = { path: '.', db: {}, dom: {} }
 
 const config = {
   combine: true,
+  combine_name: false,
   showEmpty: true
 }
 
@@ -360,8 +361,26 @@ frontend.reloadView = () => {
 
   if (!frontend.view) return
 
+  const duplicates = {}
+
+  // build duplicate arrays
   for (const card of frontend.view) {
-    const id = `${card.set}:${card.number}:${card.foil ? 'f' : ''}`
+    let id = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
+    if (config.combine_name === true) { id = `${card.name}` }
+    duplicates[id] = duplicates[id] || []
+    duplicates[id].push(card)
+  }
+
+  // set all count values
+  for (const [, cards] of Object.entries(duplicates)) {
+    for (const card of cards) {
+      card.count = cards.length
+    }
+  }
+
+  for (const card of frontend.view) {
+    let id = `[${card.set}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
+    if (config.combine_name === true) { id = `${card.name}` }
 
     if (config.combine === false || !frontend.duplicates[id]) {
       const mcard = document.createElement('m-card')
