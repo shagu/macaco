@@ -1,4 +1,4 @@
-<img align="left" width="80" height="80" src="icon.png" alt="icon">
+<img align="left" width="80" height="80" src="./icon.png" alt="icon">
 
 # macaco
 ![license](https://img.shields.io/github/license/shagu/macaco)

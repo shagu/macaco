@@ -2,7 +2,7 @@
   "name": "macaco",
   "version": "0.0.16",
   "description": "A Magic Card Collection Software",
-  "main": "index.js",
+  "main": "src/main/main.js",
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "electron .",
@@ -13,7 +13,7 @@
   "author": "Eric Mauser",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^23.0.0",
+    "electron": "^23.3.11",
     "electron-builder": "^23.6.0",
     "electron-rebuild": "^3.2.7",
     "standard": "^17.0.0"
@@ -24,7 +24,16 @@
     "jszip": "^3.10.1"
   },
   "standard": {
-    "globals": [ "core", "frontend", "filters", "popups", "customElements", "HTMLElement", "IntersectionObserver", "CSSStyleSheet" ]
+    "globals": [
+      "core",
+      "frontend",
+      "filters",
+      "popups",
+      "customElements",
+      "HTMLElement",
+      "IntersectionObserver",
+      "CSSStyleSheet"
+    ]
   },
   "build": {
     "appId": "shagu.macaco",
