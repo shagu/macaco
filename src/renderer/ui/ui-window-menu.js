@@ -19,8 +19,6 @@ export default class UIWindowMenu extends HTMLElement {
       top: 0;
       left: 0;
 
-      background: rgba(100,255,100,.25);
-
       width: 100vw;
       height: 100vh;
 
