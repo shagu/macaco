@@ -5,7 +5,6 @@ export default class UIWindowContent extends HTMLElement {
 
   static template = html`  
     <div id="cards"></div>
-    <ui-window-content-overlay/>
   `
 
   static style = css`
@@ -14,7 +13,6 @@ export default class UIWindowContent extends HTMLElement {
       min-height: 100%;
     }
   `
-
 
   dom = {}
   groups = {}

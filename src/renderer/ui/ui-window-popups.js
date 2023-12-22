@@ -9,10 +9,10 @@ export default class UIWindowPopups extends HTMLElement {
   static style = css`
     :host {
       position: fixed;
-      bottom: 16px;
+      bottom: 24px;
       left: 50%;
       transform: translate(-50%, 0);
-      min-width: 200px;
+      width: 200px;
 
       pointer-events: none;
       z-index: 128;
@@ -21,6 +21,8 @@ export default class UIWindowPopups extends HTMLElement {
     #popup {
       border: 1px rgba(0,0,0,.95);
       border-radius: 8px;
+
+      color: rgba(255,255,255,1);
 
       background: rgba(0,0,0,.85);
       box-sizing: border-box;

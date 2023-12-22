@@ -1,6 +1,6 @@
 import { html, css } from '../widgets/m-template.js'
 
-export default class UIWindowContentOverlay extends HTMLElement {
+export default class UIWindowOverlay extends HTMLElement {
   static shadow = null
 
   static template = html`
@@ -13,7 +13,7 @@ export default class UIWindowContentOverlay extends HTMLElement {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 128;
+      z-index: 32;
 
       background: black;
       box-shadow: 0 0 16px 16px black;
@@ -24,6 +24,10 @@ export default class UIWindowContentOverlay extends HTMLElement {
       opacity: 0;
 
       transition: 500ms ease;
+
+      max-height: 60%;
+      max-width: 60%;
+      aspect-ratio: 2.5/3.5;
     }
 
     :host(.visible) {
@@ -32,8 +36,7 @@ export default class UIWindowContentOverlay extends HTMLElement {
     }
 
     #image {
-      width: 512px;
-      aspect-ratio: 2.5/3.5;
+      width: 100%;
     }
   `
 
@@ -60,10 +63,10 @@ export default class UIWindowContentOverlay extends HTMLElement {
       } else {
         this.classList = ''
       }
-      
+
       macaco.events.invoke("update-overlay-image", path)
     })
   }
 }
 
-customElements.define('ui-window-content-overlay', UIWindowContentOverlay)
+customElements.define('ui-window-overlay', UIWindowOverlay)
