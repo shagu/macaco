@@ -123,9 +123,11 @@ class Filesystem {
         percent: percent,
       }
 
-      if (queue && queue.tasks && queue.tasks.length > 1) {
+      if (fallback)
+        output.title = `${output.title} (english)`
+
+      if (queue && queue.tasks && queue.tasks.length > 1)
         output.title = `[${queue.tasks.length}] ${output.title}`
-      }
 
       if (status === -1) {
         output.text = `${output.text} [ERR]`
@@ -136,13 +138,22 @@ class Filesystem {
       shared.window.webContents.send('set-popup', "artwork-download", output.title, output.text, output.percent)
     }
 
+    const language = fallback ? 'en' : card.language
+    const size = preview ? 'small' : 'border_crop'
+    const url = `https://api.scryfall.com/cards/${card.edition}/${card.number}/${language}?format=image&version=${size}`
+    console.log(`fetch ${fallback ? 'fallback' : 'normal'} of ${card.number}\n  ${url}`)
+
     await downloader.queue(
-      `https://api.scryfall.com/cards/${card.edition}/${card.number}/${card.language}?format=image&version=${preview ? 'small' : 'border_crop'}`,
-      file, download_notifier, false, preview ? 'scryfall_preview' : 'scryfall_image'
+      url, file, download_notifier, false, preview ? 'scryfall_preview' : 'scryfall_image'
     )
 
-    if (fs.existsSync(file)) return [ file, fallback ]
-    if (!fallback) return await this.get_artwork(card, preview, true)
+    if (fs.existsSync(file))
+      return [ file, fallback ]
+
+    if (!fallback) {
+      const [ fallback_file, fallback_state ] = await this.get_artwork(card, preview, true)
+      return [ fallback_file, fallback_state ]
+    }
 
     return [ await this.get_backside(), fallback ]
   }
