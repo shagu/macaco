@@ -7,32 +7,27 @@ const shared = require('./shared.js')
 const downloader = require('./downloader.js')
 
 class Metadata {
-  async fetch() {
-    const fetch_data = downloader.queue(
-      'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
-      '/tmp/mtg-date.json.gz',
-      undefined, true, 'metadata'
-    )
-  
-    const fetch_locales = downloader.queue(
-      'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
-      '/tmp/mtg-locales.json.gz',
-      undefined, true, 'metadata'
-    )
-  
-    await Promise.all([fetch_locales, fetch_data])
+  runner = false
 
-    this.reload()
-  }
-
-  reload() {
-    if(!shared.userdir) return false
-
+  async reload() {
     const data = path.join(shared.userdir, 'db', 'macaco-data.json.gz')
     const locales = path.join(shared.userdir, 'db', 'macaco-locales.json.gz')
 
+    // fetch metadata if not existing
     if(!fs.existsSync(data) || !fs.existsSync(locales)) {
-      this.fetch()
+      const fetch_data = downloader.queue(
+        'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
+        path.join(shared.userdir, 'db', 'macaco-data.json.gz'),
+        undefined, true, 'metadata'
+      )
+
+      const fetch_locales = downloader.queue(
+        'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
+        path.join(shared.userdir, 'db', 'macaco-locales.json.gz'),
+        undefined, true, 'metadata'
+      )
+
+      await Promise.all([fetch_locales, fetch_data])
     }
     
     const rawdata = fs.readFileSync(data)
@@ -40,20 +35,17 @@ class Metadata {
 
     const rawlocales = fs.readFileSync(locales)
     this.locales = JSON.parse(zlib.gunzipSync(rawlocales))
-
-    return true
   }
 
-  initialized() {
+  async initialized() {
     if(!this.data || !this.locales) {
-      if(!this.reload()) return false
+      if(!this.runner) this.runner = this.reload()
+      await this.runner
     }
-
-    return true
   }
 
-  edition(edition) {
-    if (!this.initialized()) return []
+  async edition(edition) {
+    await this.initialized()
 
     if (!this.data[edition.toUpperCase()]) return []
 
@@ -65,8 +57,8 @@ class Metadata {
     return numbers
   }
 
-  query(card) {
-    if (!this.initialized()) return {}
+  async query(card) {
+    await this.initialized()
 
     const edition = card.edition ? card.edition.toUpperCase() : 'Unknown'
     const number = card.number ? card.number.toString().toUpperCase() : 'Unknown'
