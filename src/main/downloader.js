@@ -34,6 +34,7 @@ class Downloader {
           await this.fetch(response.headers.location, file, notify, force, queue, (originalUrl || url))
           resolve()
         } else if (response.statusCode !== 200) {
+          notify(-1, -1, -1, file, url, url, queue)
           resolve()
         } else {
           const size = parseInt(response.headers['content-length'], 10)
