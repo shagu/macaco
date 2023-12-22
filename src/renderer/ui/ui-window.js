@@ -4,27 +4,17 @@ export default class UIWindow extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <div id="header">
-      <ui-window-header/>
-    </div>
+    <!-- Layout -->
+    <ui-window-header id="header"></ui-window-header>
+    <ui-window-library id="library"></ui-window-library>
+    <ui-window-content id="content"></ui-window-content>
+    <ui-window-sidebar id="sidebar"></ui-window-sidebar>
+    <ui-window-footer id="footer"></ui-window-footer>
 
-    <div id="library">
-      <ui-window-library/>
-    </div>
-
-    <div id="content">
-      <ui-window-content/>
-    </div>
-
-    <div id="sidebar">
-      <ui-window-sidebar/>
-    </div>
-
-    <div id="footer">
-      <ui-window-footer/>
-    </div>
-
-    <ui-window-popups/>
+    <!-- Overlays -->
+    <ui-window-menu></ui-window-menu>
+    <ui-window-overlay></ui-window-overlay>
+    <ui-window-popups></ui-window-popups>
   `
 
   static style = css`
