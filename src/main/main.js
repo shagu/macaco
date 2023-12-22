@@ -97,7 +97,7 @@ electron.app.whenReady().then(async () => {
     const collection = filesystem.find_cards(folder)
     for(const [path, cards] of Object.entries(collection)) {
       for(const card of cards) {
-        card.metadata = metadata.query(card)
+        card.metadata = await metadata.query(card)
       }
     }
 
@@ -119,7 +119,7 @@ electron.app.whenReady().then(async () => {
 
     // query data and send preview update event
     const qcard = structuredClone(card)
-    card.metadata = metadata.query(card)
+    card.metadata = await metadata.query(card)
     card.preview = await filesystem.get_image(card, true)
 
     window.webContents.send('update-card-preview', card, qcard)
@@ -148,11 +148,10 @@ electron.app.whenReady().then(async () => {
 
     // cheatcode to download all card images of a set
     if (card.number === '*') {
-      const qcard = structuredClone(card)
-
-      for(const number of metadata.edition(qcard.edition)) {
+      for(const number of await metadata.edition(card.edition)) {
+        const qcard = structuredClone(card)
         qcard.number = number
-        filesystem.get_image(qcard)
+        filesystem.get_artwork(qcard)
       }
 
       return
@@ -166,7 +165,7 @@ electron.app.whenReady().then(async () => {
     window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 0)
 
     /* get best possible image file path */
-    card.metadata = metadata.query(card)
+    card.metadata = await metadata.query(card)
     window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 25)
     const image = await filesystem.get_image(card)
     window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 75)
