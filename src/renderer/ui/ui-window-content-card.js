@@ -87,8 +87,90 @@ export default class UIWindowContentCard extends HTMLElement {
     }
   `
 
+  static click (ev) {
+    // decide to clear previous selection
+    if (!ev.ctrlKey) {
+      macaco.collection.selection = []
+    }
+
+    // add current cards to selection
+    for (const card of this.cards) {
+      if (macaco.collection.selection.includes(card)) {
+        macaco.collection.selection.splice(macaco.collection.selection.indexOf(card), 1)
+      } else {
+        macaco.collection.selection.push(card)
+      }
+    }
+
+    // trigger ui collection-selection updates
+    macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+    ev.stopPropagation()
+  }
+
   static dragstart (ev) {
-    ev.dataTransfer.setData('text/plain', JSON.stringify(ev.target.data))
+    // check if current object is a selected card
+    let selected = false
+    for (const card of this.cards) {
+      if (macaco.collection.selection.includes(card)) {
+        selected = true
+      }
+    }
+
+    // decide to clear previous selection
+    if (!selected && !ev.ctrlKey) {
+      macaco.collection.selection = []
+    }
+
+    // add current cards to selection
+    for (const card of this.cards) {
+      if (!macaco.collection.selection.includes(card)) {
+        macaco.collection.selection.push(card)
+      }
+    }
+
+    // trigger ui collection-selection updates
+    macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+
+    // set the current selection to the object
+    const selection = JSON.stringify(macaco.collection.selection)
+    ev.dataTransfer.setData('text/plain', selection)
+
+    // set drag image
+    const dragger = document.createElement('div')
+    document.body.appendChild(dragger)
+
+    dragger.setAttribute('id', 'dragger')
+    dragger.style = `
+      position: absolute;
+      height: 0px;
+      width: 0px;
+      top: -1500px;
+      background: #0f0;
+      clear: both;
+    `
+
+    let spacer = 0
+    let count = 0
+    for (const card of macaco.collection.selection) {
+      if ( card.fsurl && count <= 10 ) {
+        const image = document.createElement('img')
+        dragger.appendChild(image)
+
+        image.src = card.fsurl
+        image.style = `
+          position: absolute;
+          margin: ${spacer}px 0px;
+          width: 96px;
+          height: 132px;
+        `
+
+        spacer += 10
+        count += 1
+      }
+    }
+
+    setTimeout(() => { document.body.removeChild(dragger) }, 1)
+    ev.dataTransfer.setDragImage(dragger, -10, -10)
   }
 
   state (state) {
@@ -107,6 +189,12 @@ export default class UIWindowContentCard extends HTMLElement {
     // abort here on missing card data
     if (!this.cards || !this.cards[0]) return
 
+    // set basics
+    this.setAttribute('draggable', true)
+    this.ondragstart = UIWindowContentCard.dragstart
+    this.onclick = UIWindowContentCard.click
+
+    // attach meta information
     const card = this.cards[0]
     const amount = this.cards.length
 
@@ -159,26 +247,8 @@ export default class UIWindowContentCard extends HTMLElement {
 
     this.shadow.appendChild(price)
 
-    this.setAttribute('draggable', true)
+    // make it visible
     this.style.opacity = 1
-
-    this.ondragstart = UIWindowContentCard.dragstart
-    this.onclick = (ev) => {
-      if (!ev.ctrlKey) {
-        macaco.collection.selection = []
-      }
-
-      for (const card of this.cards) {
-        if (macaco.collection.selection.includes(card)) {
-          macaco.collection.selection.splice(macaco.collection.selection.indexOf(card), 1)
-        } else {
-          macaco.collection.selection.push(card)
-        }
-      }
-
-      macaco.events.invoke('update-collection-selection', macaco.collection.selection)
-      ev.stopPropagation()
-    }
   }
 
   constructor () {
