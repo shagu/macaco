@@ -3,7 +3,7 @@ import { html, css } from '../widgets/m-template.js'
 export default class UIWindowContent extends HTMLElement {
   static shadow = null
 
-  static template = html`  
+  static template = html`
     <div id="cards"></div>
   `
 
@@ -27,6 +27,17 @@ export default class UIWindowContent extends HTMLElement {
     for (const e of this.shadow.querySelectorAll('*')) {
       if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.ctrlKey && event.code === 'KeyA') {
+        macaco.collection.selection = []
+        macaco.collection.view.forEach((card) => macaco.collection.selection.push(card))
+        macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+      } else if (event.code === 'Escape') {
+        macaco.collection.selection = []
+        macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+      }
+    })
 
     this.dom.cards.onclick = (ev) => {
       macaco.collection.selection = []

@@ -15,18 +15,16 @@ export default class UIWindowOverlay extends HTMLElement {
       transform: translate(-50%, -50%);
       z-index: 32;
 
-      background: black;
-      box-shadow: 0 0 16px 16px black;
-      border-radius: 8px;
+      background: var(--window-light);
+      border: 1px var(--border-normal) solid;
+      padding: 4px;
 
       display: block;
       visibility: hidden;
       opacity: 0;
 
-      transition: 500ms ease;
-
-      max-height: 60%;
-      max-width: 60%;
+      max-height: 75%;
+      max-width: 75%;
       aspect-ratio: 2.5/3.5;
     }
 

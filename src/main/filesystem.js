@@ -59,6 +59,28 @@ class Filesystem {
     return list
   }
 
+  get_filename(card) {
+    let suffix = `${card.edition}.${card.number}.${card.language}`
+    suffix = card.foil ? `${suffix}.f` : suffix
+
+    let count = 1
+    let filename = `[${suffix}](${count}).jpg`
+
+    while (fs.existsSync(path.join(shared.collection_path, card.folder, filename))) {
+      /* keep current filename if existing and matching */
+      if(card.fsurl && card.fsurl == path.join(shared.collection_path, card.folder, filename)) break
+
+      /* try next available filename */
+      filename = `[${suffix}](${count}).jpg`
+      count++
+    }
+
+    // generate new fsurl filename
+    const fsurl = path.join(shared.collection_path, card.folder, filename)
+
+    return [ filename, fsurl ]
+  }
+
   async get_backside() {
     const backgroundDev = path.join(__dirname, '..', '..', 'assets', 'cards', 'background.jpg')
     const backgroundProd = path.join(process.resourcesPath, '..', '..', 'assets', 'cards', 'foil.jpg')
@@ -151,6 +173,7 @@ class Filesystem {
       return [ file, fallback ]
 
     if (!fallback) {
+      console.log("try fallback")
       const [ fallback_file, fallback_state ] = await this.get_artwork(card, preview, true)
       return [ fallback_file, fallback_state ]
     }

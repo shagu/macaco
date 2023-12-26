@@ -39,7 +39,7 @@ export default class UIWindowLibraryFolder extends HTMLElement {
     }
 
     #folder.drag {
-      background: var(--color-hover);
+      background: var(--color-accent);
       border: 1px var(--color-accent) solid;
     }
 
@@ -93,8 +93,35 @@ export default class UIWindowLibraryFolder extends HTMLElement {
     }
 
     this.dom.folder.onclick = (ev) => {
+      // set view to this path
       macaco.events.invoke("set-collection-folder", this.path)
       ev.stopPropagation()
+    }
+
+    this.dom.folder.ondragover = (ev) => {
+      // required to all drops on this element
+      ev.preventDefault()
+    }
+
+    this.dom.folder.ondragenter = (ev) => {
+      // set drag highlight
+      ev.preventDefault()
+      ev.target.classList.add('drag')
+    }
+
+    this.dom.folder.ondragleave = (ev) => {
+      // remove drag highlight
+      ev.preventDefault()
+      ev.target.classList.remove('drag')
+    }
+
+    this.dom.folder.ondrop = (ev) => {
+      // remove drag highlight
+      ev.preventDefault()
+      ev.target.classList.remove('drag')
+
+      // merge all cards into this path
+      macaco.ipc.invoke('set-card-folder', macaco.collection.selection, this.path)
     }
   }
 

@@ -142,6 +142,38 @@ electron.app.whenReady().then(async () => {
     }
   }
 
+  electron.ipcMain.handle('set-card-folder', async (event, card, folder, ...args) => {
+    let cardlist = []
+    if(Array.isArray(card)) {
+      cardlist = card
+    } else {
+      cardlist.push(card)
+    }
+
+    // move all files where required
+    for (const card of cardlist) {
+      card.folder = folder
+      const [filename, fsurl] = filesystem.get_filename(card)
+      if (fsurl !== card.fsurl) {
+        if (fs.existsSync(card.fsurl)) {
+          fs.renameSync(card.fsurl, fsurl)
+        }
+      }
+    }
+
+    // reload collection from filesystem
+    shared.collection = filesystem.find_cards(shared.collection_path)
+    for(const [path, cards] of Object.entries(shared.collection)) {
+      for(const card of cards) {
+        card.metadata = await metadata.query(card)
+      }
+    }
+
+    // notify frontend
+    window.webContents.send('update-collection', shared.collection_path, shared.collection)
+
+  })
+
   electron.ipcMain.handle('add-update-card', async (event, card, ...args) => {
     /* skip empty or invalid card */
     if (!card || !card.edition || !card.number || !card.language) return
@@ -173,20 +205,7 @@ electron.app.whenReady().then(async () => {
     updatePreview(event, structuredClone(card))
 
     /* detect best filename */
-    let count = 1
-    let filename = `[${suffix}](${count}).jpg`
-
-    while (fs.existsSync(path.join(shared.collection_path, card.folder, filename))) {
-      /* keep current filename if existing and matching */
-      if(card.fsurl && card.fsurl == path.join(shared.collection_path, card.folder, filename)) break
-
-      /* try next available filename */
-      filename = `[${suffix}](${count}).jpg`
-      count++
-    }
-
-    // generate new fsurl filename
-    const fsurl = path.join(shared.collection_path, card.folder, filename)
+    const [ filename, fsurl ] = filesystem.get_filename(card)
 
     // move old one to new location if it was an existing card
     if (card.fsurl && fs.existsSync(card.fsurl)) fs.renameSync(card.fsurl, fsurl)
