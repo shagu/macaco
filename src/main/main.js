@@ -1,22 +1,16 @@
 const path = require('path')
 const electron = require('electron')
 
-const fs = require('fs')
-
-const rootdir = path.join(__dirname, '..', '..')
-const userdir = electron.app.getPath('userData')
-
-const filesystem = require('./filesystem.js')
-const metadata = require('./metadata.js')
 const shared = require('./shared.js')
-
-shared.userdir = userdir
+const ipc = require('./ipc.js')
 
 electron.app.commandLine.appendSwitch('ignore-gpu-blacklist');
 electron.app.commandLine.appendSwitch('disable-gpu');
 electron.app.commandLine.appendSwitch('disable-gpu-compositing');
 
 electron.app.whenReady().then(async () => {
+  const rootdir = path.join(__dirname, '..', '..')
+  const userdir = electron.app.getPath('userData')
   const window = new electron.BrowserWindow({
     width: 1600,
     height: 920,
@@ -33,6 +27,11 @@ electron.app.whenReady().then(async () => {
     }
   })
 
+  // save reference
+  shared.rootdir = rootdir
+  shared.userdir = userdir
+  shared.window = window
+
   // setup content
   window.setMenu(null)
   window.loadFile(path.join(rootdir, 'src', 'renderer', 'window.html'))
@@ -44,27 +43,7 @@ electron.app.whenReady().then(async () => {
     window.webContents.openDevTools({ mode: 'detach' })
   }
 
-  shared.window = window
-
-  /* IPC */
-  // custom minimize button
-  electron.ipcMain.handle('window-minimize', () => {
-    window.minimize()
-  })
-
-  // custom maximize button
-  let maximized = false
-  electron.ipcMain.handle('window-maximize', () => {
-    maximized ? window.unmaximize() : window.maximize()
-    maximized = !maximized
-  })
-
-  // custom close button
-  electron.ipcMain.handle('window-close', () => {
-    window.close()
-  })
-
-  // update darkmode when the system theme is updated
+  // detect darkmode on system theme change
   let lastThemeChange = 0
   electron.nativeTheme.on('updated', () => {
     // skip everything if not enough time has passed since the last change
@@ -81,131 +60,6 @@ electron.app.whenReady().then(async () => {
     electron.nativeTheme.themeSource = 'system'
   })
 
-  // handle file dialog requests
-  electron.ipcMain.handle('set-collection', async (event, folder, ...args) => {
-    if (!folder) {
-      // show open dialog if folder is not set
-      const result = await electron.dialog.showOpenDialog({
-        properties: ['openDirectory', 'createDirectory']
-      })
-
-      if (!result.filePaths || result.canceled) return
-      folder = result.filePaths[0]
-    }
-
-    // reload collection from filesystem
-    const collection = await filesystem.findCards(folder)
-    for(const [path, cards] of Object.entries(collection)) {
-      for(const card of cards) {
-        card.metadata = await metadata.query(card)
-      }
-    }
-
-    // set new collection path
-    shared.collection_path = folder
-    shared.collection = collection
-
-    // notify frontend
-    window.webContents.send('update-collection', shared.collection_path, shared.collection)
-  })
-
-  const updatePreview = async (event, card, ...args) => {
-    /* skip empty or invalid card */
-    if (!card || !card.edition || !card.number || !card.language) {
-      card.metadata = false
-      window.webContents.send('update-card-preview', card, card)
-      return
-    }
-
-    // query data and send preview update event
-    const qcard = structuredClone(card)
-    card.metadata = await metadata.query(card)
-    card.preview = await filesystem.get_image(card, true)
-
-    window.webContents.send('update-card-preview', card, qcard)
-  }
-
-  electron.ipcMain.handle('set-card-preview', updatePreview)
-
-  const push_card = (card, file_url) => {
-    if (file_url) {
-      for (const [folder, contents] of Object.entries(shared.collection)) {
-        for (let cardid in contents) {
-          if (contents[cardid].fsurl === file_url) {
-            contents[cardid] = card
-            return
-          }
-        }
-      }
-    } else {
-      shared.collection[card.folder].push(card)
-    }
-  }
-
-  electron.ipcMain.handle('set-card-folder', async (event, card, folder, ...args) => {
-    // convert to array if a single card is found
-    card = Array.isArray(card) ? card : [ card ]
-
-    // write card paths and move them
-    await filesystem.moveCardsToFolder(card, folder)
-    
-    // notify frontend about collection changes
-    window.webContents.send('update-collection', shared.collection_path, shared.collection)
-  })
-
-  electron.ipcMain.handle('add-update-card', async (event, card, ...args) => {
-    /* skip empty or invalid card */
-    if (!card || !card.edition || !card.number || !card.language) return
-
-    // cheatcode to download all card images of a set
-    if (card.number === '*') {
-      for(const number of await metadata.edition(card.edition)) {
-        const qcard = structuredClone(card)
-        qcard.number = number
-        filesystem.get_artwork(qcard)
-      }
-
-      return
-    }
-
-    let suffix = `${card.edition}.${card.number}.${card.language}`
-    suffix = card.foil ? `${suffix}.f` : suffix
-
-    const oldurl = card.fsurl
-
-    window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 0)
-
-    /* get best possible image file path */
-    card.metadata = await metadata.query(card)
-    window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 25)
-    const image = await filesystem.get_image(card)
-    window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 75)
-
-    updatePreview(event, structuredClone(card))
-
-    /* detect best filename */
-    const [ filename, fsurl ] = filesystem.getFilename(card)
-
-    // move old one to new location if it was an existing card
-    if (card.fsurl && fs.existsSync(card.fsurl)) fs.renameSync(card.fsurl, fsurl)
-
-    // write (copy) image to file
-    if (fs.existsSync(image)) fs.copyFileSync(image, fsurl)
-
-    // update card
-    card.fsurl = fsurl
-
-    // add card to collection without filesystem-scanning
-    push_card(card, oldurl)
-
-    // reload collection (TODO: highlight in frontend parameter)
-    window.webContents.send('set-popup', "add-card", oldurl ? "Update Card" : "Add Card", suffix, 100)
-    window.webContents.send('update-collection', shared.collection_path, shared.collection)
-
-    const pcard = structuredClone(card)
-    pcard.fsurl = undefined
-    pcard.preview = image
-
-    window.webContents.send('update-card-preview', pcard, pcard)
-  })
+  /* IPC */
+  ipc.register()
 })

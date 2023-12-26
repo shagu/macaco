@@ -5,71 +5,20 @@ const shared = require('./shared.js')
 const downloader = require('./downloader.js')
 
 const jimp = require('jimp')
-const metadata = require('./metadata.js')
 
 class Filesystem {
   constructor() {}
 
-  async findCards(folder, base) {
-    base = base || folder
-    folder = folder.replace(base, '.')
-
-    const list = {}
-    list[folder] = []
-
-    for (const file of fs.readdirSync(path.join(base, folder))) {
-      const fsurl = path.join(base, folder, file)
-      const stat = fs.statSync(fsurl)
-
-      // handle hidden files and folders
-      if (file.length > 1 && file.startsWith('.')) {
-        continue
-      } else if (stat.isDirectory()) {
-        const cards = await this.findCards(fsurl, base)
-        Object.assign(list, cards)
-        continue
-      }
-
-      // parse filenames and detect cards
-      const parse = file.match(/(.*?) ?\[(.*)\]/i)
-      if (parse && parse[2]) {
-        let name = parse[1] === '' ? 'Unknown' : parse[1]
-        const meta = parse[2].split('.')
-
-        // don't proceed on invalid files'
-        if (!meta[0] || !meta[1] || !meta[2])
-          continue
-
-        // push card data
-        list[folder].push({
-          name: name.replaceAll('|', '/'),
-
-          edition: meta[0],
-          number: meta[1],
-          language: meta[2],
-          foil: meta[3] !== undefined,
-
-          folder: folder,
-          file: file,
-
-          fsurl: fsurl
-        })
-      }
-    }
-
-    return list
-  }
-
-  async getFilename(card) {
+  async filename(card) {
     let suffix = `${card.edition}.${card.number}.${card.language}`
     suffix = card.foil ? `${suffix}.f` : suffix
 
     let count = 1
     let filename = `[${suffix}](${count}).jpg`
 
-    while (fs.existsSync(path.join(shared.collection_path, card.folder, filename))) {
+    while (fs.existsSync(path.join(card.collection, card.folder, filename))) {
       /* keep current filename if existing and matching */
-      if(card.fsurl && card.fsurl == path.join(shared.collection_path, card.folder, filename)) break
+      if(card.fsurl && card.fsurl == path.join(card.collection, card.folder, filename)) break
 
       /* try next available filename */
       filename = `[${suffix}](${count}).jpg`
@@ -77,43 +26,22 @@ class Filesystem {
     }
 
     // generate new fsurl filename
-    const fsurl = path.join(shared.collection_path, card.folder, filename)
+    const fsurl = path.join(card.collection, card.folder, filename)
 
     return [ filename, fsurl ]
   }
 
-  async moveCardsToFolder(cards, folder) {
-    // move all files where required
-    for (const card of cards) {
-      card.folder = folder
-      const [filename, fsurl] = await this.getFilename(card)
-      if (fsurl !== card.fsurl) {
-        if (fs.existsSync(card.fsurl)) {
-          fs.renameSync(card.fsurl, fsurl)
-        }
-      }
-    }
-
-    // reload collection from filesystem
-    shared.collection = await this.findCards(shared.collection_path)
-    for(const [path, cards] of Object.entries(shared.collection)) {
-      for(const card of cards) {
-        card.metadata = await metadata.query(card)
-      }
-    }
-  }
-
-  async get_backside() {
+  async backside() {
     const backgroundDev = path.join(__dirname, '..', '..', 'assets', 'cards', 'background.jpg')
     const backgroundProd = path.join(process.resourcesPath, '..', '..', 'assets', 'cards', 'foil.jpg')
     const image = fs.existsSync(backgroundDev) ? backgroundDev : backgroundProd
     return image
   }
 
-  async get_image(card, preview) {
+  async image(card, preview) {
     // do not go into previews without metadata
     if(preview && Object.keys(card.metadata).length === 0) {
-      return this.get_backside()
+      return this.backside()
     }
 
     const fileHQ = path.join(shared.userdir, 'images', `full_[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
@@ -122,7 +50,7 @@ class Filesystem {
     const file = path.join(shared.userdir, 'images', `${preview ? 'preview' : 'full'}_[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
     if (fs.existsSync(file)) return file
 
-    const [ artwork, ] = await this.get_artwork(card, preview)
+    const [ artwork, ] = await this.artwork(card, preview)
 
     if (card.foil) {
       const imgdata = await jimp.read(artwork)
@@ -147,7 +75,7 @@ class Filesystem {
     return file
   }
 
-  async get_artwork(card, preview, fallback) {
+  async artwork(card, preview, fallback) {
     const fileHQ = path.join(shared.userdir, 'images', `full_[${card.edition}.${card.number}.${card.language}].jpg`)
     if (fs.existsSync(fileHQ)) return [ fileHQ, fallback ]
 
@@ -162,7 +90,7 @@ class Filesystem {
 
       const output = {
         title: name ? `${name} [${identifier}]` : identifier,
-        text: `${shared.byteUnits(downloaded)} of ${shared.byteUnits(size)} (${percent}%)`,
+        text: `${shared.unit(downloaded)} of ${shared.unit(size)} (${percent}%)`,
         percent: percent,
       }
 
@@ -195,11 +123,80 @@ class Filesystem {
 
     if (!fallback) {
       console.log("try fallback")
-      const [ fallback_file, fallback_state ] = await this.get_artwork(card, preview, true)
+      const [ fallback_file, fallback_state ] = await this.artwork(card, preview, true)
       return [ fallback_file, fallback_state ]
     }
 
-    return [ await this.get_backside(), fallback ]
+    return [ await this.backside(), fallback ]
+  }
+
+  async find(folder, base) {
+    base = base || folder
+    folder = folder.replace(base, '.')
+
+    const list = {}
+    list[folder] = []
+
+    for (const file of fs.readdirSync(path.join(base, folder))) {
+      const fsurl = path.join(base, folder, file)
+      const stat = fs.statSync(fsurl)
+
+      // handle hidden files and folders
+      if (file.length > 1 && file.startsWith('.')) {
+        continue
+      } else if (stat.isDirectory()) {
+        const cards = await this.find(fsurl, base)
+        Object.assign(list, cards)
+        continue
+      }
+
+      // parse filenames and detect cards
+      const parse = file.match(/(.*?) ?\[(.*)\]/i)
+      if (parse && parse[2]) {
+        let name = parse[1] === '' ? 'Unknown' : parse[1]
+        const meta = parse[2].split('.')
+
+        // don't proceed on invalid files'
+        if (!meta[0] || !meta[1] || !meta[2])
+          continue
+
+        // push card data
+        list[folder].push({
+          name: name.replaceAll('|', '/'),
+
+          edition: meta[0],
+          number: meta[1],
+          language: meta[2],
+          foil: meta[3] !== undefined,
+
+          collection: base,
+          folder: folder,
+          file: file,
+
+          fsurl: fsurl
+        })
+      }
+    }
+
+    return list
+  }
+
+  async write(card, updateImage) {
+    /* retrieve best image */
+    const image = updateImage ? await this.image(card) : false
+
+    /* get the preferred filename for the card */
+    const [ filename, fsurl ] = await this.filename(card)
+
+    // in case of a previous fsurl, move it to the new filename
+    if (card.fsurl && fs.existsSync(card.fsurl)) fs.renameSync(card.fsurl, fsurl)
+
+    // write image to card file
+    if (image && fs.existsSync(image)) fs.copyFileSync(image, fsurl)
+
+    // update card file data
+    card.fsurl = fsurl
+    return card
   }
 }
 

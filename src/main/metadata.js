@@ -29,7 +29,7 @@ class Metadata {
 
       await Promise.all([fetch_locales, fetch_data])
     }
-    
+
     const rawdata = fs.readFileSync(data)
     this.data = JSON.parse(zlib.gunzipSync(rawdata))
 

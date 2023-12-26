@@ -287,10 +287,10 @@ export default class UIWindowSidebarSingle extends HTMLElement {
       this.folder = folder
     })
 
-    macaco.ipc.register('update-card-preview', (ev, card, query) => {
+    macaco.ipc.register('update-card-preview', (ev, query, preview) => {
       const current = this.get_card()
       if (this.compare_card(current, query) === false) return
-      this.set_card(card)
+      this.set_card(preview)
     })
 
     macaco.events.register('update-collection-selection', (ev, selection) => {

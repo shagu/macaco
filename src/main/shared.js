@@ -1,10 +1,9 @@
 class Shared {
-  static collection
-  static collection_path
+  static rootdir
   static userdir
   static window
 
-  static byteUnits = (bytes) => {
+  static unit = (bytes) => {
     if (bytes === 0 || !bytes) return 'N/A'
 
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
