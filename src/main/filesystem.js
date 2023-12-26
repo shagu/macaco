@@ -10,7 +10,7 @@ const metadata = require('./metadata.js')
 class Filesystem {
   constructor() {}
 
-  find_cards(folder, base) {
+  async findCards(folder, base) {
     base = base || folder
     folder = folder.replace(base, '.')
 
@@ -25,7 +25,8 @@ class Filesystem {
       if (file.length > 1 && file.startsWith('.')) {
         continue
       } else if (stat.isDirectory()) {
-        Object.assign(list, this.find_cards(fsurl, base))
+        const cards = await this.findCards(fsurl, base)
+        Object.assign(list, cards)
         continue
       }
 
@@ -59,7 +60,7 @@ class Filesystem {
     return list
   }
 
-  get_filename(card) {
+  async getFilename(card) {
     let suffix = `${card.edition}.${card.number}.${card.language}`
     suffix = card.foil ? `${suffix}.f` : suffix
 
@@ -79,6 +80,27 @@ class Filesystem {
     const fsurl = path.join(shared.collection_path, card.folder, filename)
 
     return [ filename, fsurl ]
+  }
+
+  async moveCardsToFolder(cards, folder) {
+    // move all files where required
+    for (const card of cards) {
+      card.folder = folder
+      const [filename, fsurl] = await this.getFilename(card)
+      if (fsurl !== card.fsurl) {
+        if (fs.existsSync(card.fsurl)) {
+          fs.renameSync(card.fsurl, fsurl)
+        }
+      }
+    }
+
+    // reload collection from filesystem
+    shared.collection = await this.findCards(shared.collection_path)
+    for(const [path, cards] of Object.entries(shared.collection)) {
+      for(const card of cards) {
+        card.metadata = await metadata.query(card)
+      }
+    }
   }
 
   async get_backside() {
@@ -124,7 +146,6 @@ class Filesystem {
 
     return file
   }
-
 
   async get_artwork(card, preview, fallback) {
     const fileHQ = path.join(shared.userdir, 'images', `full_[${card.edition}.${card.number}.${card.language}].jpg`)
