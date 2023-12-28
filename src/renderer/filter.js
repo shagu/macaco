@@ -86,22 +86,22 @@ filter.sort = (attributes, order = 1) => {
   return (a, b) => {
     if (attribute === 'rarity') {
       // special sorting for card rarity
-      const aVal = filter.rarity.indexOf(a.rarity) + 1
-      const bVal = filter.rarity.indexOf(b.rarity) + 1
+      const aVal = filter.rarity.indexOf(a.metadata.rarity) + 1
+      const bVal = filter.rarity.indexOf(b.metadata.rarity) + 1
 
       if (aVal !== bVal) {
         return aVal < bVal ? order : -1 * order
       }
     } else {
       // generic sorting algorithm
-      if ((a[attribute] || 0) !== (b[attribute] || 0)) {
-        return a[attribute] < b[attribute] ? order : -1 * order
+      if ((a.metadata[attribute] || 0) !== (b.metadata[attribute] || 0)) {
+        return a.metadata[attribute] < b.metadata[attribute] ? order : -1 * order
       }
     }
 
     // sort by name as fallback on identical values
-    if (a.name && b.name && a.name !== b.name) {
-      return a.name < b.name ? order : -1 * order
+    if (a.metadata.name && b.metadata.name && a.metadata.name !== b.metadata.name) {
+      return a.metadata.name < b.metadata.name ? order : -1 * order
     }
 
     return 0
@@ -212,7 +212,7 @@ filter.view = (db) => {
   const str = filter.get('text')
   if (str.length < filter.min) return db
 
-  // return filtered view
+  // filter results
   const result = db.filter(card => filter.check(card))
 
   // sort view
