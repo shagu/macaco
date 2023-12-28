@@ -14,39 +14,12 @@ const macaco = {
     contents: {}
   },
 
-  languages: {
-    'Ancient Greek':        ['grc'],
-    'Arabic':               ['ar'],
-    'Chinese Simplified':   ['zhs', 'cs'],
-    'Chinese Traditional':  ['zht', 'ct'],
-    'English':              ['en'],
-    'French':               ['fr'],
-    'German':               ['de'],
-    'Hebrew':               ['he'],
-    'Italian':              ['it'],
-    'Japanese':             ['ja', 'jp'],
-    'Korean':               ['ko', 'kr'],
-    'Latin':                ['la'],
-    'Phyrexian':            ['ph'],
-    'Portuguese (Brazil)':  ['pt'],
-    'Russian':              ['ru'],
-    'Sanskrit':             ['sa'],
-    'Spanish':              ['es', 'sp'],
-  },
-
   getLocale: (card, entry) => {
-    let retval = ''
-
-    const langShort = card.language
-    for (const [language, abbreviations] of Object.entries(macaco.languages)) {
-      if (abbreviations.includes(langShort)) {
-        retval = card.metadata.locales && card.metadata.locales[language] ? card.metadata.locales[language][entry] : false
-        retval = retval || (card.metadata.locales && card.metadata.locales.English[entry])
-      }
+    if (card.language && card.metadata && card.metadata.locales && card.metadata.locales[card.language]) {
+      return card.metadata.locales[card.language][entry]
+    } else {
+      return ""
     }
-
-    retval = Array.isArray(retval) ? retval[0] : retval
-    return retval
   },
 
   getColorIcon: (cards) => {
@@ -156,7 +129,7 @@ macaco.ipc.register('update-collection', (ev, path, contents) => {
     macaco.collection.contents = contents
     macaco.collection.view = macaco.filter.view(macaco.collection.contents[macaco.collection.folder])
     macaco.collection.selection = []
-    
+
     /* send update events for all variables that did change */
     macaco.events.invoke("update-collection-path", macaco.collection.path)
     macaco.events.invoke("update-collection-contents", macaco.collection.contents)

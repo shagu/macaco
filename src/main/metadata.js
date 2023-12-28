@@ -6,6 +6,26 @@ const jimp = require('jimp')
 const shared = require('./shared.js')
 const downloader = require('./downloader.js')
 
+const languages = {
+  'Ancient Greek': 'grc',
+  'Arabic': 'ar',
+  'Chinese Simplified': 'cs',
+  'Chinese Traditional': 'ct',
+  'English': 'en',
+  'French': 'fr',
+  'German': 'de',
+  'Hebrew': 'he',
+  'Italian': 'it',
+  'Japanese': 'jp',
+  'Korean': 'kr',
+  'Latin': 'la',
+  'Phyrexian': 'ph',
+  'Portuguese (Brazil)': 'pt',
+  'Russian': 'ru',
+  'Sanskrit': 'sa',
+  'Spanish': 'sp',
+}
+
 class Metadata {
   runner = false
 
@@ -73,15 +93,18 @@ class Metadata {
 
       // replace pointers with locale strings
       for (const language in data.locales) {
+        const short = languages[language]
+
         for (const entry of ["name", "text", "type", "flavor"]) {
           const pointer = parseInt(data.locales[language][entry])
 
           if (pointer !== undefined && locale[language][entry][pointer]) {
-            metadata.locales[language][entry] = `${locale[language][entry][pointer]}`
-          } else {
-            delete metadata.locales[language][entry]
+            metadata.locales[short] = metadata.locales[short] || {}
+            metadata.locales[short][entry] = `${locale[language][entry][pointer]}`
           }
         }
+
+        delete metadata.locales[language]
       }
 
       // add best price shortcut

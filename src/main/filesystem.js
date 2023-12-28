@@ -109,7 +109,15 @@ class Filesystem {
       shared.window.webContents.send('set-popup', "artwork-download", output.title, output.text, output.percent)
     }
 
-    const language = fallback ? 'en' : card.language
+    let language = fallback ? 'en' : card.language
+
+    // scryfall locales are different to the printed ones
+    language = language == 'sp' ? 'es' : language
+    language = language == 'jp' ? 'ja' : language
+    language = language == 'kr' ? 'ko' : language
+    language = language == 'cs' ? 'zhs' : language
+    language = language == 'ct' ? 'zht' : language
+
     const size = preview ? 'small' : 'border_crop'
     const url = `https://api.scryfall.com/cards/${card.edition}/${card.number}/${language}?format=image&version=${size}`
     console.log(`fetch ${fallback ? 'fallback' : 'normal'} of ${card.number}\n  ${url}`)

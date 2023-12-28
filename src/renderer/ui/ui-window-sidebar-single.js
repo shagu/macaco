@@ -29,21 +29,21 @@ export default class UIWindowSidebarSingle extends HTMLElement {
           <select id="language-input" name="language" id="language">
             <option value="grc">Ancient Greek</option>
             <option value="ar">Arabic</option>
-            <option value="zhs">Chinese Simplified</option>
-            <option value="zht">Chinese Traditional</option>
+            <option value="cs">Chinese Simplified</option>
+            <option value="ct">Chinese Traditional</option>
             <option value="en">English</option>
             <option value="fr">French</option>
             <option value="de" selected="selected">German</option>
             <option value="he">Hebrew</option>
             <option value="it">Italian</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
+            <option value="jp">Japanese</option>
+            <option value="kr">Korean</option>
             <option value="la">Latin</option>
             <option value="ph">Phyrexian</option>
             <option value="pt">Portuguese (Brazil)</option>
             <option value="ru">Russian</option>
             <option value="sa">Sanskrit</option>
-            <option value="es">Spanish</option>
+            <option value="sp">Spanish</option>
           </select>
         </div>
       </m-grid>
