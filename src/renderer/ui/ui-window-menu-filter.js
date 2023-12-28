@@ -129,6 +129,81 @@ export default class UIWindowMenuFilter extends HTMLElement {
     for (const e of this.shadow.querySelectorAll('*')) {
       if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
+
+    // mana cost filters
+    for (const cmc of [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]) {
+      const button = this.dom[`filter-mana-${cmc}`]
+      button.onclick = (ev) => {
+        const state = !button.checked
+        macaco.events.invoke('set-filter', 'cmc', cmc, state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register(`update-filter`, (ev, filter) => {
+        const state = filter.get('cmc', cmc)
+        button.checked = state
+      })
+    }
+
+    // rarity filters
+    for (const rarity of [ 'common', 'uncommon', 'rare', 'mythic' ]) {
+      const button = this.dom[`filter-rarity-${rarity}`]
+      button.onclick = (ev) => {
+        const state = !button.checked
+        macaco.events.invoke('set-filter', 'rarity', rarity, state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register(`update-filter`, (ev, filter) => {
+        const state = filter.get('rarity', rarity)
+        button.checked = state
+      })
+    }
+
+    // card type filters
+    for (const type of [ 'instant', 'sorcery', 'creature', 'enchantment', 'artifact', 'planeswalker', 'land' ]) {
+      const button = this.dom[`filter-type-${type}`]
+      button.onclick = (ev) => {
+        const state = !button.checked
+        macaco.events.invoke('set-filter', 'type', type, state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register(`update-filter`, (ev, filter) => {
+        const state = filter.get('type', type)
+        button.checked = state
+      })
+    }
+
+    // sort methods
+    for (const method of [ 'name', 'color', 'mana', 'rarity', 'price', 'count', 'set' ]) {
+      const button = this.dom[`sort-${method}`]
+      button.onclick = (ev) => {
+        const state = !button.checked
+        macaco.events.invoke('set-filter', 'sort', method, state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register(`update-filter`, (ev, filter) => {
+        const state = filter.get('sort', method)
+        button.checked = state
+      })
+    }
+
+    // sort order mode
+    for (const order of [ 'asc', 'desc' ]) {
+      const button = this.dom[`sort-mode-${order}`]
+      button.onclick = (ev) => {
+        const state = !button.checked
+        macaco.events.invoke('set-filter', 'order', order, state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register(`update-filter`, (ev, filter) => {
+        const state = filter.get('order', order)
+        button.checked = state
+      })
+    }
   }
 }
 
