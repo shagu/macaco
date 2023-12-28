@@ -84,6 +84,13 @@ class Metadata {
         }
       }
 
+      // add best price shortcut
+      metadata.price = 0
+      if (metadata.prices) {
+        metadata.price = metadata.prices[2] || metadata.prices[0]
+        if (data.foil) metadata.price = metadata.prices[3] || metadata.prices[1]
+      }
+
       return metadata
     } else {
       return {}
