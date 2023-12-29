@@ -9,6 +9,9 @@ const macaco = {
   filter:
     require('./filter.js'),
 
+  statistics:
+    require('./statistics.js'),
+
   collection: {
     path: "",
     contents: {}
@@ -19,45 +22,6 @@ const macaco = {
       return card.metadata.locales[card.language][entry]
     } else {
       return ""
-    }
-  },
-
-  getColorIcon: (cards) => {
-    const icons = [
-      'BG', 'BR', 'GU', 'GW', 'RG',
-      'RW', 'UB', 'UR', 'WB', 'WU'
-    ]
-
-    const colors = {}
-    const identity = []
-
-    for (const card of cards) {
-      if (!card.metadata || !card.metadata.color) continue
-
-      for (const color of card.metadata.color) {
-        colors[color] = colors[color] ? colors[color] + 1 : 1
-      }
-    }
-
-    for (const [color, count] of Object.entries(colors)) {
-      if (count / cards.length >= 0.10) {
-        identity.push(color)
-      }
-    }
-
-    const identityStr = identity.toString().toUpperCase()
-    if (identity.length === 1) {
-      return identityStr
-    } else if (identity.length === 2) {
-      for (const icon of icons) {
-        if (identityStr.includes(icon.charAt(0)) && identityStr.includes(icon.charAt(1))) {
-          return icon
-        }
-      }
-    } else if (identity.length > 2) {
-      return 'M'
-    } else {
-      return 'C'
     }
   },
 
@@ -158,6 +122,8 @@ macaco.events.register("set-collection-folder", (ev, folder) => {
   /* send update events for all variables that did change */
   macaco.events.invoke("update-collection-view", macaco.collection.view)
   macaco.events.invoke("update-collection-folder", macaco.collection.folder)
+
+  macaco.statistics.read(macaco.collection.view)
 })
 
 macaco.events.register("set-filter", (ev, entry, value, state) => {
@@ -169,4 +135,26 @@ macaco.events.register("update-filter", (ev, filter) => {
   const view = macaco.collection.contents[macaco.collection.folder]
   macaco.collection.view = macaco.filter.view(view)
   macaco.events.invoke("update-collection-view", macaco.collection.view)
+})
+
+
+macaco.events.register("update-collection-contents", (ev, contents) => {
+  let statistics = false
+  for (const [folder, cards] of Object.entries(contents)) {
+    statistics = macaco.statistics.read(cards, "Collection", statistics)
+  }
+
+  macaco.events.invoke("update-statistics-contents", statistics)
+})
+
+
+macaco.events.register("update-collection-selection", (ev, cards) => {
+  const statistics = macaco.statistics.read(cards, "Selection")
+  macaco.events.invoke("update-statistics-selection", statistics)
+})
+
+
+macaco.events.register("update-collection-view", (ev, cards) => {
+  const statistics = macaco.statistics.read(cards, macaco.collection.folder)
+  macaco.events.invoke("update-statistics-view", statistics)
 })

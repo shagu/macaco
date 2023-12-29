@@ -21,7 +21,7 @@ class Ipc {
   async setCollection(event, folder, ...args) {
     if (!folder) {
       // show open dialog if folder is not set
-      const result = await this.electron.dialog.showOpenDialog({
+      const result = await electron.dialog.showOpenDialog({
         properties: ['openDirectory', 'createDirectory']
       })
 

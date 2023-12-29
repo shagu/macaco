@@ -1,6 +1,6 @@
-import { html, css } from './m-template.js'
+import { html, css } from '../widgets/m-template.js'
 
-export default class MFolderDetails extends HTMLElement {
+export default class UIWindowMenuStatistics extends HTMLElement {
   static shadow = null
 
   static template = html`
@@ -29,6 +29,22 @@ export default class MFolderDetails extends HTMLElement {
   `
 
   static style = css`
+    :host {
+      display: none;
+
+      position: fixed;
+
+      width: min-content;
+      max-height: max-content;
+
+      background: var(--window-light);
+      border: 1px var(--border-normal) solid;
+      box-shadow: 0px 0px 5px var(--border-dark);
+
+      padding: 5px;
+      z-index: 16;
+    }
+
     m-grid {
       margin: 4px 2px;
       padding: 4px;
@@ -102,24 +118,22 @@ export default class MFolderDetails extends HTMLElement {
     }
   `
 
-  setDetails = (details) => {
-    // folder title and icon
-    if (details.icon && details.title) {
-      const imgSrc = `img/icons/${details.icon}.png`
-      const icon = this.shadow.getElementById('icon')
-      const title = this.shadow.getElementById('title')
+  dom = {}
 
-      icon.innerHTML = `<img src="${imgSrc}" />`
-      title.innerHTML = details.title || 'N/A'
+  set = (stats) => {
+    // folder title and icon
+    if (stats.icon && stats.title) {
+      this.dom.icon.innerHTML = `<img src="../../assets/mana/${stats.icon}.png" />`
+      this.dom.title.innerHTML = stats.title || 'N/A'
     }
 
     // mana curve diagram
-    if (details.mana.values) {
+    if (stats.mana.values) {
       let maxCount = 1
       const values = {}
 
       // read all mana values, detect maximum and set limit to 8
-      for (const [cmc, count] of Object.entries(details.mana.values)) {
+      for (const [cmc, count] of Object.entries(stats.mana.values)) {
         maxCount = Math.max(maxCount, count)
         values[Math.min(cmc, 8)] = values[Math.min(cmc, 8)] || 0
         values[Math.min(cmc, 8)] += count
@@ -159,29 +173,29 @@ export default class MFolderDetails extends HTMLElement {
     }
 
     // mana values
-    if (details.mana.avg) {
+    if (stats.mana.avg) {
       const frame = this.shadow.getElementById('mana-average')
       frame.innerHTML = `
         <div class=label>Average Mana</div>
-        <div class=content id=avg_mana>${details.mana.avg ? details.mana.avg.toFixed(1) : 'N/A'}</div>
+        <div class=content id=avg_mana>${stats.mana.avg ? stats.mana.avg.toFixed(1) : 'N/A'}</div>
       `
     }
 
     // card types and count
-    if (details.types && details.cards) {
+    if (stats.types && stats.cards) {
       const frame = this.shadow.getElementById('card-types')
       frame.innerHTML = `
         <div class=header>Cards</div>
 
         <m-grid horizontal=1>
           <div class=label>Total</div>
-          <div class=content>${details.cards}</div>
+          <div class=content>${stats.cards}</div>
         </m-grid>
       `
 
       // sort all card types by card count
       const sortable = Object.fromEntries(
-        Object.entries(details.types).sort(([, a], [, b]) => b - a)
+        Object.entries(stats.types).sort(([, a], [, b]) => b - a)
       )
 
       for (const [type, count] of Object.entries(sortable)) {
@@ -195,16 +209,16 @@ export default class MFolderDetails extends HTMLElement {
     }
 
     // card prices
-    if (details.price) {
+    if (stats.price) {
       const total = this.shadow.getElementById('price-total')
       total.innerHTML = `
         <div class=label>Total</div>
-        <div class=content>${details.price.sum ? details.price.sum.toFixed(2) : 'N/A'}€</div>
+        <div class=content>${stats.price.sum ? stats.price.sum.toFixed(2) : 'N/A'}€</div>
       `
       const average = this.shadow.getElementById('price-average')
       average.innerHTML = `
         <div class=label>Average</div>
-        <div class=content>${details.price.avg ? details.price.avg.toFixed(2) : 'N/A'}€</div>
+        <div class=content>${stats.price.avg ? stats.price.avg.toFixed(2) : 'N/A'}€</div>
       `
     }
   }
@@ -213,9 +227,15 @@ export default class MFolderDetails extends HTMLElement {
     super()
 
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.shadow.adoptedStyleSheets = [MFolderDetails.style]
-    this.shadow.append(document.importNode(MFolderDetails.template, true))
+    this.shadow.adoptedStyleSheets = [this.constructor.style]
+    this.shadow.append(document.importNode(this.constructor.template, true))
+
+    for (const e of this.shadow.querySelectorAll('*')) {
+      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+    }
+
+    macaco.events.register(`update-statistics-view`, (ev, stats) => this.set(stats))
   }
 }
 
-customElements.define('m-folder-details', MFolderDetails)
+customElements.define('ui-window-menu-statistics', UIWindowMenuStatistics)

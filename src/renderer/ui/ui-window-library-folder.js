@@ -148,7 +148,7 @@ export default class UIWindowLibraryFolder extends HTMLElement {
 
     this.dom.label.innerHTML = string
     this.dom.count.innerHTML = this.cards.length > 0 ? this.cards.length : ""
-    this.dom.icon.src = `../../assets/mana/${macaco.getColorIcon(this.cards)}.png`
+    this.dom.icon.src = `../../assets/mana/${macaco.statistics.icon(this.cards)}.png`
   }
 }
 

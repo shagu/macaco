@@ -24,7 +24,7 @@ export default class UIWindowHeader extends HTMLElement {
 
     <div> <!-- toolbar menu buttons -->
       <m-button class="menu-button" id="menu-filter" disabled>${macaco.icons.filter}</m-button>
-      <m-button class="menu-button" id="menu-details" disabled>${macaco.icons.details}</m-button>
+      <m-button class="menu-button" id="menu-statistics" disabled>${macaco.icons.details}</m-button>
       <m-button class="menu-button" id="menu-main">${macaco.icons.menu}</m-button>
     </div>
 
@@ -116,7 +116,7 @@ export default class UIWindowHeader extends HTMLElement {
       const uiLock = [
         'button-color-w', 'button-color-u', 'button-color-b', 'button-color-r',
         'button-color-g', 'button-color-c', 'button-color-m', 'search',
-        'menu-filter', 'menu-details', 'menu-main'
+        'menu-filter', 'menu-statistics', 'menu-main'
       ]
 
       for (const element of uiLock) {
@@ -145,8 +145,8 @@ export default class UIWindowHeader extends HTMLElement {
       macaco.events.invoke('set-menu', 'filter', this.dom['menu-filter'])
     })
 
-    this.dom['menu-details'].addEventListener('click', (ev) => {
-      macaco.events.invoke('set-menu', 'details', this.dom['menu-details'])
+    this.dom['menu-statistics'].addEventListener('click', (ev) => {
+      macaco.events.invoke('set-menu', 'statistics', this.dom['menu-statistics'])
     })
 
     this.dom['menu-main'].addEventListener('click', (ev) => {

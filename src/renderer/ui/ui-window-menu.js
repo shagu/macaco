@@ -7,8 +7,8 @@ export default class UIWindowMenu extends HTMLElement {
   static buttons = []
 
   static template = html`
-    <ui-window-menu-filter id="filter">
-    </ui-window-menu-filter>
+    <ui-window-menu-filter id="filter"></ui-window-menu-filter>
+    <ui-window-menu-statistics id="statistics"></ui-window-menu-statistics>
   `
 
   static style = css`

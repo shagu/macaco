@@ -43,7 +43,6 @@ filter.tags = {
     return false
   },
   color: (card, values) => {
-    const metadata = card.metadata
     let multicolorEnforced = false
     let atleastOne = false
     let mismatch = false
