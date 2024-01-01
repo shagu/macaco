@@ -1,111 +1,111 @@
-const statistics = { }
+class Statistics {
+  icon (cards) {
+    const icons = [
+      'BG', 'BR', 'GU', 'GW', 'RG',
+      'RW', 'UB', 'UR', 'WB', 'WU'
+    ]
 
-statistics.icon = (cards) => {
-  const icons = [
-    'BG', 'BR', 'GU', 'GW', 'RG',
-    'RW', 'UB', 'UR', 'WB', 'WU'
-  ]
+    const colors = {}
+    const identity = []
 
-  const colors = {}
-  const identity = []
+    for (const card of cards) {
+      if (!card.metadata || !card.metadata.color) continue
 
-  for (const card of cards) {
-    if (!card.metadata || !card.metadata.color) continue
-
-    for (const color of card.metadata.color) {
-      colors[color] = colors[color] ? colors[color] + 1 : 1
-    }
-  }
-
-  for (const [color, count] of Object.entries(colors)) {
-    if (count / cards.length >= 0.10) {
-      identity.push(color)
-    }
-  }
-
-  const identityStr = identity.toString().toUpperCase()
-  if (identity.length === 1) {
-    return identityStr
-  } else if (identity.length === 2) {
-    for (const icon of icons) {
-      if (identityStr.includes(icon.charAt(0)) && identityStr.includes(icon.charAt(1))) {
-        return icon
-      }
-    }
-  } else if (identity.length > 2) {
-    return 'M'
-  } else {
-    return 'C'
-  }
-}
-
-statistics.title = (folder) => {
-  const paths = folder.split("/")
-  let string = ""
-
-  if(paths.length === 1) {
-    string = "Library"
-  } else {
-    for (let i = 1; i < paths.length; i++) {
-      if (i == paths.length - 1) {
-        string = `${string}${paths[i]}`
-        //string = `${string}<b>${paths[i]}</b>`
-      } else if (i == paths.length - 2){
-        string = `${string}${paths[i]}/`
-        // string = `${string} ► `
-      } else {
-        string = `${string}${paths[i]}/`
-        // string = `${string}   `
-      }
-    }
-  }
-
-  return string
-}
-
-statistics.read = (cards, folder = "Unknown", template) => {
-  const stats = template ? template : {
-    types: { /* creature: 0, enchantment: 0, .. */ },
-    price: { num: 0, sum: 0, min: 0, max: 0, avg: 0 },
-    mana: { num: 0, sum: 0, min: 0, max: 0, avg: 0, values: {} },
-
-    cards: 0
-  }
-
-  stats.icon = statistics.icon(cards)
-  stats.title = statistics.title(folder)
-
-  for (const card of cards) {
-    if (card.metadata.types) {
-      for (const type of card.metadata.types) {
-        stats.types[type] = stats.types[type] || 0
-        stats.types[type]++
+      for (const color of card.metadata.color) {
+        colors[color] = colors[color] ? colors[color] + 1 : 1
       }
     }
 
-    if (card.metadata.price) {
-      stats.price.num++
-      stats.price.sum += card.metadata.price
-      stats.price.min = stats.price.min === 0 ? card.metadata.price : Math.min(stats.price.min, card.metadata.price)
-      stats.price.max = Math.max(stats.price.max, card.metadata.price)
-      stats.price.avg = stats.price.sum / stats.price.num
+    for (const [color, count] of Object.entries(colors)) {
+      if (count / cards.length >= 0.10) {
+        identity.push(color)
+      }
     }
 
-    if (card.metadata.cmc && card.metadata.cmc > 0) {
-      stats.mana.num++
-      stats.mana.sum += card.metadata.cmc
-      stats.mana.min = stats.price.min === 0 ? card.metadata.cmc : Math.min(stats.mana.min, card.metadata.cmc)
-      stats.mana.max = Math.max(stats.mana.max, card.metadata.cmc)
-      stats.mana.avg = stats.mana.sum / stats.mana.num
-
-      stats.mana.values[card.metadata.cmc] = stats.mana.values[card.metadata.cmc] || 0
-      stats.mana.values[card.metadata.cmc]++
+    const identityStr = identity.toString().toUpperCase()
+    if (identity.length === 1) {
+      return identityStr
+    } else if (identity.length === 2) {
+      for (const icon of icons) {
+        if (identityStr.includes(icon.charAt(0)) && identityStr.includes(icon.charAt(1))) {
+          return icon
+        }
+      }
+    } else if (identity.length > 2) {
+      return 'M'
+    } else {
+      return 'C'
     }
-
-    stats.cards++
   }
 
-  return stats
+  title (folder) {
+    const paths = folder.split("/")
+    let string = ""
+
+    if (paths.length === 1) {
+      string = "Library"
+    } else {
+      for (let i = 1; i < paths.length; i++) {
+        if (i == paths.length - 1) {
+          string = `${string}${paths[i]}`
+          //string = `${string}<b>${paths[i]}</b>`
+        } else if (i == paths.length - 2){
+          string = `${string}${paths[i]}/`
+          // string = `${string} ► `
+        } else {
+          string = `${string}${paths[i]}/`
+          // string = `${string}   `
+        }
+      }
+    }
+
+    return string
+  }
+
+  read (cards, folder = "Unknown", template) {
+    const stats = template ? template : {
+      types: { /* creature: 0, enchantment: 0, .. */ },
+      price: { num: 0, sum: 0, min: 0, max: 0, avg: 0 },
+      mana: { num: 0, sum: 0, min: 0, max: 0, avg: 0, values: {} },
+
+      cards: 0
+    }
+
+    stats.icon = this.icon(cards)
+    stats.title = this.title(folder)
+
+    for (const card of cards) {
+      if (card.metadata.types) {
+        for (const type of card.metadata.types) {
+          stats.types[type] = stats.types[type] || 0
+          stats.types[type]++
+        }
+      }
+
+      if (card.metadata.price) {
+        stats.price.num++
+        stats.price.sum += card.metadata.price
+        stats.price.min = stats.price.min === 0 ? card.metadata.price : Math.min(stats.price.min, card.metadata.price)
+        stats.price.max = Math.max(stats.price.max, card.metadata.price)
+        stats.price.avg = stats.price.sum / stats.price.num
+      }
+
+      if (card.metadata.cmc && card.metadata.cmc > 0) {
+        stats.mana.num++
+        stats.mana.sum += card.metadata.cmc
+        stats.mana.min = stats.price.min === 0 ? card.metadata.cmc : Math.min(stats.mana.min, card.metadata.cmc)
+        stats.mana.max = Math.max(stats.mana.max, card.metadata.cmc)
+        stats.mana.avg = stats.mana.sum / stats.mana.num
+
+        stats.mana.values[card.metadata.cmc] = stats.mana.values[card.metadata.cmc] || 0
+        stats.mana.values[card.metadata.cmc]++
+      }
+
+      stats.cards++
+    }
+
+    return stats
+  }
 }
 
-module.exports = statistics
+module.exports = new Statistics()
