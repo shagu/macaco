@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
-const jimp = require('jimp')
 
 const shared = require('./shared.js')
 const downloader = require('./downloader.js')
