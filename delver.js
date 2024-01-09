@@ -43,7 +43,7 @@ const delver = {
     const apk = fs.readFileSync(path.join(core.dataDirectory, 'db', 'delverlens.apk'))
     const result = await extractor.loadAsync(apk)
     const output = path.join(core.dataDirectory, 'db', 'delverlens.sqlite')
-    const data = result.files['res/ut.db'].async('arraybuffer')
+    const data = result.files['res/Cc.db'].async('arraybuffer')
 
     fs.writeFileSync(output, Buffer.from(await data))
 
