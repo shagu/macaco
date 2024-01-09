@@ -12,6 +12,7 @@ const queryView = `
       cards.image AS image,
       cards.foil AS foil,
       cards.language AS language,
+      cards.quantity AS count,
       delver_cards.number AS number,
       delver_editions.tl_abb AS edition,
       backup_lists.name AS list
@@ -95,20 +96,27 @@ const delver = {
       // use fallback list name on empty list entries
       const folder = row.list || 'Unknown'
 
-      const card = {
-        image: row.image,
-        foil: row.foil !== 0,
-        language: row.language === '' || !languageMap[row.language] ? languageMap.English : languageMap[row.language],
-        set: row.edition,
-        number: row.number,
-        path: path.join(currentPath, folder.replaceAll('/', '-'))
-      }
+      // read card amount and fallback to 1
+      const amount = row.count || 1
 
-      const percent = Math.ceil(count / sum * 100)
-      const caption = `${backupFile}<br>${count}/${sum} (${percent}%)`
-      core.utils.popup('Import DelverLens Backup', caption, percent)
+      for (i = 1; i <= amount; i++) {
+        const card = {
+          image: row.image,
+          foil: row.foil !== 0,
+          language: row.language === '' || !languageMap[row.language] ? languageMap.English : languageMap[row.language],
+          set: row.edition,
+          number: row.number,
+          path: path.join(currentPath, folder.replaceAll('/', '-'))
+        }
 
-      await core.collection.addCard(card)
+        const percent = Math.ceil(count / sum * 100)
+        const caption = `${backupFile}<br>${count}/${sum} (${percent}%)`
+        core.utils.popup('Import DelverLens Backup', caption, percent)
+
+        await core.collection.addCard(card)
+     }
+
+
       count++
     }
 
