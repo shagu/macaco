@@ -340,7 +340,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
     }
 
     /* overlay */
-    this.dom['image'].onmouseenter = (ev) => {
+    this.dom['image'].onclick = (ev) => {
       macaco.events.invoke('set-overlay-image', this.dom['image'].src)
     }
 
