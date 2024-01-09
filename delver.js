@@ -92,21 +92,24 @@ const delver = {
     // read through all results in merged backup table
     const result = backup.prepare(queryCards).all()
     for (const row of result) {
+      // use fallback list name on empty list entries
+      const folder = row.list || 'Unknown'
+
       const card = {
         image: row.image,
         foil: row.foil !== 0,
         language: row.language === '' || !languageMap[row.language] ? languageMap.English : languageMap[row.language],
         set: row.edition,
         number: row.number,
-        path: path.join(currentPath, row.list.replaceAll('/', '-'))
+        path: path.join(currentPath, folder.replaceAll('/', '-'))
       }
 
-      count++
       const percent = Math.ceil(count / sum * 100)
       const caption = `${backupFile}<br>${count}/${sum} (${percent}%)`
       core.utils.popup('Import DelverLens Backup', caption, percent)
 
       await core.collection.addCard(card)
+      count++
     }
 
     backup.close()
