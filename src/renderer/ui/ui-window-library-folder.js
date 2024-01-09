@@ -92,6 +92,14 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
+    macaco.events.register('update-collection-folder', (ev, folder) => {
+      if (folder == this.path) {
+        this.dom.folder.classList.add('active')
+      } else {
+        this.dom.folder.classList.remove('active')
+      }
+    })
+
     this.dom.folder.onclick = (ev) => {
       // set view to this path
       macaco.events.invoke("set-collection-folder", this.path)
