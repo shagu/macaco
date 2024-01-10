@@ -133,29 +133,16 @@ export default class UIWindowLibraryFolder extends HTMLElement {
   }
 
   connectedCallback () {
-    const paths = this.path.split("/")
-    let string = ""
-
-    if(paths.length === 1) {
-      string = "Library"
-    } else {
-      for (let i = 1; i < paths.length; i++) {
-        if (i == paths.length - 1) {
-          string = `${string}${paths[i]}`
-          //string = `${string}<b>${paths[i]}</b>`
-        } else if (i == paths.length - 2){
-          string = `${string}${paths[i]}/`
-          // string = `${string} ► `
-        } else {
-          string = `${string}${paths[i]}/`
-          // string = `${string}   `
-        }
-      }
-    }
-
-    this.dom.label.innerHTML = string
+    this.dom.label.innerHTML = this.path == '.' ? 'Collection' : this.path
     this.dom.count.innerHTML = this.cards.length > 0 ? this.cards.length : ""
     this.dom.icon.src = `../../assets/mana/${macaco.statistics.icon(this.cards)}.png`
+
+    const folder = macaco.collection.folder
+    if (folder == this.path) {
+      this.dom.folder.classList.add('active')
+    } else {
+      this.dom.folder.classList.remove('active')
+    }
   }
 }
 
