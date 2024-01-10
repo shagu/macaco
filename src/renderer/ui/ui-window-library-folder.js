@@ -16,7 +16,7 @@ export default class UIWindowLibraryFolder extends HTMLElement {
   static style = css`
     #folder {
       margin: 1px;
-      padding: 4px 6px;
+      padding: 6px;
       text-overflow: ellipsis;
       border: 1px var(--window-light) solid;
 
@@ -25,7 +25,6 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       grid-template-areas: 'title count';
       align-items: center;
       white-space: nowrap;
-      height: 20px;
     }
 
     #folder:hover {
