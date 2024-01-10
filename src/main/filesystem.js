@@ -206,6 +206,10 @@ class Filesystem {
     card.fsurl = fsurl
     return card
   }
+
+  async mkdir(collection, folder) {
+    fs.mkdirSync(path.join(collection, folder), { recursive: true })
+  }
 }
 
 module.exports = new Filesystem()

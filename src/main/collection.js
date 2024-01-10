@@ -77,6 +77,12 @@ class Collection {
     return card
   }
 
+  /* create new folder in library */
+  async mkdir(folder) {
+    await filesystem.mkdir(this.folder, folder)
+    this.collection[folder] = this.collection[folder] || []
+  }
+
   async preview(card) {
     // query image and metadata
     const preview = structuredClone(card)

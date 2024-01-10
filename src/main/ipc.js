@@ -73,6 +73,11 @@ class Ipc {
     shared.window.webContents.send('update-card-preview', previewCard, previewCard)
   }
 
+  async createNewFolder(event, folder, ...args) {
+    await collection.mkdir(folder)
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
   register() {
     electron.ipcMain.handle('window-minimize', this.windowMinimize)
     electron.ipcMain.handle('window-maximize', this.windowMaximize)
@@ -81,7 +86,9 @@ class Ipc {
     electron.ipcMain.handle('set-collection', this.setCollection)
     electron.ipcMain.handle('set-card-preview', this.setCardPreview)
     electron.ipcMain.handle('set-card-folder', this.setCardFolder)
+
     electron.ipcMain.handle('add-update-card', this.addUpdateCard)
+    electron.ipcMain.handle('create-new-folder', this.createNewFolder)
   }
 }
 
