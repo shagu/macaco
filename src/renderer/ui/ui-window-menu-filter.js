@@ -74,6 +74,13 @@ export default class UIWindowMenuFilter extends HTMLElement {
       z-index: 16;
     }
 
+    m-grid {
+      margin: 2px;
+      padding: 4px;
+      background-color: var(--widget-normal);
+      border: 1px var(--border-normal) solid;
+    }
+
     div.menu-segment-title {
       padding: 4px;
       color: var(--font-dark);
