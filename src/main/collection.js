@@ -15,8 +15,8 @@ class Collection {
   constructor() {}
 
   /* set collection to a folder */
-  async set(folder) {
-    if(folder === this.folder) return
+  async set(folder, force) {
+    if(!force && folder === this.folder) return
 
     // load collection of file and folder names
     const files = await filesystem.find(folder)
@@ -27,6 +27,11 @@ class Collection {
     for(const [path, cards] of Object.entries(this.collection)) {
       for(const card of cards) card.metadata = await metadata.query(card)
     }
+  }
+
+  async metadata(force) {
+    await metadata.reload(force)
+    await this.set(this.folder)
   }
 
   async reload(card, oldurl) {

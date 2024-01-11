@@ -28,12 +28,12 @@ const languages = {
 class Metadata {
   runner = false
 
-  async reload() {
+  async reload(force) {
     const data = path.join(shared.userdir, 'db', 'macaco-data.json.gz')
     const locales = path.join(shared.userdir, 'db', 'macaco-locales.json.gz')
 
     // fetch metadata if not existing
-    if(!fs.existsSync(data) || !fs.existsSync(locales)) {
+    if(force || !fs.existsSync(data) || !fs.existsSync(locales)) {
       const fetch_data = downloader.queue(
         'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
         path.join(shared.userdir, 'db', 'macaco-data.json.gz'),

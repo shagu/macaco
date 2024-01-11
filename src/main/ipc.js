@@ -78,10 +78,17 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
+  async reloadMetadata(event, forced, ...args) {
+    await collection.metadata(forced)
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
   register() {
     electron.ipcMain.handle('window-minimize', this.windowMinimize)
     electron.ipcMain.handle('window-maximize', this.windowMaximize)
     electron.ipcMain.handle('window-close', this.windowClose)
+
+    electron.ipcMain.handle('reload-metadata', this.reloadMetadata)
 
     electron.ipcMain.handle('set-collection', this.setCollection)
     electron.ipcMain.handle('set-card-preview', this.setCardPreview)

@@ -5,7 +5,7 @@ export default class UIWindowMenuMain extends HTMLElement {
 
   static template = html`
     <m-button id="metadata">Update Macaco Metadata</m-button>
-    <m-button id="delver" disabled>Import DelverLens Backup</m-button>
+    <m-button id="delver">Import DelverLens Backup</m-button>
   `
 
   static style = css`
@@ -43,6 +43,10 @@ export default class UIWindowMenuMain extends HTMLElement {
 
     for (const e of this.shadow.querySelectorAll('*')) {
       if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+    }
+
+    this.dom['metadata'].onclick = (e) => {
+      macaco.ipc.invoke('reload-metadata', true)
     }
   }
 }
