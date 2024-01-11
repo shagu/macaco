@@ -48,7 +48,7 @@ class Collection {
   }
 
   /* add card to current collection */
-  async write(card) {
+  async write(card, keep) {
     // cheatcode to download all card images of a set
     if (card.number === '*') {
       for(const number of await metadata.edition(card.edition)) {
@@ -70,7 +70,7 @@ class Collection {
     card.metadata = await metadata.query(card)
 
     // write card updates to filesystem
-    card = await filesystem.write(card, true)
+    card = await filesystem.write(card, keep)
 
     // reload collection and return card
     await this.reload(card, oldurl)

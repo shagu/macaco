@@ -189,18 +189,20 @@ class Filesystem {
     return list
   }
 
-  async write(card, updateImage) {
-    /* retrieve best image */
-    const image = updateImage ? await this.image(card) : false
-
+  async write(card, keepImage) {
     /* get the preferred filename for the card */
     const [ filename, fsurl ] = await this.filename(card)
 
-    // in case of a previous fsurl, move it to the new filename
-    if (card.fsurl && fs.existsSync(card.fsurl)) fs.renameSync(card.fsurl, fsurl)
-
-    // write image to card file
-    if (image && fs.existsSync(image)) fs.copyFileSync(image, fsurl)
+    /* check if the card is an existing one */
+    if (card.fsurl && fs.existsSync(card.fsurl)) {
+      /* move the card to a new location/filename */
+      const image = keepImage ? card.fsurl : await this.image(card)
+      fs.renameSync(image, fsurl)
+    } else {
+      /* create a new card on the new location/filename */
+      const image = await this.image(card)
+      fs.copyFileSync(image, fsurl)
+    }
 
     // update card file data
     card.fsurl = fsurl

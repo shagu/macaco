@@ -49,7 +49,7 @@ class Ipc {
     // move collection cards
     for(const card of cards) {
       card.folder = folder
-      await collection.write(card)
+      await collection.write(card, true)
     }
 
     // notify frontend about collection changes
