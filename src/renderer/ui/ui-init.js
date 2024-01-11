@@ -15,6 +15,7 @@ import './ui-window-overlay.js'
 
 import './ui-window-menu.js'
 import './ui-window-menu-filter.js'
+import './ui-window-menu-main.js'
 import './ui-window-menu-statistics.js'
 
 import './ui-window-sidebar.js'
