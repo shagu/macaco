@@ -79,6 +79,11 @@ class Metadata {
   async query(card) {
     await this.initialized()
 
+    // make sure all data is in lowercase
+    card.edition = card.edition.toLowerCase()
+    card.number = card.number.toLowerCase()
+
+    // get upper case version for mtgjson query
     const edition = card.edition ? card.edition.toUpperCase() : 'Unknown'
     const number = card.number ? card.number.toString().toUpperCase() : 'Unknown'
 
