@@ -69,13 +69,13 @@ class Ipc {
     previewCard.fsurl = undefined
 
     // send update events to frontend
-    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection, [card.fsurl])
     shared.window.webContents.send('update-card-preview', previewCard, previewCard)
   }
 
   async createNewFolder(event, folder, ...args) {
     await collection.mkdir(folder)
-    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection, [folder])
   }
 
   async reloadMetadata(event, forced, ...args) {
