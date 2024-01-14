@@ -19,7 +19,7 @@
     "standard": "^17.0.0"
   },
   "dependencies": {
-    "better-sqlite3": "^8.0.1",
+    "better-sqlite3": "^8.7.0",
     "jimp": "^0.16.2",
     "jszip": "^3.10.1"
   },
