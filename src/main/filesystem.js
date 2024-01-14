@@ -193,11 +193,21 @@ class Filesystem {
     /* get the preferred filename for the card */
     const [ filename, fsurl ] = await this.filename(card)
 
+    /* create required directories */
+    fs.mkdirSync(path.dirname(fsurl), { recursive: true })
+
     /* check if the card is an existing one */
     if (card.fsurl && fs.existsSync(card.fsurl)) {
       /* move the card to a new location/filename */
       const image = keepImage ? card.fsurl : await this.image(card)
       fs.renameSync(image, fsurl)
+    } else if (card.image){
+      /* write imagedata from json object to fsurl */
+      const fd = fs.openSync(fsurl, 'a')
+      fs.writeSync(fd, card.image)
+      fs.closeSync(fd)
+
+      delete card.image
     } else {
       /* create a new card on the new location/filename */
       const image = await this.image(card)
