@@ -111,6 +111,7 @@ class Collection {
       filesystem.write(card)
     }
 
+    this.set(this.folder, true)
     console.log('Done')
   }
 }
