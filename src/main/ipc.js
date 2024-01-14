@@ -83,12 +83,38 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
+
+  async importDelver(event, file, ...args) {
+    if (!file) {
+      // show open dialog if folder is not set
+      const dialogOptions = {
+        properties: ['openFile'],
+        filters: [
+          { name: 'DelverLens Backup Files', extensions: ['dlens.bin', 'dlens', 'sqlite'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      }
+
+      const result = await await electron.dialog.showOpenDialog(dialogOptions)
+      if (!result.filePaths || result.canceled) return
+      file = result.filePaths[0]
+    }
+
+    // reload collection
+    await collection.importDelver(file)
+
+    // notify frontend
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
+
   register() {
     electron.ipcMain.handle('window-minimize', this.windowMinimize)
     electron.ipcMain.handle('window-maximize', this.windowMaximize)
     electron.ipcMain.handle('window-close', this.windowClose)
 
     electron.ipcMain.handle('reload-metadata', this.reloadMetadata)
+    electron.ipcMain.handle('import-delver', this.importDelver)
 
     electron.ipcMain.handle('set-collection', this.setCollection)
     electron.ipcMain.handle('set-card-preview', this.setCardPreview)

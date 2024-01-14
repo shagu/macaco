@@ -143,12 +143,12 @@ export default class UIWindowPopups extends HTMLElement {
 
     macaco.ipc.register("set-popup", (ev, id, title, info, progress) => {
       this.popup(id, title, info, progress)
-      macaco.events.invoke("update-popup", id, title, info, progress) // NOT USED
+      macaco.events.invoke("update-popup", id, title, info, progress)
     })
 
     macaco.events.register("set-popup", (ev, id, title, info, progress) => {
       this.popup(id, title, info, progress)
-      macaco.events.invoke("update-popup", id, title, info, progress) // NOT USED
+      macaco.events.invoke("update-popup", id, title, info, progress)
     })
   }
 }

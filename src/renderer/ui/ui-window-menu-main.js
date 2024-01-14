@@ -48,6 +48,10 @@ export default class UIWindowMenuMain extends HTMLElement {
     this.dom['metadata'].onclick = (e) => {
       macaco.ipc.invoke('reload-metadata', true)
     }
+
+    this.dom['delver'].onclick = (e) => {
+      macaco.ipc.invoke('import-delver')
+    }
   }
 }
 

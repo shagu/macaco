@@ -7,6 +7,7 @@
 
 const filesystem = require('./filesystem.js')
 const metadata = require('./metadata.js')
+const delver = require('./delver.js')
 
 class Collection {
   static collection = {}
@@ -95,6 +96,22 @@ class Collection {
     preview.preview = await filesystem.image(preview, true)
 
     return preview
+  }
+
+  async importDelver(file) {
+    // abort if no collection is loaded
+    if (!this.folder || this.folder == "") return
+
+    const cards = await delver.import(file)
+
+    console.log(`Backup contains ${cards.length} cards.`)
+
+    for (const card of cards) {
+      card.collection = this.folder
+      filesystem.write(card)
+    }
+
+    console.log('Done')
   }
 }
 
