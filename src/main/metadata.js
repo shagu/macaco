@@ -82,6 +82,11 @@ class Metadata {
     const edition = card.edition ? card.edition.toUpperCase() : 'Unknown'
     const number = card.number ? card.number.toString().toUpperCase() : 'Unknown'
 
+    // convert long language name to short version
+    if(card.language && languages[card.language]) {
+      card.language = languages[card.language]
+    }
+
     if (this.data && this.data[edition] && this.data[edition][number]) {
       // shortcuts to access internal databases
       const data = this.data[edition][number] || { name: "Unknown" }
