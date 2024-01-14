@@ -28,11 +28,11 @@ const macaco = {
   getTextHtml: (str) => {
     if (!str) return ''
 
-    // multicolor icons, separated by "/"
+    // remove multicolor icon slash-separator
     const micons = /{(.+?)\/(.+?)}/gi
-    str = str.replace(micons, "<img src='../../assets/mana/$1$2.png' alt='$1$2'>")
+    str = str.replace(micons, "{$1$2}")
 
-    // normal icons, same as filename
+    // convert mana icons to html images
     const icons = /{(.+?)}/gi
     str = str.replace(icons, "<img src='../../assets/mana/$1.png' alt='$1'>")
 
