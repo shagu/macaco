@@ -29,6 +29,9 @@ export default class UIWindowContent extends HTMLElement {
     }
 
     document.addEventListener('keydown', (event) => {
+      /* ignore if any element or input has focus */
+      if (document.activeElement.tagName !== "BODY") return
+
       if (event.ctrlKey && event.code === 'KeyA') {
         macaco.collection.selection = []
         macaco.collection.view.forEach((card) => macaco.collection.selection.push(card))
