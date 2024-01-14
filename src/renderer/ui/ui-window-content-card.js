@@ -37,7 +37,7 @@ export default class UIWindowContentCard extends HTMLElement {
       background: var(--color-accent);
     }
 
-    :host(.new) {
+    :host(.recent) {
       background: var(--color-hover);
       border: 1px var(--color-notify) solid;
     }

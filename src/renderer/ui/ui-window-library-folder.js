@@ -37,6 +37,10 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       border: 1px var(--color-select) solid;
     }
 
+    #folder.recent {
+      border: 1px var(--color-accent) solid;
+    }
+
     #folder.drag {
       background: var(--color-accent);
       border: 1px var(--color-accent) solid;
@@ -97,6 +101,13 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       } else {
         this.dom.folder.classList.remove('active')
       }
+
+      // detect recent change
+      if (macaco.collection.diff.includes(this.path)) {
+        this.dom.folder.classList.add('recent')
+      } else {
+        this.dom.folder.classList.remove('recent')
+      }
     })
 
     this.dom.folder.onclick = (ev) => {
@@ -137,11 +148,18 @@ export default class UIWindowLibraryFolder extends HTMLElement {
     this.dom.count.innerHTML = this.cards.length > 0 ? this.cards.length : ""
     this.dom.icon.src = `../../assets/mana/${macaco.statistics.icon(this.cards)}.png`
 
-    const folder = macaco.collection.folder
-    if (folder == this.path) {
+    // detect current folder
+    if (macaco.collection.folder == this.path) {
       this.dom.folder.classList.add('active')
     } else {
       this.dom.folder.classList.remove('active')
+    }
+
+    // detect recent change
+    if (macaco.collection.diff.includes(this.path)) {
+      this.dom.folder.classList.add('recent')
+    } else {
+      this.dom.folder.classList.remove('recent')
     }
   }
 }

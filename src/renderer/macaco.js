@@ -14,7 +14,8 @@ const macaco = {
 
   collection: {
     path: "",
-    contents: {}
+    contents: {},
+    diff: [],
   },
 
   getLocale: (card, entry) => {
@@ -85,7 +86,15 @@ const macaco = {
 }
 
 /* external events */
-macaco.ipc.register('update-collection', (ev, path, contents) => {
+macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
+  // update and reset recent updates
+  macaco.collection.diff = diff || []
+  setTimeout(() => {
+    if (macaco.collection.diff == diff) {
+      macaco.collection.diff = []
+    }
+  }, 1000)
+
   if (path !== macaco.collection.path) {
     /* set new received collection data */
     macaco.collection.path = path

@@ -51,6 +51,7 @@ export default class UIWindowContent extends HTMLElement {
       // remove previous selections
       for (const [identifier, element] of Object.entries(this.groups)) {
         element.classList.remove('active')
+        element.classList.remove('recent')
       }
 
       // add active class to selected groups
@@ -58,6 +59,15 @@ export default class UIWindowContent extends HTMLElement {
         for(const selected of macaco.collection.selection) {
           if(element.cards.includes(selected))
             element.classList.add('active')
+        }
+      }
+
+      // add recent class to recently changed groups
+      for (const [identifier, element] of Object.entries(this.groups)) {
+        for (const card of element.cards) {
+          if (macaco.collection.diff.includes(card.fsurl)) {
+            element.classList.add('recent')
+          }
         }
       }
     }
