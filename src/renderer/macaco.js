@@ -18,6 +18,8 @@ const macaco = {
     diff: []
   },
 
+  combine: 'id',
+
   getLocale: (card, entry) => {
     if (card.language && card.metadata && card.metadata.locales && card.metadata.locales[card.language]) {
       return card.metadata.locales[card.language][entry]
@@ -118,6 +120,8 @@ macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
     macaco.events.invoke('update-collection-contents', macaco.collection.contents)
     macaco.events.invoke('update-collection-view', macaco.collection.view)
   }
+
+  macaco.events.invoke('update-combine', macaco.combine)
 })
 
 /* internal events */
@@ -138,6 +142,12 @@ macaco.events.register('set-collection-folder', (ev, folder) => {
 macaco.events.register('set-filter', (ev, entry, value, state) => {
   macaco.filter.set(entry, value, state)
   macaco.events.invoke('update-filter', macaco.filter)
+})
+
+macaco.events.register('set-combine', (ev, state) => {
+  macaco.combine = state
+  macaco.events.invoke('update-combine', macaco.combine)
+  macaco.events.invoke('update-collection-view', macaco.collection.view)
 })
 
 macaco.events.register('update-filter', (ev, filter) => {

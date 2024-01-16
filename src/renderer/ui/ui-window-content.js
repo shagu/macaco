@@ -15,7 +15,7 @@ export default class UIWindowContent extends HTMLElement {
   `
 
   dom = {}
-  groups = {}
+  cards = {}
 
   constructor () {
     super()
@@ -49,20 +49,20 @@ export default class UIWindowContent extends HTMLElement {
 
     const updateSelection = (ev, selection) => {
       // remove previous selections
-      for (const [, element] of Object.entries(this.groups)) {
+      for (const [, element] of Object.entries(this.cards)) {
         element.classList.remove('active')
         element.classList.remove('recent')
       }
 
       // add active class to selected groups
-      for (const [, element] of Object.entries(this.groups)) {
+      for (const [, element] of Object.entries(this.cards)) {
         for (const selected of macaco.collection.selection) {
           if (element.cards.includes(selected)) { element.classList.add('active') }
         }
       }
 
       // add recent class to recently changed groups
-      for (const [, element] of Object.entries(this.groups)) {
+      for (const [, element] of Object.entries(this.cards)) {
         for (const card of element.cards) {
           if (macaco.collection.diff.includes(card.fsurl)) {
             element.classList.add('recent')
@@ -76,19 +76,23 @@ export default class UIWindowContent extends HTMLElement {
       this.dom.cards.innerHTML = ''
 
       // cache dom object of same cards
-      this.groups = {}
+      this.cards = {}
 
       // add card for each entry in view
       for (const card of macaco.collection.view) {
-        let id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-        if (macaco.config.byname && card.data && card.data.name) { id = `${card.data.name}` }
+        let id = `${card.fsurl}`
+        if (macaco.combine === 'id') {
+          id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
+        } else if (macaco.combine === 'name' && card.metadata) {
+          id = `[${card.metadata.name}]`
+        }
 
-        if (this.groups[id]) {
-          this.groups[id].cards.push(card)
+        if (this.cards[id]) {
+          this.cards[id].cards.push(card)
         } else {
-          this.groups[id] = document.createElement('ui-window-content-card')
-          this.groups[id].cards = [card]
-          this.dom.cards.appendChild(this.groups[id])
+          this.cards[id] = document.createElement('ui-window-content-card')
+          this.cards[id].cards = [card]
+          this.dom.cards.appendChild(this.cards[id])
         }
       }
 

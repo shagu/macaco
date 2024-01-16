@@ -55,6 +55,13 @@ export default class UIWindowMenuFilter extends HTMLElement {
       <div><m-button id="sort-mode-asc">▲ Ascending</m-button></div>
       <div><m-button id="sort-mode-desc">▼ Descending</m-button></div>
     </m-grid>
+
+    <div class="menu-segment-title">Group</div>
+    <m-grid horizontal="1" gap="1px">
+      <div class="menu-multi-label">Group by</div>
+      <div><m-button id="group-mode-id">Identical Cards</m-button></div>
+      <div><m-button id="group-mode-name">Same Name</m-button></div>
+    </m-grid>
   `
 
   static style = css`
@@ -201,6 +208,21 @@ export default class UIWindowMenuFilter extends HTMLElement {
 
       macaco.events.register('update-filter', (ev, filter) => {
         const state = filter.get('order', order)
+        button.checked = state
+      })
+    }
+
+    // combine cards
+    for (const combine of ['id', 'name']) {
+      const button = this.dom[`group-mode-${combine}`]
+      button.onclick = (ev) => {
+        const state = !button.checked && combine
+        macaco.events.invoke('set-combine', state)
+        ev.stopPropagation()
+      }
+
+      macaco.events.register('update-combine', (ev, value) => {
+        const state = value === combine
         button.checked = state
       })
     }
