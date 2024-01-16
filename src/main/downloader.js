@@ -6,25 +6,25 @@ const shared = require('./shared.js')
 class Downloader {
   static processes
 
-  constructor() {
+  constructor () {
     this.processes = {}
   }
 
-  notify(status, size, downloaded, file, url, real_url, queue) {
+  notify (status, size, downloaded, file, url, real, queue) {
     const percent = size > 0 ? (100.0 * downloaded / size).toFixed() : 0
-    let string = "Downloading"
+    let string = 'Downloading'
 
-    if (status === 1) string = "Done"
-    if (status === -1) string = "Error"
+    if (status === 1) string = 'Done'
+    if (status === -1) string = 'Error'
 
-    if(shared.window) {
-      shared.window.webContents.send('set-popup', "Download", url, `${downloaded} of ${size} (${percent}) [${queue ? queue.tasks.length : 0}]`, percent)
+    if (shared.window) {
+      shared.window.webContents.send('set-popup', 'Download', url, `${downloaded} of ${size} (${percent}) [${queue ? queue.tasks.length : 0}]`, percent)
     } else {
       console.log(string, `${percent}%`, size, downloaded, url)
     }
   }
 
-  fetch(url, file, notify = this.notify, force, queue, originalUrl) {
+  fetch (url, file, notify = this.notify, force, queue, originalUrl) {
     return new Promise((resolve, reject) => {
       notify(0, 0, 0, file, url, url, queue)
 
@@ -39,7 +39,7 @@ class Downloader {
         } else {
           const size = parseInt(response.headers['content-length'], 10)
           const url = originalUrl
-          const real_url = url
+          const real = url
           let downloaded = 0
 
           // create directory
@@ -60,26 +60,26 @@ class Downloader {
           // notify goes here
           response.on('data', function (chunk) {
             downloaded += chunk.length
-            notify(0, size, downloaded, file, url, real_url, queue)
+            notify(0, size, downloaded, file, url, real, queue)
           })
 
           output.on('finish', () => {
             output.close()
-            notify(1, size, size, file, url, real_url, queue)
+            notify(1, size, size, file, url, real, queue)
             resolve()
           })
         }
       })
 
       request.on('error', function (err) {
-        notify(-1, size, size, file, url, real_url, queue)
+        notify(-1, -1, -1, -1)
         resolve(err)
       })
     })
   }
 
   // TODO same url? same path? return existing promise
-  queue(url, path, notify, force, queueName) {
+  queue (url, path, notify, force, queueName) {
     // initialize empty process list by name
     if (!this.processes[queueName]) {
       this.processes[queueName] = { count: 0, tasks: [] }
@@ -89,7 +89,7 @@ class Downloader {
 
     // detect duplicate entries in queue
     const duplicate = process.tasks.find((task) => {
-      return task.url == url && task.path == path && task.force == force;
+      return task.url === url && task.path === path && task.force === force
     })
 
     // add new task to the process list

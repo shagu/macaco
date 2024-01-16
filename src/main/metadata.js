@@ -7,46 +7,46 @@ const downloader = require('./downloader.js')
 
 const languages = {
   'Ancient Greek': 'grc',
-  'Arabic': 'ar',
+  Arabic: 'ar',
   'Chinese Simplified': 'cs',
   'Chinese Traditional': 'ct',
-  'English': 'en',
-  'French': 'fr',
-  'German': 'de',
-  'Hebrew': 'he',
-  'Italian': 'it',
-  'Japanese': 'jp',
-  'Korean': 'kr',
-  'Latin': 'la',
-  'Phyrexian': 'ph',
+  English: 'en',
+  French: 'fr',
+  German: 'de',
+  Hebrew: 'he',
+  Italian: 'it',
+  Japanese: 'jp',
+  Korean: 'kr',
+  Latin: 'la',
+  Phyrexian: 'ph',
   'Portuguese (Brazil)': 'pt',
-  'Russian': 'ru',
-  'Sanskrit': 'sa',
-  'Spanish': 'sp',
+  Russian: 'ru',
+  Sanskrit: 'sa',
+  Spanish: 'sp'
 }
 
 class Metadata {
   runner = false
 
-  async reload(force) {
+  async reload (force) {
     const data = path.join(shared.userdir, 'db', 'macaco-data.json.gz')
     const locales = path.join(shared.userdir, 'db', 'macaco-locales.json.gz')
 
     // fetch metadata if not existing
-    if(force || !fs.existsSync(data) || !fs.existsSync(locales)) {
-      const fetch_data = downloader.queue(
+    if (force || !fs.existsSync(data) || !fs.existsSync(locales)) {
+      const data = downloader.queue(
         'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
         path.join(shared.userdir, 'db', 'macaco-data.json.gz'),
         undefined, true, 'metadata'
       )
 
-      const fetch_locales = downloader.queue(
+      const locales = downloader.queue(
         'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
         path.join(shared.userdir, 'db', 'macaco-locales.json.gz'),
         undefined, true, 'metadata'
       )
 
-      await Promise.all([fetch_locales, fetch_data])
+      await Promise.all([locales, data])
     }
 
     const rawdata = fs.readFileSync(data)
@@ -56,27 +56,27 @@ class Metadata {
     this.locales = JSON.parse(zlib.gunzipSync(rawlocales))
   }
 
-  async initialized() {
-    if(!this.data || !this.locales) {
-      if(!this.runner) this.runner = this.reload()
+  async initialized () {
+    if (!this.data || !this.locales) {
+      if (!this.runner) this.runner = this.reload()
       await this.runner
     }
   }
 
-  async edition(edition) {
+  async edition (edition) {
     await this.initialized()
 
     if (!this.data[edition.toUpperCase()]) return []
 
     const numbers = []
-    for(const [number, card] of Object.entries(this.data[edition.toUpperCase()])) {
+    for (const [number] of Object.entries(this.data[edition.toUpperCase()])) {
       numbers.push(number)
     }
 
     return numbers
   }
 
-  async query(card) {
+  async query (card) {
     await this.initialized()
 
     // make sure all data is in lowercase
@@ -88,13 +88,13 @@ class Metadata {
     const number = card.number ? card.number.toString().toUpperCase() : 'Unknown'
 
     // convert long language name to short version
-    if(card.language && languages[card.language]) {
+    if (card.language && languages[card.language]) {
       card.language = languages[card.language]
     }
 
     if (this.data && this.data[edition] && this.data[edition][number]) {
       // shortcuts to access internal databases
-      const data = this.data[edition][number] || { name: "Unknown" }
+      const data = this.data[edition][number] || { name: 'Unknown' }
       const locale = this.locales[data.name]
 
       // deep copy the dabase's metadata to a new metadata object
@@ -104,7 +104,7 @@ class Metadata {
       for (const language in data.locales) {
         const short = languages[language]
 
-        for (const entry of ["name", "text", "type", "flavor"]) {
+        for (const entry of ['name', 'text', 'type', 'flavor']) {
           const pointer = parseInt(data.locales[language][entry])
 
           if (pointer !== undefined && locale[language][entry][pointer]) {

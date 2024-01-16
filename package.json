@@ -25,10 +25,8 @@
   },
   "standard": {
     "globals": [
-      "core",
-      "frontend",
-      "filters",
-      "popups",
+      "macaco",
+      "CustomEvent",
       "customElements",
       "HTMLElement",
       "IntersectionObserver",

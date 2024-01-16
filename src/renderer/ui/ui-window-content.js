@@ -25,12 +25,12 @@ export default class UIWindowContent extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     document.addEventListener('keydown', (event) => {
       /* ignore if any element or input has focus */
-      if (document.activeElement.tagName !== "BODY") return
+      if (document.activeElement.tagName !== 'BODY') return
 
       if (event.ctrlKey && event.code === 'KeyA') {
         macaco.collection.selection = []
@@ -47,23 +47,22 @@ export default class UIWindowContent extends HTMLElement {
       macaco.events.invoke('update-collection-selection', macaco.collection.selection)
     }
 
-    const update_selection = (ev, selection) => {
+    const updateSelection = (ev, selection) => {
       // remove previous selections
-      for (const [identifier, element] of Object.entries(this.groups)) {
+      for (const [, element] of Object.entries(this.groups)) {
         element.classList.remove('active')
         element.classList.remove('recent')
       }
 
       // add active class to selected groups
-      for (const [identifier, element] of Object.entries(this.groups)) {
-        for(const selected of macaco.collection.selection) {
-          if(element.cards.includes(selected))
-            element.classList.add('active')
+      for (const [, element] of Object.entries(this.groups)) {
+        for (const selected of macaco.collection.selection) {
+          if (element.cards.includes(selected)) { element.classList.add('active') }
         }
       }
 
       // add recent class to recently changed groups
-      for (const [identifier, element] of Object.entries(this.groups)) {
+      for (const [, element] of Object.entries(this.groups)) {
         for (const card of element.cards) {
           if (macaco.collection.diff.includes(card.fsurl)) {
             element.classList.add('recent')
@@ -72,19 +71,19 @@ export default class UIWindowContent extends HTMLElement {
       }
     }
 
-    const update_view = (ev, view) => {
+    const updateView = (ev, view) => {
       // clear current view
-      this.dom.cards.innerHTML = ""
+      this.dom.cards.innerHTML = ''
 
       // cache dom object of same cards
       this.groups = {}
 
       // add card for each entry in view
-      for(const card of macaco.collection.view) {
+      for (const card of macaco.collection.view) {
         let id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
         if (macaco.config.byname && card.data && card.data.name) { id = `${card.data.name}` }
 
-        if(this.groups[id]) {
+        if (this.groups[id]) {
           this.groups[id].cards.push(card)
         } else {
           this.groups[id] = document.createElement('ui-window-content-card')
@@ -94,11 +93,11 @@ export default class UIWindowContent extends HTMLElement {
       }
 
       // update selected cards
-      update_selection()
+      updateSelection()
     }
 
-    macaco.events.register('update-collection-selection', update_selection)
-    macaco.events.register('update-collection-view', update_view)
+    macaco.events.register('update-collection-selection', updateSelection)
+    macaco.events.register('update-collection-view', updateView)
   }
 }
 

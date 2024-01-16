@@ -36,7 +36,7 @@ export default class UIWindowMenu extends HTMLElement {
 
     // update state of all buttons and menus
     for (const popover of UIWindowMenu.popovers) {
-      if (popover == menu) {
+      if (popover === menu) {
         popover.state = !popover.state
       } else {
         popover.state = false
@@ -92,7 +92,7 @@ export default class UIWindowMenu extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     // register on set-menu events to toggle menus

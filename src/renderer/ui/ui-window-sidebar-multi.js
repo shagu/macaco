@@ -61,42 +61,45 @@ export default class UIWindowSidebarMulti extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     const colormap = {
-      "W": "#f8f6d8", "B": "#948d88", 
-      "U": "#c1d7e9", "R": "#e49977", 
-      "G": "#a3c095", "M": "#CFAC5E", 
-      "C": "#ccc2c0", "E": "#E55055"
+      W: '#f8f6d8',
+      B: '#948d88',
+      U: '#c1d7e9',
+      R: '#e49977',
+      G: '#a3c095',
+      M: '#CFAC5E',
+      C: '#ccc2c0',
+      E: '#E55055'
     }
 
     macaco.events.register('update-collection-selection', (ev, selection) => {
       if (selection.length < 2) return
 
-      this.dom.cards.innerHTML = ""
+      this.dom.cards.innerHTML = ''
 
       const merged = {}
 
-      for(const card of selection) {
+      for (const card of selection) {
         let id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
         if (macaco.config.byname && card.data && card.data.name) { id = `${card.data.name}` }
-        
+
         if (merged[id]) {
           merged[id].push(card)
         } else {
-          merged[id] = [ card ]
+          merged[id] = [card]
         }
       }
 
-
-      for(const [id, cards] of Object.entries(merged)) {
+      for (const [, cards] of Object.entries(merged)) {
         const card = cards[0]
         const meta = card.metadata
 
         const count = cards.length
-        const color = meta.color ? meta.color.length === 0 ? colormap["C"] : meta.color.length > 1 ? colormap["M"] : colormap[meta.color[0]] : colormap["E"]
-        const name = macaco.getLocale(card, "name")
+        const color = meta.color ? meta.color.length === 0 ? colormap.C : meta.color.length > 1 ? colormap.M : colormap[meta.color[0]] : colormap.E
+        const name = macaco.getLocale(card, 'name')
 
         const element = document.createElement('m-grid')
         element.classList = 'frame'
@@ -108,7 +111,7 @@ export default class UIWindowSidebarMulti extends HTMLElement {
 
         const etitle = document.createElement('div')
         etitle.classList = 'title'
-        etitle.innerHTML = name || "Unknown Card"
+        etitle.innerHTML = name || 'Unknown Card'
 
         const emana = document.createElement('div')
         emana.classList = 'mana'
@@ -122,7 +125,7 @@ export default class UIWindowSidebarMulti extends HTMLElement {
         element.onmouseenter = (ev) => {
           macaco.events.invoke('set-overlay-image', card.fsurl)
         }
-    
+
         element.onmouseleave = (ev) => {
           macaco.events.invoke('set-overlay-image', false)
         }

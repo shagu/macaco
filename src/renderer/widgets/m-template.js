@@ -1,15 +1,14 @@
 export const html = (data, ...vars) => {
   const template = document.createElement('template')
 
-  let chunks = []
+  const chunks = []
   for (let i = 0; i < data.length; i++) {
     chunks.push(data[i])
 
-    if (vars[i] !== undefined) 
-      chunks.push(vars[i])
+    if (vars[i] !== undefined) { chunks.push(vars[i]) }
   }
 
-  template.innerHTML = chunks.join("")
+  template.innerHTML = chunks.join('')
   return template.content
 }
 
@@ -20,6 +19,5 @@ export const css = (data) => {
 }
 
 export const dom = (p) => {
-  for (const e of p.shadow.querySelectorAll( '*' ))
-    if(e.id) p.dom[e.id] = p.shadow.getElementById(e.id)
+  for (const e of p.shadow.querySelectorAll('*')) { if (e.id) p.dom[e.id] = p.shadow.getElementById(e.id) }
 }

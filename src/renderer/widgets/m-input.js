@@ -1,7 +1,7 @@
 import { html, css } from './m-template.js'
 
 export default class MInput extends HTMLElement {
-  static observedAttributes = [ 'disabled', 'maxlength', 'placeholder', 'readonly', 'type', 'value' ]
+  static observedAttributes = ['disabled', 'maxlength', 'placeholder', 'readonly', 'type', 'value']
   static shadow = null
 
   static template = html`
@@ -40,55 +40,56 @@ export default class MInput extends HTMLElement {
     }
   `
 
-  get type() {
-    return this.hasAttribute("type") ? this.getAttribute("type") : "text"
+  get type () {
+    return this.hasAttribute('type') ? this.getAttribute('type') : 'text'
   }
 
-  set type(type) {
-    this.setAttribute("type", type)
+  set type (type) {
+    this.setAttribute('type', type)
   }
 
-  get value() {
+  get value () {
     return this.input.value
   }
 
-  set value(value) {
+  set value (value) {
     this.input.value = value
   }
 
-  get placeholder() {
+  get placeholder () {
     return this.input.placeholder
   }
 
-  set placeholder(value) {
-    this.setAttribute("placeholder", value)
+  set placeholder (value) {
+    this.setAttribute('placeholder', value)
   }
 
-  get maxLength() {
-    return this.hasAttribute("maxlength") ? parseInt(this.getAttribute("maxlength")) : Infinity
-  }
-  set maxLength(maxLength) {
-    this.setAttribute("maxlength", maxLength)
+  get maxLength () {
+    return this.hasAttribute('maxlength') ? parseInt(this.getAttribute('maxlength')) : Infinity
   }
 
-  get readOnly() {
-    return this.hasAttribute("readonly")
+  set maxLength (maxLength) {
+    this.setAttribute('maxlength', maxLength)
   }
 
-  set readOnly(state) {
-    state === true ? this.setAttribute("readonly", state) : this.removeAttribute("readonly")
+  get readOnly () {
+    return this.hasAttribute('readonly')
   }
 
-  get disabled() {
-    return this.hasAttribute("disabled")
+  set readOnly (state) {
+    state === true ? this.setAttribute('readonly', state) : this.removeAttribute('readonly')
   }
 
-  set disabled(disabled) {
-    disabled ? this.setAttribute("disabled", "") : this.removeAttribute("disabled")
-    disabled ? this.input.setAttribute("disabled", "") : this.input.removeAttribute("disabled")
+  get disabled () {
+    return this.hasAttribute('disabled')
   }
 
-  attributeChangedCallback(name) {
+  set disabled (disabled) {
+    disabled ? this.setAttribute('disabled', '') : this.removeAttribute('disabled')
+    disabled ? this.input.setAttribute('disabled', '') : this.input.removeAttribute('disabled')
+  }
+
+  attributeChangedCallback (name) {
     this.input.setAttribute(name, this.getAttribute(name))
   }
 
@@ -101,17 +102,17 @@ export default class MInput extends HTMLElement {
 
     this.input = this.shadow.getElementById('input')
 
-    this.input.addEventListener("change", (event) => {
-      this.dispatchEvent(new CustomEvent("change", {bubbles: true}))
+    this.input.addEventListener('change', (event) => {
+      this.dispatchEvent(new CustomEvent('change', { bubbles: true }))
     })
 
-    this.input.addEventListener("input", (event) => {
+    this.input.addEventListener('input', (event) => {
       event.stopPropagation()
-      this.dispatchEvent(new CustomEvent("input", {bubbles: true}))
+      this.dispatchEvent(new CustomEvent('input', { bubbles: true }))
     })
   }
 
-  connectedCallback() {
+  connectedCallback () {
   }
 }
 

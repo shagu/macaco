@@ -195,7 +195,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
   `
 
   dom = {}
-  folder = "."
+  folder = '.'
 
   get_card = () => {
     return {
@@ -212,7 +212,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
     this.card = card || {}
 
     if (card && card.metadata) {
-      this.dom['image'].src = card.preview || card.fsurl
+      this.dom.image.src = card.preview || card.fsurl
 
       const name = macaco.getLocale(card, 'name') || 'Unknown Card'
       const type = macaco.getLocale(card, 'type')
@@ -220,7 +220,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
       const text = macaco.getTextHtml(macaco.getLocale(card, 'text'))
       const mana = macaco.getTextHtml(card.metadata.mana)
 
-      this.dom['metadata'].innerHTML = `
+      this.dom.metadata.innerHTML = `
         <span id="metadata-mana">
           ${mana}
         </span>
@@ -230,36 +230,34 @@ export default class UIWindowSidebarSingle extends HTMLElement {
         ${flavor && flavor != null ? `<div id=quote>${flavor}</div>` : ''}
       `
 
-      let [ cm, ck, cm_col, ck_col ] = [ "N/A", "N/A", false, false ]
-
       if (card.metadata.prices) {
         const cm = card.foil ? card.metadata.prices[3] : card.metadata.prices[2]
         const ck = card.foil ? card.metadata.prices[1] : card.metadata.prices[0]
 
-        const cm_col = cm >= 10.0 ? "#f22" : cm >= 5.0 ? "#f62" : cm >= 1.0 ? "#fa2" : "var(--font-normal)"
-        const ck_col = ck >= 10.0 ? "#f22" : ck >= 5.0 ? "#f62" : ck >= 1.0 ? "#fa2" : "var(--font-normal)"
+        const cmColor = cm >= 10.0 ? '#f22' : cm >= 5.0 ? '#f62' : cm >= 1.0 ? '#fa2' : 'var(--font-normal)'
+        const ckColor = ck >= 10.0 ? '#f22' : ck >= 5.0 ? '#f62' : ck >= 1.0 ? '#fa2' : 'var(--font-normal)'
 
         this.dom['price-cm-value'].innerHTML = `${cm.toFixed(2)} €`
-        this.dom['price-cm-value'].style.color = cm_col
+        this.dom['price-cm-value'].style.color = cmColor
 
         this.dom['price-ck-value'].innerHTML = `${ck.toFixed(2)} $`
-        this.dom['price-ck-value'].style.color = ck_col
+        this.dom['price-ck-value'].style.color = ckColor
       } else {
-        this.dom['price-cm-value'].innerHTML = "N/A"
-        this.dom['price-cm-value'].style.color = "var(--font-normal)"
+        this.dom['price-cm-value'].innerHTML = 'N/A'
+        this.dom['price-cm-value'].style.color = 'var(--font-normal)'
 
-        this.dom['price-ck-value'].innerHTML = "N/A"
-        this.dom['price-ck-value'].style.color = "var(--font-normal)"
+        this.dom['price-ck-value'].innerHTML = 'N/A'
+        this.dom['price-ck-value'].style.color = 'var(--font-normal)'
       }
     } else {
-      this.dom['image'].src = '../../assets/cards/background.jpg'
-      this.dom['metadata'].innerHTML = ""
+      this.dom.image.src = '../../assets/cards/background.jpg'
+      this.dom.metadata.innerHTML = ''
 
-      this.dom['price-cm-value'].innerHTML = "N/A"
-      this.dom['price-cm-value'].style.color = "var(--font-normal)"
+      this.dom['price-cm-value'].innerHTML = 'N/A'
+      this.dom['price-cm-value'].style.color = 'var(--font-normal)'
 
-      this.dom['price-ck-value'].innerHTML = "N/A"
-      this.dom['price-ck-value'].style.color = "var(--font-normal)"
+      this.dom['price-ck-value'].innerHTML = 'N/A'
+      this.dom['price-ck-value'].style.color = 'var(--font-normal)'
     }
   }
 
@@ -280,7 +278,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     macaco.events.register('update-collection-folder', (ev, folder) => {
@@ -301,8 +299,8 @@ export default class UIWindowSidebarSingle extends HTMLElement {
         this.dom['foil-input'].checked = selection[0].foil
         this.dom['add-card'].innerHTML = 'Update Card'
       } else {
-        this.dom['edition-input'].value = ""
-        this.dom['number-input'].value = ""
+        this.dom['edition-input'].value = ''
+        this.dom['number-input'].value = ''
         this.dom['foil-input'].checked = false
         this.dom['add-card'].innerHTML = 'Add Card'
       }
@@ -340,11 +338,11 @@ export default class UIWindowSidebarSingle extends HTMLElement {
     }
 
     /* overlay */
-    this.dom['image'].onclick = (ev) => {
-      macaco.events.invoke('set-overlay-image', this.dom['image'].src)
+    this.dom.image.onclick = (ev) => {
+      macaco.events.invoke('set-overlay-image', this.dom.image.src)
     }
 
-    this.dom['image'].onmouseleave = (ev) => {
+    this.dom.image.onmouseleave = (ev) => {
       macaco.events.invoke('set-overlay-image', false)
     }
   }

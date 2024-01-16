@@ -88,19 +88,19 @@ export default class UIWindowContentCard extends HTMLElement {
   `
 
   selector (multiselect, drag) {
-    let has_selected = false
-    let all_selected = true
+    let hasSelected = false
+    let allSelected = true
 
     for (const card of this.cards) {
       if (macaco.collection.selection.includes(card)) {
-        has_selected = true
+        hasSelected = true
       } else {
-        all_selected = false
+        allSelected = false
       }
     }
 
     if (multiselect) {
-      if (all_selected && !drag) {
+      if (allSelected && !drag) {
         // remove every card from selection
         for (const card of this.cards) {
           macaco.collection.selection.splice(macaco.collection.selection.indexOf(card), 1)
@@ -115,7 +115,7 @@ export default class UIWindowContentCard extends HTMLElement {
       }
     } else {
       // deselect everything in most cases
-      if (!has_selected || !drag) {
+      if (!hasSelected || !drag) {
         macaco.collection.selection = []
       }
 
@@ -159,7 +159,7 @@ export default class UIWindowContentCard extends HTMLElement {
     let spacer = 0
     let count = 0
     for (const card of macaco.collection.selection) {
-      if ( card.fsurl && count <= 10 ) {
+      if (card.fsurl && count <= 10) {
         const image = document.createElement('img')
         dragger.appendChild(image)
 
@@ -231,13 +231,13 @@ export default class UIWindowContentCard extends HTMLElement {
     const price = document.createElement('div')
     price.setAttribute('id', 'price')
 
-    let worth = "N/A"
+    let worth = 'N/A'
     if (card.metadata && card.metadata.prices) {
       worth = card.metadata.prices[2] || card.metadata.prices[0]
       if (card.foil) worth = card.metadata.prices[3] || card.metadata.prices[1]
     }
 
-    if (worth !== "N/A") {
+    if (worth !== 'N/A') {
       price.innerHTML = `${worth.toFixed(2)}€`
 
       if (worth > 10.0) {
@@ -266,7 +266,7 @@ export default class UIWindowContentCard extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
   }
 }

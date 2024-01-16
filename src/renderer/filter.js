@@ -81,7 +81,7 @@ class Filter {
   }
 
   sort (attributes, order = 1) {
-    const attribute = attributes && attributes[0] || 'name'
+    const attribute = attributes && attributes[0] ? attributes[0] : 'name'
 
     return (a, b) => {
       if (attribute === 'rarity') {
@@ -116,7 +116,7 @@ class Filter {
         if (tag !== 'text' && elements.length > 0) string += `${tag}=${elements.toString()} `
       }
 
-      string += this.json.text || ""
+      string += this.json.text || ''
 
       return string.trim()
     } else {
@@ -185,7 +185,7 @@ class Filter {
       }
     }
 
-    let text = this.json.text || ""
+    let text = this.json.text || ''
     text = text.toLowerCase()
 
     // perform fulltext search over the remaining card

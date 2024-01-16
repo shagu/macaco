@@ -18,7 +18,7 @@ class Ipc {
     shared.window.close()
   }
 
-  async setCollection(event, folder, ...args) {
+  async setCollection (event, folder, ...args) {
     if (!folder) {
       // show open dialog if folder is not set
       const result = await electron.dialog.showOpenDialog({
@@ -36,18 +36,18 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
-  async setCardPreview(event, card, ...args) {
+  async setCardPreview (event, card, ...args) {
     // get preview card and send back to frontend
     const preview = await collection.preview(card)
     shared.window.webContents.send('update-card-preview', card, preview)
   }
 
-  async setCardFolder(event, card, folder, ...args) {
+  async setCardFolder (event, card, folder, ...args) {
     // convert to array if a single card is found
-    const cards = Array.isArray(card) ? card : [ card ]
+    const cards = Array.isArray(card) ? card : [card]
 
     // move collection cards
-    for(const card of cards) {
+    for (const card of cards) {
       card.folder = folder
       await collection.write(card, true)
     }
@@ -56,7 +56,7 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
-  async addUpdateCard(event, card, ...args) {
+  async addUpdateCard (event, card, ...args) {
     // skip empty or invalid card
     if (!card || !card.edition || !card.number || !card.language) return
 
@@ -73,18 +73,17 @@ class Ipc {
     shared.window.webContents.send('update-card-preview', previewCard, previewCard)
   }
 
-  async createNewFolder(event, folder, ...args) {
+  async createNewFolder (event, folder, ...args) {
     await collection.mkdir(folder)
     shared.window.webContents.send('update-collection', collection.folder, collection.collection, [folder])
   }
 
-  async reloadMetadata(event, forced, ...args) {
+  async reloadMetadata (event, forced, ...args) {
     await collection.metadata(forced)
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
-
-  async importDelver(event, file, ...args) {
+  async importDelver (event, file, ...args) {
     if (!file) {
       // show open dialog if folder is not set
       const dialogOptions = {
@@ -107,8 +106,7 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
-
-  register() {
+  register () {
     electron.ipcMain.handle('window-minimize', this.windowMinimize)
     electron.ipcMain.handle('window-maximize', this.windowMaximize)
     electron.ipcMain.handle('window-close', this.windowClose)
@@ -126,7 +124,3 @@ class Ipc {
 }
 
 module.exports = new Ipc()
-
-
-
-

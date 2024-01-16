@@ -59,7 +59,7 @@ export default class UIWindowLibrary extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     this.dom['folder-input'].onfocus = (e) => {
@@ -86,9 +86,9 @@ export default class UIWindowLibrary extends HTMLElement {
     }
 
     macaco.events.register('update-collection-contents', (ev, contents) => {
-      this.dom.folders.innerHTML = ""
+      this.dom.folders.innerHTML = ''
 
-      for(const [path, cards] of Object.entries(contents)) {
+      for (const [path, cards] of Object.entries(contents)) {
         const element = document.createElement('ui-window-library-folder')
         element.cards = cards
         element.path = path

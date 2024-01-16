@@ -5,15 +5,15 @@ window.addEventListener('DOMContentLoaded', () => {
   const events = [
     'update-collection',
     'update-card-preview',
-    'set-popup',
+    'set-popup'
   ]
 
   // ipc-on: register all events to macaco functions
   for (const event of events) {
     ipcRenderer.on(event, (...args) => {
       macaco.ipc.on[event] = macaco.ipc.on[event] || []
-      for (const callback of macaco.ipc.on[event]) {
-        callback(...args)
+      for (const runner of macaco.ipc.on[event]) {
+        runner(...args)
       }
     })
   }
@@ -24,5 +24,5 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // TODO // DEBUG
-  macaco.ipc.invoke('set-collection', "/home/eric/projects/macaco-testdata")
+  macaco.ipc.invoke('set-collection', '/home/eric/projects/macaco-testdata')
 })

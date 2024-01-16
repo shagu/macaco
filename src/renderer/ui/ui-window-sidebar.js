@@ -23,17 +23,17 @@ export default class UIWindowSidebar extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     macaco.events.register('update-collection-selection', (ev, selection) => {
       /* change visibility based on selection contents */
-      if(selection.length === 0 || (selection.length === 1)) {
-        this.dom.single.style.display = "block"
-        this.dom.multi.style.display = "none"
+      if (selection.length === 0 || (selection.length === 1)) {
+        this.dom.single.style.display = 'block'
+        this.dom.multi.style.display = 'none'
       } else {
-        this.dom.single.style.display = "none"
-        this.dom.multi.style.display = "block"
+        this.dom.single.style.display = 'none'
+        this.dom.multi.style.display = 'block'
       }
     })
   }

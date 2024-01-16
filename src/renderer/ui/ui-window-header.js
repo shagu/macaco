@@ -108,7 +108,7 @@ export default class UIWindowHeader extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     // enable all inputs when collection gets loaded
@@ -160,26 +160,26 @@ export default class UIWindowHeader extends HTMLElement {
         macaco.events.invoke('set-filter', 'color', color, state)
       }
 
-      macaco.events.register(`update-filter`, (ev, filter) => {
+      macaco.events.register('update-filter', (ev, filter) => {
         const state = filter.get('color', color)
         this.dom[`button-color-${color}`].checked = state
       })
     }
 
     // filters: text
-    this.dom['search'].onkeyup = (ev) => {
-      if (this.dom['search'].value === this.dom['search'].previous) return
-      this.dom['search'].previous = this.dom['search'].value
-      macaco.events.invoke('set-filter', 'text', this.dom['search'].value)
+    this.dom.search.onkeyup = (ev) => {
+      if (this.dom.search.value === this.dom.search.previous) return
+      this.dom.search.previous = this.dom.search.value
+      macaco.events.invoke('set-filter', 'text', this.dom.search.value)
     }
 
-    macaco.events.register(`update-filter`, (ev, filter) => {
+    macaco.events.register('update-filter', (ev, filter) => {
       const text = filter.get('text')
 
       // do not remove whitespaces at the end while typing
-      if(this.dom['search'].value.trim() !== text) {
-        this.dom['search'].previous = text
-        this.dom['search'].value = text
+      if (this.dom.search.value.trim() !== text) {
+        this.dom.search.previous = text
+        this.dom.search.value = text
       }
     })
   }

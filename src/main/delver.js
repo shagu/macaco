@@ -11,9 +11,7 @@ class Delver {
   busy = null
   query = {}
 
-  constructor() {}
-
-  async queries() {
+  async queries () {
     this.query.attach = `
       ATTACH DATABASE '${path.join(shared.userdir, 'db', 'delverlens.sqlite')}' AS delver;
     `
@@ -40,8 +38,8 @@ class Delver {
   }
 
   /* fetch and unpack latest delver APK file */
-  async prepare() {
-    if(this.busy) {
+  async prepare () {
+    if (this.busy) {
       return this.busy
     } else {
       this.busy = new Promise(async (resolve, reject) => {
@@ -64,7 +62,7 @@ class Delver {
   }
 
   /* unpack the card-association sqlite file from the delver APK file */
-  async unpack() {
+  async unpack () {
     const extractor = new Jszip()
     const apk = fs.readFileSync(path.join(shared.userdir, 'db', 'delverlens.apk'))
     const result = await extractor.loadAsync(apk)
@@ -72,7 +70,7 @@ class Delver {
 
     /* find database file in APK */
     let filename = false
-    for (const [file, data] of Object.entries(result.files)) {
+    for (const [file] of Object.entries(result.files)) {
       const found = file.match(/res\/.?.?.db/)
       if (found) filename = found[0]
     }
@@ -83,7 +81,7 @@ class Delver {
     fs.writeFileSync(output, Buffer.from(await data))
   }
 
-  async import(file) {
+  async import (file) {
     // prepare all metadata
     await this.prepare()
 

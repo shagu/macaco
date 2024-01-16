@@ -49,12 +49,12 @@ export default class UIWindowOverlay extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     this.classList = 'invisible'
 
-    macaco.events.register("set-overlay-image", (ev, path) => {
+    macaco.events.register('set-overlay-image', (ev, path) => {
       if (path !== false) {
         this.classList = 'visible'
         this.dom.image.src = path
@@ -62,7 +62,7 @@ export default class UIWindowOverlay extends HTMLElement {
         this.classList = ''
       }
 
-      macaco.events.invoke("update-overlay-image", path)
+      macaco.events.invoke('update-overlay-image', path)
     })
   }
 }

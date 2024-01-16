@@ -38,32 +38,8 @@ class Statistics {
     }
   }
 
-  title (folder) {
-    const paths = folder.split("/")
-    let string = ""
-
-    if (paths.length === 1) {
-      string = "Library"
-    } else {
-      for (let i = 1; i < paths.length; i++) {
-        if (i == paths.length - 1) {
-          string = `${string}${paths[i]}`
-          //string = `${string}<b>${paths[i]}</b>`
-        } else if (i == paths.length - 2){
-          string = `${string}${paths[i]}/`
-          // string = `${string} ► `
-        } else {
-          string = `${string}${paths[i]}/`
-          // string = `${string}   `
-        }
-      }
-    }
-
-    return string
-  }
-
-  read (cards, folder = "Unknown", template) {
-    const stats = template ? template : {
+  read (cards, folder = 'Unknown', template) {
+    const stats = template || {
       types: { /* creature: 0, enchantment: 0, .. */ },
       price: { num: 0, sum: 0, min: 0, max: 0, avg: 0 },
       mana: { num: 0, sum: 0, min: 0, max: 0, avg: 0, values: {} },
@@ -72,7 +48,7 @@ class Statistics {
     }
 
     stats.icon = this.icon(cards)
-    stats.title = this.title(folder)
+    stats.title = folder === '.' ? 'Collection' : folder
 
     for (const card of cards) {
       if (card.metadata.types) {

@@ -42,14 +42,14 @@ export default class UIWindowMenuMain extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
-    this.dom['metadata'].onclick = (e) => {
+    this.dom.metadata.onclick = (e) => {
       macaco.ipc.invoke('reload-metadata', true)
     }
 
-    this.dom['delver'].onclick = (e) => {
+    this.dom.delver.onclick = (e) => {
       macaco.ipc.invoke('import-delver')
     }
   }

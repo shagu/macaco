@@ -54,23 +54,23 @@ export default class UIWindowPopups extends HTMLElement {
   dom = {}
   popups = []
 
-  popup(id, title, info, progress) {
+  popup (id, title, info, progress) {
     // try to reuse existing popup
     let popup = this.popups.filter(obj => {
       return obj.id === id
     })
 
-    popup = popup && popup[0] || false
+    popup = popup && popup[0]
 
     // create a new object if nothing is found
-    if(!popup) {
+    if (!popup) {
       popup = {
-        id: id,
-        title: "N/A",
-        info: "N/A",
+        id,
+        title: 'N/A',
+        info: 'N/A',
         progress: 0,
         time: 0,
-        dom: document.createElement('div'),
+        dom: document.createElement('div')
       }
 
       popup.dom.setAttribute('id', 'popup')
@@ -87,7 +87,7 @@ export default class UIWindowPopups extends HTMLElement {
     this.render()
   }
 
-  render() {
+  render () {
     // clear current popups
     this.shadow.innerHTML = ''
     for (const popup of this.popups) {
@@ -121,34 +121,34 @@ export default class UIWindowPopups extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     setInterval(() => {
       // remove and fade popups based on their state and remaining time
       for (const popup of this.popups) {
-        if (popup.progress == 100 && popup.time + 3000 < Date.now()) {
+        if (popup.progress === 100 && popup.time + 3000 < Date.now()) {
           // remove popup after 3 seconds
           this.popups.splice(this.popups.indexOf(popup), 1)
           this.render()
-        } else if (popup.progress == 100 && popup.time + 2000 < Date.now()) {
+        } else if (popup.progress === 100 && popup.time + 2000 < Date.now()) {
           // start popup fading after 2 seconds
-          popup.dom.style.opacity = "0"
+          popup.dom.style.opacity = '0'
         } else {
           // keep every other popup visible
-          popup.dom.style.opacity = "1"
+          popup.dom.style.opacity = '1'
         }
       }
     }, 100)
 
-    macaco.ipc.register("set-popup", (ev, id, title, info, progress) => {
+    macaco.ipc.register('set-popup', (ev, id, title, info, progress) => {
       this.popup(id, title, info, progress)
-      macaco.events.invoke("update-popup", id, title, info, progress)
+      macaco.events.invoke('update-popup', id, title, info, progress)
     })
 
-    macaco.events.register("set-popup", (ev, id, title, info, progress) => {
+    macaco.events.register('set-popup', (ev, id, title, info, progress) => {
       this.popup(id, title, info, progress)
-      macaco.events.invoke("update-popup", id, title, info, progress)
+      macaco.events.invoke('update-popup', id, title, info, progress)
     })
   }
 }

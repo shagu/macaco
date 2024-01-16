@@ -92,11 +92,11 @@ export default class UIWindowLibraryFolder extends HTMLElement {
     this.shadow.append(document.importNode(this.constructor.template, true))
 
     for (const e of this.shadow.querySelectorAll('*')) {
-      if(e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
+      if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
     macaco.events.register('update-collection-folder', (ev, folder) => {
-      if (folder == this.path) {
+      if (folder === this.path) {
         this.dom.folder.classList.add('active')
       } else {
         this.dom.folder.classList.remove('active')
@@ -112,7 +112,7 @@ export default class UIWindowLibraryFolder extends HTMLElement {
 
     this.dom.folder.onclick = (ev) => {
       // set view to this path
-      macaco.events.invoke("set-collection-folder", this.path)
+      macaco.events.invoke('set-collection-folder', this.path)
       ev.stopPropagation()
     }
 
@@ -144,12 +144,12 @@ export default class UIWindowLibraryFolder extends HTMLElement {
   }
 
   connectedCallback () {
-    this.dom.label.innerHTML = this.path == '.' ? 'Collection' : this.path
-    this.dom.count.innerHTML = this.cards.length > 0 ? this.cards.length : ""
+    this.dom.label.innerHTML = this.path === '.' ? 'Collection' : this.path
+    this.dom.count.innerHTML = this.cards.length > 0 ? this.cards.length : ''
     this.dom.icon.src = `../../assets/mana/${macaco.statistics.icon(this.cards)}.png`
 
     // detect current folder
-    if (macaco.collection.folder == this.path) {
+    if (macaco.collection.folder === this.path) {
       this.dom.folder.classList.add('active')
     } else {
       this.dom.folder.classList.remove('active')

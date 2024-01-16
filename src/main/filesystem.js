@@ -7,9 +7,7 @@ const downloader = require('./downloader.js')
 const jimp = require('jimp')
 
 class Filesystem {
-  constructor() {}
-
-  async filename(card) {
+  async filename (card) {
     let suffix = `${card.edition}.${card.number}.${card.language}`
     suffix = card.foil ? `${suffix}.f` : suffix
 
@@ -18,7 +16,7 @@ class Filesystem {
 
     while (fs.existsSync(path.join(card.collection, card.folder, filename))) {
       /* keep current filename if existing and matching */
-      if(card.fsurl && card.fsurl == path.join(card.collection, card.folder, filename)) break
+      if (card.fsurl && card.fsurl === path.join(card.collection, card.folder, filename)) break
 
       /* try next available filename */
       filename = `[${suffix}](${count}).jpg`
@@ -28,19 +26,19 @@ class Filesystem {
     // generate new fsurl filename
     const fsurl = path.join(card.collection, card.folder, filename)
 
-    return [ filename, fsurl ]
+    return [filename, fsurl]
   }
 
-  async backside() {
+  async backside () {
     const backgroundDev = path.join(__dirname, '..', '..', 'assets', 'cards', 'background.jpg')
     const backgroundProd = path.join(process.resourcesPath, '..', '..', 'assets', 'cards', 'foil.jpg')
     const image = fs.existsSync(backgroundDev) ? backgroundDev : backgroundProd
     return image
   }
 
-  async image(card, preview) {
+  async image (card, preview) {
     // do not go into previews without metadata
-    if(preview && Object.keys(card.metadata).length === 0) {
+    if (preview && Object.keys(card.metadata).length === 0) {
       return this.backside()
     }
 
@@ -50,7 +48,7 @@ class Filesystem {
     const file = path.join(shared.userdir, 'images', `${preview ? 'preview' : 'full'}_[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}].jpg`)
     if (fs.existsSync(file)) return file
 
-    const [ artwork, ] = await this.artwork(card, preview)
+    const [artwork] = await this.artwork(card, preview)
 
     if (card.foil) {
       const imgdata = await jimp.read(artwork)
@@ -75,70 +73,67 @@ class Filesystem {
     return file
   }
 
-  async artwork(card, preview, fallback) {
+  async artwork (card, preview, fallback) {
     const fileHQ = path.join(shared.userdir, 'images', `full_[${card.edition}.${card.number}.${card.language}].jpg`)
-    if (fs.existsSync(fileHQ)) return [ fileHQ, fallback ]
+    if (fs.existsSync(fileHQ)) return [fileHQ, fallback]
 
     const file = path.join(shared.userdir, 'images', `${preview ? 'preview' : 'full'}_[${card.edition}.${card.number}.${card.language}].jpg`)
-    if (fs.existsSync(file)) return [ file, fallback ]
+    if (fs.existsSync(file)) return [file, fallback]
 
     const name = card.metadata ? card.metadata.name : false
     const identifier = `${card.edition}.${card.number}.${card.language}`.toUpperCase()
 
-    const download_notifier = (status, size, downloaded, file, url, real_url, queue) => {
+    const notifier = (status, size, downloaded, file, url, real, queue) => {
       const percent = size > 0 ? (100.0 * downloaded / size).toFixed() : 0
 
       const output = {
         title: name ? `${name} [${identifier}]` : identifier,
         text: `${shared.unit(downloaded)} of ${shared.unit(size)} (${percent}%)`,
-        percent: percent,
+        percent
       }
 
-      if (fallback)
-        output.title = `${output.title} (english)`
+      if (fallback) { output.title = `${output.title} (english)` }
 
-      if (queue && queue.tasks && queue.tasks.length > 1)
-        output.title = `[${queue.tasks.length}] ${output.title}`
+      if (queue && queue.tasks && queue.tasks.length > 1) { output.title = `[${queue.tasks.length}] ${output.title}` }
 
       if (status === -1) {
         output.text = `${output.text} [ERR]`
       } else if (percent === 0) {
-        output.text = `Connecting...`
+        output.text = 'Connecting...'
       }
 
-      shared.window.webContents.send('set-popup', "artwork-download", output.title, output.text, output.percent)
+      shared.window.webContents.send('set-popup', 'artwork-download', output.title, output.text, output.percent)
     }
 
     let language = fallback ? 'en' : card.language
 
     // scryfall locales are different to the printed ones
-    language = language == 'sp' ? 'es' : language
-    language = language == 'jp' ? 'ja' : language
-    language = language == 'kr' ? 'ko' : language
-    language = language == 'cs' ? 'zhs' : language
-    language = language == 'ct' ? 'zht' : language
+    language = language === 'sp' ? 'es' : language
+    language = language === 'jp' ? 'ja' : language
+    language = language === 'kr' ? 'ko' : language
+    language = language === 'cs' ? 'zhs' : language
+    language = language === 'ct' ? 'zht' : language
 
     const size = preview ? 'small' : 'border_crop'
     const url = `https://api.scryfall.com/cards/${card.edition}/${card.number}/${language}?format=image&version=${size}`
     console.log(`fetch ${fallback ? 'fallback' : 'normal'} of ${card.number}\n  ${url}`)
 
     await downloader.queue(
-      url, file, download_notifier, false, preview ? 'scryfall_preview' : 'scryfall_image'
+      url, file, notifier, false, preview ? 'scryfall_preview' : 'scryfall_image'
     )
 
-    if (fs.existsSync(file))
-      return [ file, fallback ]
+    if (fs.existsSync(file)) { return [file, fallback] }
 
     if (!fallback) {
-      console.log("try fallback")
-      const [ fallback_file, fallback_state ] = await this.artwork(card, preview, true)
-      return [ fallback_file, fallback_state ]
+      console.log('try fallback')
+      const [fallbackFile, fallbackState] = await this.artwork(card, preview, true)
+      return [fallbackFile, fallbackState]
     }
 
-    return [ await this.backside(), fallback ]
+    return [await this.backside(), fallback]
   }
 
-  async find(folder, base) {
+  async find (folder, base) {
     base = base || folder
     folder = path.join(folder.replace(base, '.'))
 
@@ -161,12 +156,11 @@ class Filesystem {
       // parse filenames and detect cards
       const parse = file.match(/(.*?) ?\[(.*)\]/i)
       if (parse && parse[2]) {
-        let name = parse[1] === '' ? 'Unknown' : parse[1]
+        const name = parse[1] === '' ? 'Unknown' : parse[1]
         const meta = parse[2].split('.')
 
         // don't proceed on invalid files'
-        if (!meta[0] || !meta[1] || !meta[2])
-          continue
+        if (!meta[0] || !meta[1] || !meta[2]) { continue }
 
         // push card data
         list[folder].push({
@@ -178,10 +172,10 @@ class Filesystem {
           foil: meta[3] !== undefined,
 
           collection: base,
-          folder: folder,
-          file: file,
+          folder,
+          file,
 
-          fsurl: fsurl
+          fsurl
         })
       }
     }
@@ -189,9 +183,9 @@ class Filesystem {
     return list
   }
 
-  async write(card, keepImage) {
+  async write (card, keepImage) {
     /* get the preferred filename for the card */
-    const [ filename, fsurl ] = await this.filename(card)
+    const [, fsurl] = await this.filename(card)
 
     /* create required directories */
     fs.mkdirSync(path.dirname(fsurl), { recursive: true })
@@ -201,7 +195,7 @@ class Filesystem {
       /* move the card to a new location/filename */
       const image = keepImage ? card.fsurl : await this.image(card)
       fs.renameSync(image, fsurl)
-    } else if (card.image){
+    } else if (card.image) {
       /* write imagedata from json object to fsurl */
       const fd = fs.openSync(fsurl, 'a')
       fs.writeSync(fd, card.image)
@@ -219,7 +213,7 @@ class Filesystem {
     return card
   }
 
-  async mkdir(collection, folder) {
+  async mkdir (collection, folder) {
     fs.mkdirSync(path.join(collection, folder), { recursive: true })
   }
 }
