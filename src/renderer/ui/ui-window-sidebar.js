@@ -27,22 +27,8 @@ export default class UIWindowSidebar extends HTMLElement {
     }
 
     macaco.events.register('update-collection-selection', (ev, selection) => {
-      /* detect if multi selection has same cards */
-      let combined = true
-      let current = false
-
-      for(const card of selection) {
-        let id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-        if (!current || current === id) {
-          current = id
-        } else {
-          combined = false
-          break
-        }
-      }
-
       /* change visibility based on selection contents */
-      if(selection.length === 0 || (selection.length === 1 || combined)) {
+      if(selection.length === 0 || (selection.length === 1)) {
         this.dom.single.style.display = "block"
         this.dom.multi.style.display = "none"
       } else {

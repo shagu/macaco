@@ -87,49 +87,56 @@ export default class UIWindowContentCard extends HTMLElement {
     }
   `
 
-  static click (ev) {
-    // decide to clear previous selection
-    if (!ev.ctrlKey) {
-      macaco.collection.selection = []
-    }
+  selector (multiselect, drag) {
+    let has_selected = false
+    let all_selected = true
 
-    // add current cards to selection
     for (const card of this.cards) {
       if (macaco.collection.selection.includes(card)) {
-        macaco.collection.selection.splice(macaco.collection.selection.indexOf(card), 1)
+        has_selected = true
       } else {
-        macaco.collection.selection.push(card)
+        all_selected = false
+      }
+    }
+
+    if (multiselect) {
+      if (all_selected && !drag) {
+        // remove every card from selection
+        for (const card of this.cards) {
+          macaco.collection.selection.splice(macaco.collection.selection.indexOf(card), 1)
+        }
+      } else {
+        // add every card to selection
+        for (const card of this.cards) {
+          if (!macaco.collection.selection.includes(card)) {
+            macaco.collection.selection.push(card)
+          }
+        }
+      }
+    } else {
+      // deselect everything in most cases
+      if (!has_selected || !drag) {
+        macaco.collection.selection = []
+      }
+
+      // select current card if not already selected
+      if (this.cards[0] && !macaco.collection.selection.includes(this.cards[0])) {
+        macaco.collection.selection.push(this.cards[0])
       }
     }
 
     // trigger ui collection-selection updates
     macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+  }
+
+  static click (ev) {
+    this.selector(ev.ctrlKey)
     ev.stopPropagation()
   }
 
   static dragstart (ev) {
-    // check if current object is a selected card
-    let selected = false
-    for (const card of this.cards) {
-      if (macaco.collection.selection.includes(card)) {
-        selected = true
-      }
-    }
-
-    // decide to clear previous selection
-    if (!selected && !ev.ctrlKey) {
-      macaco.collection.selection = []
-    }
-
-    // add current cards to selection
-    for (const card of this.cards) {
-      if (!macaco.collection.selection.includes(card)) {
-        macaco.collection.selection.push(card)
-      }
-    }
-
-    // trigger ui collection-selection updates
-    macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+    // handle click event
+    this.selector(ev.ctrlKey, true)
 
     // set the current selection to the object
     const selection = JSON.stringify(macaco.collection.selection)
