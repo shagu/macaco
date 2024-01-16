@@ -141,7 +141,7 @@ macaco.events.register('set-collection-folder', (ev, folder) => {
 
 macaco.events.register('set-filter', (ev, entry, value, state) => {
   macaco.filter.set(entry, value, state)
-  macaco.events.invoke('update-filter', macaco.filter)
+  macaco.events.invoke('update-filter', macaco.filter, entry)
 })
 
 macaco.events.register('set-combine', (ev, state) => {

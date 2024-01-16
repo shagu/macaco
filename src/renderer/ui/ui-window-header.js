@@ -173,7 +173,10 @@ export default class UIWindowHeader extends HTMLElement {
       macaco.events.invoke('set-filter', 'text', this.dom.search.value)
     }
 
-    macaco.events.register('update-filter', (ev, filter) => {
+    macaco.events.register('update-filter', (ev, filter, entry) => {
+      // do not interrupt user typing
+      if (entry === 'text') return
+
       const text = filter.get('text')
 
       // do not remove whitespaces at the end while typing
