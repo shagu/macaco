@@ -5,6 +5,7 @@ export default class UIWindowMenu extends HTMLElement {
   static background = null
   static popovers = []
   static buttons = []
+  static current = false
 
   static template = html`
     <ui-window-menu-filter id="filter"></ui-window-menu-filter>
@@ -33,6 +34,9 @@ export default class UIWindowMenu extends HTMLElement {
     // save menus and buttons into array for later use
     if (!UIWindowMenu.popovers.includes(menu)) UIWindowMenu.popovers.push(menu)
     if (!UIWindowMenu.buttons.includes(button)) UIWindowMenu.buttons.push(button)
+
+    // cache menu and button as current one
+    this.current = [menu, button]
 
     // update state of all buttons and menus
     for (const popover of UIWindowMenu.popovers) {
@@ -105,7 +109,12 @@ export default class UIWindowMenu extends HTMLElement {
     })
 
     // reload position on resize
-    window.addEventListener('resize', () => { })
+    window.addEventListener('resize', () => {
+      if (this.current) {
+        const [menu, button] = this.current
+        this.position(menu, button)
+      }
+    })
 
     // create clickable background
     this.addEventListener('click', (ev) => {
