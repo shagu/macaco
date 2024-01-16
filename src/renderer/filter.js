@@ -145,15 +145,13 @@ class Filter {
           entries.push(entry)
         }
 
+        // clear matching tag from string
         this.json[pattern] = entries
+        value = value.replace(match[0], '')
       }
 
-      // clear all tags from string
-      const pattern = /\b([^ ]+)=([^ ]+)/gi
-      const text = value.replace(pattern, '')
-
       // add fulltext search attribute
-      this.json.text = text.trim()
+      this.json.text = value.trim()
     } else {
       this.json[entry] = this.json[entry] || []
 
