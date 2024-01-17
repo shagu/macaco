@@ -4,7 +4,7 @@ class Shared {
   static window
 
   static unit = (bytes) => {
-    if (bytes === 0 || !bytes) return 'N/A'
+    if (bytes === 0 || !bytes) return '0'
 
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
