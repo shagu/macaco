@@ -102,15 +102,12 @@ class Collection {
 
     const cards = await delver.import(file)
 
-    console.log(`Backup contains ${cards.length} cards.`)
-
     for (const card of cards) {
       card.collection = this.folder
       filesystem.write(card)
     }
 
     this.set(this.folder, true)
-    console.log('Done')
   }
 }
 
