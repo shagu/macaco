@@ -101,7 +101,6 @@ export default class UIWindowPopups extends HTMLElement {
     for (const popup of this.popups) {
       popup.dom.innerHTML = ''
 
-      console.log('update', popup)
       const title = document.createElement('div')
       title.setAttribute('id', 'title')
       title.innerHTML = popup.title
