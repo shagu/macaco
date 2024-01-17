@@ -56,8 +56,14 @@ export default class UIWindowOverlay extends HTMLElement {
 
     macaco.events.register('set-overlay-image', (ev, path) => {
       if (path !== false) {
+        this.shadow.innerHTML = ''
+
+        const image = document.createElement('img')
+        image.setAttribute('id', 'image')
+        image.src = path
+        this.shadow.appendChild(image)
+
         this.classList = 'visible'
-        this.dom.image.src = path
       } else {
         this.classList = ''
       }
