@@ -16,6 +16,10 @@ class Delver {
       ATTACH DATABASE '${path.join(shared.userdir, 'db', 'delverlens.sqlite')}' AS delver;
     `
 
+    this.query.sum = `
+      SELECT COUNT(*) AS count FROM backup_cards;
+    `
+
     this.query.cards = `
       SELECT * FROM backup_cards;
     `
@@ -37,6 +41,11 @@ class Delver {
     `
   }
 
+  notifier (info) {
+    const small = info.downloaded > 0 && `${shared.unit(info.downloaded)} of ${shared.unit(info.size)}`
+    shared.popup('DelverLens Import', 'Download APK', small, info.percent)
+  }
+
   /* fetch and unpack latest delver APK file */
   async prepare () {
     if (this.busy) {
@@ -47,7 +56,7 @@ class Delver {
         await downloader.queue(
           'https://delver-public.s3.us-west-1.amazonaws.com/app-release.apk',
           path.join(shared.userdir, 'db', 'delverlens.apk'),
-          undefined, false, 'metadata'
+          (info) => { this.notifier(info) }, false, 'metadata'
         )
 
         await this.unpack()
@@ -63,6 +72,8 @@ class Delver {
 
   /* unpack the card-association sqlite file from the delver APK file */
   async unpack () {
+    shared.popup('DelverLens Import', 'Unpacking Database')
+
     const extractor = new Jszip()
     const apk = fs.readFileSync(path.join(shared.userdir, 'db', 'delverlens.apk'))
     const result = await extractor.loadAsync(apk)
@@ -85,16 +96,26 @@ class Delver {
     // prepare all metadata
     await this.prepare()
 
+    shared.popup('DelverLens Import', 'Reading Backup File')
+
     // open and prepare backup database
     const backup = new Sqlite3(file)
     backup.prepare(this.query.attach).run()
     backup.prepare(this.query.view).run()
+    const sum = backup.prepare(this.query.sum).get().count
+    let count = 0
+    let percent = 0
 
     // initialize empty card array
     const cards = []
 
     // read through all results in merged backup table
     for (const row of backup.prepare(this.query.cards).all()) {
+      // popup progress
+      count = count + 1
+      percent = (100.0 * count / sum).toFixed()
+      shared.popup('DelverLens Import', 'Reading Backup File', `${count} of ${sum} Entries`, percent)
+
       // use fallback list name on empty list entries
       const folder = row.list || 'Unknown List'
       const amount = row.count || 1
@@ -112,6 +133,7 @@ class Delver {
     }
 
     backup.close()
+
     return cards
   }
 }

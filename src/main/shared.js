@@ -15,6 +15,10 @@ class Shared {
       return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i]
     }
   }
+
+  static popup (title, text, small, progress) {
+    Shared.window.webContents.send('set-popup', title, text, small, progress)
+  }
 }
 
 module.exports = Shared

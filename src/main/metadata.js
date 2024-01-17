@@ -28,6 +28,12 @@ const languages = {
 class Metadata {
   runner = false
 
+  notifier (info, mod) {
+    const text = mod === 'metadata' ? 'Card Database' : 'Locale Database'
+    const small = info.downloaded > 0 && `${shared.unit(info.downloaded)} of ${shared.unit(info.size)}`
+    shared.popup('MTGJSON Database', text, small, info.percent)
+  }
+
   async reload (force) {
     const data = path.join(shared.userdir, 'db', 'macaco-data.json.gz')
     const locales = path.join(shared.userdir, 'db', 'macaco-locales.json.gz')
@@ -37,23 +43,29 @@ class Metadata {
       const data = downloader.queue(
         'https://github.com/shagu/macaco-data/releases/latest/download/macaco-data.json.gz',
         path.join(shared.userdir, 'db', 'macaco-data.json.gz'),
-        undefined, true, 'metadata'
+        (state) => { this.notifier(state, 'metadata') }, true, 'metadata'
       )
 
       const locales = downloader.queue(
         'https://github.com/shagu/macaco-data/releases/latest/download/macaco-locales.json.gz',
         path.join(shared.userdir, 'db', 'macaco-locales.json.gz'),
-        undefined, true, 'metadata'
+        (state) => { this.notifier(state, 'locale') }, true, 'metadata'
       )
 
       await Promise.all([locales, data])
     }
 
+    shared.popup('MTGJSON Database', 'Loading Metadata', false, 0)
+
     const rawdata = fs.readFileSync(data)
     this.data = JSON.parse(zlib.gunzipSync(rawdata))
 
+    shared.popup('MTGJSON Database', 'Loading Metadata', false, 50)
+
     const rawlocales = fs.readFileSync(locales)
     this.locales = JSON.parse(zlib.gunzipSync(rawlocales))
+
+    shared.popup('MTGJSON Database', 'Loading Metadata', false, 100)
   }
 
   async initialized () {

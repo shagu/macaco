@@ -10,44 +10,43 @@ class Downloader {
     this.processes = {}
   }
 
-  notify (status, size, downloaded, file, url, real, queue) {
-    const percent = size > 0 ? (100.0 * downloaded / size).toFixed() : 0
-    let string = 'Downloading'
-
-    if (status === 1) string = 'Done'
-    if (status === -1) string = 'Error'
-
-    if (shared.window) {
-      shared.window.webContents.send('set-popup', 'Download', url, `${downloaded} of ${size} (${percent}) [${queue ? queue.tasks.length : 0}]`, percent)
-    } else {
-      console.log(string, `${percent}%`, size, downloaded, url)
-    }
+  notifier (info) {
+    const small = info.downloaded > 0 && `${shared.unit(info.downloaded)} of ${shared.unit(info.size)}`
+    shared.popup('Downloading', info.url, small, info.percent)
   }
 
-  fetch (url, file, notify = this.notify, force, queue, originalUrl) {
-    return new Promise((resolve, reject) => {
-      notify(0, 0, 0, file, url, url, queue)
+  fetch (url, file, notify = this.notifier, force, queue, originalUrl) {
+    const info = {
+      file,
+      status: 0,
+      size: 0,
+      downloaded: 0,
+      percent: 0,
+      url: originalUrl || url,
+      redirect: url,
+      queue
+    }
 
+    return new Promise((resolve, reject) => {
       const request = http.get(url, async (response) => {
         // handle non-200 http status codes
         if (response.statusCode === 301 || response.statusCode === 302) {
-          await this.fetch(response.headers.location, file, notify, force, queue, (originalUrl || url))
+          info.redirect = response.headers.location
+          await this.fetch(info.redirect, info.file, notify, force, info.queue, info.url)
           resolve()
         } else if (response.statusCode !== 200) {
-          notify(-1, -1, -1, file, url, url, queue)
+          info.status = -1
+          notify(info)
           resolve()
         } else {
-          const size = parseInt(response.headers['content-length'], 10)
-          const url = originalUrl
-          const real = url
-          let downloaded = 0
+          info.size = parseInt(response.headers['content-length'], 10)
 
           // create directory
-          const destfolder = path.parse(file).dir
+          const destfolder = path.parse(info.file).dir
           fs.mkdirSync(destfolder, { recursive: true })
 
           // skip download of existing file with same size
-          if (!force && fs.existsSync(file) && size === fs.statSync(file).size) {
+          if (!force && fs.existsSync(file) && info.size === fs.statSync(info.file).size) {
             console.log('Skipping (same size)', file)
             resolve()
             return
@@ -59,22 +58,33 @@ class Downloader {
 
           // notify goes here
           response.on('data', function (chunk) {
-            downloaded += chunk.length
-            notify(0, size, downloaded, file, url, real, queue)
+            info.downloaded += chunk.length
+
+            if (info.size > 0) {
+              info.percent = (100.0 * info.downloaded / info.size).toFixed()
+            }
+
+            notify(info)
           })
 
           output.on('finish', () => {
             output.close()
-            notify(1, size, size, file, url, real, queue)
+            info.status = 1
+
+            notify(info)
             resolve()
           })
         }
       })
 
       request.on('error', function (err) {
-        notify(-1, -1, -1, -1)
+        info.status = -1
+
+        notify(info)
         resolve(err)
       })
+
+      notify(info)
     })
   }
 

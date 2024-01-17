@@ -8,6 +8,7 @@
 const filesystem = require('./filesystem.js')
 const metadata = require('./metadata.js')
 const delver = require('./delver.js')
+const shared = require('./shared.js')
 
 class Collection {
   static collection = {}
@@ -17,14 +18,31 @@ class Collection {
   async set (folder, force) {
     if (!force && folder === this.folder) return
 
+    const foldername = folder.match(/([^/]*)\/*$/)[1]
+
+    shared.popup('Open Collection', `Folder: ${foldername}`, 'Scanning Files')
+
     // load collection of file and folder names
     const files = await filesystem.find(folder)
     this.collection = files
     this.folder = folder
 
+    // initialize progression data
+    let [percent, count, sum] = [0, 0, 0]
+    for (const [, cards] of Object.entries(this.collection)) {
+      sum = sum + cards.length
+    }
+
     // add metadata to each file
     for (const [, cards] of Object.entries(this.collection)) {
-      for (const card of cards) card.metadata = await metadata.query(card)
+      for (const card of cards) {
+        count += 1
+        percent = (100.0 * count / sum).toFixed()
+        const small = `${count} of ${sum} Cards`
+        shared.popup('Open Collection', `Folder: ${foldername}`, small, percent)
+
+        card.metadata = await metadata.query(card)
+      }
     }
   }
 

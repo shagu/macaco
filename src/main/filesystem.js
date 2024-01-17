@@ -7,19 +7,24 @@ const downloader = require('./downloader.js')
 const jimp = require('jimp')
 
 class Filesystem {
+  identifier (card) {
+    let id = `${card.edition}.${card.number}.${card.language}`
+    id = card.foil ? `${id}.f` : id
+    return id
+  }
+
   async filename (card) {
-    let suffix = `${card.edition}.${card.number}.${card.language}`
-    suffix = card.foil ? `${suffix}.f` : suffix
+    const identifier = this.identifier(card)
 
     let count = 1
-    let filename = `[${suffix}](${count}).jpg`
+    let filename = `[${identifier}](${count}).jpg`
 
     while (fs.existsSync(path.join(card.collection, card.folder, filename))) {
       /* keep current filename if existing and matching */
       if (card.fsurl && card.fsurl === path.join(card.collection, card.folder, filename)) break
 
       /* try next available filename */
-      filename = `[${suffix}](${count}).jpg`
+      filename = `[${identifier}](${count}).jpg`
       count++
     }
 
@@ -73,37 +78,26 @@ class Filesystem {
     return file
   }
 
+  notifier (info, card, preview) {
+    if (preview) return
+
+    const small = info.downloaded > 0 && `${shared.unit(info.downloaded)} of ${shared.unit(info.size)}`
+    const identifier = this.identifier(card)
+    const remaining = info.queue.tasks.length
+
+    if (remaining > 1) {
+      shared.popup('Download Image', `[${identifier}]`, `Queue: ${info.queue.tasks.length}`, info.percent)
+    } else {
+      shared.popup('Download Image', `[${identifier}]`, small, info.percent)
+    }
+  }
+
   async artwork (card, preview, fallback) {
     const fileHQ = path.join(shared.userdir, 'images', `full_[${card.edition}.${card.number}.${card.language}].jpg`)
     if (fs.existsSync(fileHQ)) return [fileHQ, fallback]
 
     const file = path.join(shared.userdir, 'images', `${preview ? 'preview' : 'full'}_[${card.edition}.${card.number}.${card.language}].jpg`)
     if (fs.existsSync(file)) return [file, fallback]
-
-    const name = card.metadata ? card.metadata.name : false
-    const identifier = `${card.edition}.${card.number}.${card.language}`.toUpperCase()
-
-    const notifier = (status, size, downloaded, file, url, real, queue) => {
-      const percent = size > 0 ? (100.0 * downloaded / size).toFixed() : 0
-
-      const output = {
-        title: name ? `${name} [${identifier}]` : identifier,
-        text: `${shared.unit(downloaded)} of ${shared.unit(size)} (${percent}%)`,
-        percent
-      }
-
-      if (fallback) { output.title = `${output.title} (english)` }
-
-      if (queue && queue.tasks && queue.tasks.length > 1) { output.title = `[${queue.tasks.length}] ${output.title}` }
-
-      if (status === -1) {
-        output.text = `${output.text} [ERR]`
-      } else if (percent === 0) {
-        output.text = 'Connecting...'
-      }
-
-      shared.window.webContents.send('set-popup', 'artwork-download', output.title, output.text, output.percent)
-    }
 
     let language = fallback ? 'en' : card.language
 
@@ -119,7 +113,7 @@ class Filesystem {
     console.log(`fetch ${fallback ? 'fallback' : 'normal'} of ${card.number}\n  ${url}`)
 
     await downloader.queue(
-      url, file, notifier, false, preview ? 'scryfall_preview' : 'scryfall_image'
+      url, file, (info) => { this.notifier(info, card, preview) }, false, preview ? 'scryfall_preview' : 'scryfall_image'
     )
 
     if (fs.existsSync(file)) { return [file, fallback] }
@@ -186,17 +180,27 @@ class Filesystem {
   async write (card, keepImage) {
     /* get the preferred filename for the card */
     const [, fsurl] = await this.filename(card)
+    const identifier = this.identifier(card)
 
     /* create required directories */
     fs.mkdirSync(path.dirname(fsurl), { recursive: true })
 
     /* check if the card is an existing one */
     if (card.fsurl && fs.existsSync(card.fsurl)) {
-      /* move the card to a new location/filename */
-      const image = keepImage ? card.fsurl : await this.image(card)
-      fs.renameSync(image, fsurl)
+      if (keepImage) {
+        /* move the card to a new location */
+        shared.popup('Move Card', `[${identifier}]`)
+        const image = card.fsurl
+        fs.renameSync(image, fsurl)
+      } else {
+        /* modify existing card */
+        shared.popup('Update Card', `[${identifier}]`)
+        const image = await this.image(card)
+        fs.renameSync(image, fsurl)
+      }
     } else if (card.image) {
       /* write imagedata from json object to fsurl */
+      shared.popup('Write Card', `[${identifier}]`)
       const fd = fs.openSync(fsurl, 'a')
       fs.writeSync(fd, card.image)
       fs.closeSync(fd)
@@ -204,6 +208,7 @@ class Filesystem {
       delete card.image
     } else {
       /* create a new card on the new location/filename */
+      shared.popup('Add Card', `[${identifier}]`)
       const image = await this.image(card)
       fs.copyFileSync(image, fsurl)
     }
