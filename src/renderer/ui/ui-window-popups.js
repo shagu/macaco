@@ -10,25 +10,36 @@ export default class UIWindowPopups extends HTMLElement {
     :host {
       position: fixed;
       bottom: 24px;
+
       left: 50%;
       transform: translate(-50%, 0);
-      width: 200px;
+      width: 250px;
 
       pointer-events: none;
       z-index: 128;
     }
 
     #popup {
+      display: grid;
+      grid-auto-flow: row;
+      justify-content: stretch;
+      align-items: center;
+      text-align: left;
+
+      width: 100%;
+      overflow: hidden;
+
+      gap: 2px;
+      margin: 8px;
+      padding: 8px;
+
+      box-sizing: border-box;
       border: 1px rgba(0,0,0,.95);
       border-radius: 8px;
+      box-shadow: 0px 0px 8px #000;
 
       color: rgba(255,255,255,1);
-
       background: rgba(0,0,0,.85);
-      box-sizing: border-box;
-
-      margin: 4px;
-      padding: 16px 16px 4px 16px;
 
       transition: opacity 1s linear;
     }
@@ -41,7 +52,10 @@ export default class UIWindowPopups extends HTMLElement {
       font-weight: bold;
     }
 
-    #info {
+    #text {
+    }
+
+    #small {
       font-size: small;
     }
 
@@ -54,33 +68,27 @@ export default class UIWindowPopups extends HTMLElement {
   dom = {}
   popups = []
 
-  popup (id, title, info, progress) {
+  popup (title, text, small, progress) {
     // try to reuse existing popup
     let popup = this.popups.filter(obj => {
-      return obj.id === id
+      return obj.title === title
     })
 
     popup = popup && popup[0]
 
     // create a new object if nothing is found
     if (!popup) {
-      popup = {
-        id,
-        title: 'N/A',
-        info: 'N/A',
-        progress: 0,
-        time: 0,
-        dom: document.createElement('div')
-      }
-
+      popup = { }
+      popup.dom = document.createElement('div')
       popup.dom.setAttribute('id', 'popup')
       this.popups.push(popup)
     }
 
-    // update values
-    popup.title = title !== undefined ? title : popup.title
-    popup.info = info !== undefined ? info : popup.info
-    popup.progress = progress !== undefined ? progress : popup.progress
+    // update existing values
+    popup.title = title
+    popup.text = text
+    popup.small = small
+    popup.progress = progress
     popup.time = Date.now()
 
     // update ui
@@ -93,21 +101,32 @@ export default class UIWindowPopups extends HTMLElement {
     for (const popup of this.popups) {
       popup.dom.innerHTML = ''
 
+      console.log('update', popup)
       const title = document.createElement('div')
       title.setAttribute('id', 'title')
       title.innerHTML = popup.title
       popup.dom.appendChild(title)
 
-      const info = document.createElement('div')
-      info.setAttribute('id', 'info')
-      info.innerHTML = popup.info
-      popup.dom.appendChild(info)
+      if (popup.text) {
+        const text = document.createElement('div')
+        text.setAttribute('id', 'text')
+        text.innerHTML = popup.text
+        popup.dom.appendChild(text)
+      }
 
-      const progress = document.createElement('progress')
-      progress.setAttribute('id', 'progress')
-      progress.value = popup.progress
-      progress.style.visibility = popup.progress ? 'visible' : 'hidden'
-      popup.dom.appendChild(progress)
+      if (popup.small) {
+        const small = document.createElement('div')
+        small.setAttribute('id', 'small')
+        small.innerHTML = popup.small
+        popup.dom.appendChild(small)
+      }
+
+      if (popup.progress) {
+        const progress = document.createElement('progress')
+        progress.setAttribute('id', 'progress')
+        progress.value = popup.progress / 100
+        popup.dom.appendChild(progress)
+      }
 
       this.shadow.appendChild(popup.dom)
     }
@@ -125,14 +144,14 @@ export default class UIWindowPopups extends HTMLElement {
     }
 
     setInterval(() => {
-      // remove and fade popups based on their state and remaining time
+      // remove and fade popups based on their remaining time
       for (const popup of this.popups) {
-        if (popup.progress === 100 && popup.time + 3000 < Date.now()) {
-          // remove popup after 3 seconds
+        if (popup.time + 4000 < Date.now()) {
+          // remove popup after 4 seconds
           this.popups.splice(this.popups.indexOf(popup), 1)
           this.render()
-        } else if (popup.progress === 100 && popup.time + 2000 < Date.now()) {
-          // start popup fading after 2 seconds
+        } else if (popup.time + 3000 < Date.now()) {
+          // start popup fading after 3 seconds
           popup.dom.style.opacity = '0'
         } else {
           // keep every other popup visible
@@ -141,14 +160,16 @@ export default class UIWindowPopups extends HTMLElement {
       }
     }, 100)
 
-    macaco.ipc.register('set-popup', (ev, id, title, info, progress) => {
-      this.popup(id, title, info, progress)
-      macaco.events.invoke('update-popup', id, title, info, progress)
+    // register for backend popups
+    macaco.ipc.register('set-popup', (ev, title, text, small, progress) => {
+      this.popup(title, text, small, progress)
+      macaco.events.invoke('update-popup', title, text, small, progress)
     })
 
-    macaco.events.register('set-popup', (ev, id, title, info, progress) => {
-      this.popup(id, title, info, progress)
-      macaco.events.invoke('update-popup', id, title, info, progress)
+    // register for frontend popups
+    macaco.events.register('set-popup', (ev, title, text, small, progress) => {
+      this.popup(title, text, small, progress)
+      macaco.events.invoke('update-popup', title, text, small, progress)
     })
   }
 }
