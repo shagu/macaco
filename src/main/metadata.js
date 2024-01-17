@@ -55,17 +55,22 @@ class Metadata {
       await Promise.all([locales, data])
     }
 
-    shared.popup('MTGJSON Database', 'Loading Metadata', false, 0)
+    try {
+      shared.popup('MTGJSON Database', 'Loading Metadata', false, 0)
 
-    const rawdata = fs.readFileSync(data)
-    this.data = JSON.parse(zlib.gunzipSync(rawdata))
+      const rawdata = fs.readFileSync(data)
+      this.data = JSON.parse(zlib.gunzipSync(rawdata))
 
-    shared.popup('MTGJSON Database', 'Loading Metadata', false, 50)
+      shared.popup('MTGJSON Database', 'Loading Metadata', false, 50)
 
-    const rawlocales = fs.readFileSync(locales)
-    this.locales = JSON.parse(zlib.gunzipSync(rawlocales))
+      const rawlocales = fs.readFileSync(locales)
+      this.locales = JSON.parse(zlib.gunzipSync(rawlocales))
 
-    shared.popup('MTGJSON Database', 'Loading Metadata', false, 100)
+      shared.popup('MTGJSON Database', 'Loading Metadata', false, 100)
+    } catch (err) {
+      console.log('Corrupted MTJSON database detected. Retrying...')
+      await this.reload(true)
+    }
   }
 
   async initialized () {
