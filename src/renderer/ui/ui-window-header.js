@@ -23,9 +23,9 @@ export default class UIWindowHeader extends HTMLElement {
     </div>
 
     <div> <!-- toolbar menu buttons -->
-      <m-button class="menu-button" id="menu-filter" disabled>${macaco.icons.filter}</m-button>
-      <m-button class="menu-button" id="menu-statistics" disabled>${macaco.icons.details}</m-button>
-      <m-button class="menu-button" id="menu-main">${macaco.icons.menu}</m-button>
+      <m-button class="menu-button" m-popover="filter" id="menu-filter" disabled>${macaco.icons.filter}</m-button>
+      <m-button class="menu-button" m-popover="statistics" id="menu-statistics" disabled>${macaco.icons.details}</m-button>
+      <m-button class="menu-button" m-popover="main" id="menu-main">${macaco.icons.menu}</m-button>
     </div>
 
     <div id="window-buttons"> <!-- window controls -->
@@ -139,18 +139,6 @@ export default class UIWindowHeader extends HTMLElement {
 
     this.dom['window-close'].addEventListener('click', (ev) => {
       macaco.ipc.invoke('window-close')
-    })
-
-    this.dom['menu-filter'].addEventListener('click', (ev) => {
-      macaco.events.invoke('set-menu', 'filter', this.dom['menu-filter'])
-    })
-
-    this.dom['menu-statistics'].addEventListener('click', (ev) => {
-      macaco.events.invoke('set-menu', 'statistics', this.dom['menu-statistics'])
-    })
-
-    this.dom['menu-main'].addEventListener('click', (ev) => {
-      macaco.events.invoke('set-menu', 'main', this.dom['menu-main'])
     })
 
     // filters: color
