@@ -4,7 +4,7 @@ export default class UIWindowFooter extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <b>Macaco</b> <small>- The <b>ma</b>gic <b>ca</b>rd <b>co</b>llection</small>
+    <b>Macaco</b> <small>- Manage Your <b>Ma</b>gic <b>Ca</b>rd <b>Co</b>llection</small>
   `
 
   static style = css`
