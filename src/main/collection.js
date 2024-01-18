@@ -126,7 +126,7 @@ class Collection {
       filesystem.write(card)
     }
 
-    this.set(this.folder, true)
+    await this.set(this.folder, true)
   }
 }
 
