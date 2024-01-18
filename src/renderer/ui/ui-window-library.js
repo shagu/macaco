@@ -24,6 +24,7 @@ export default class UIWindowLibrary extends HTMLElement {
 
     #container-box {
       padding: 5px;
+      max-width: 550px;
     }
 
     #folder-input {

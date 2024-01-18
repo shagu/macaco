@@ -14,12 +14,10 @@ export default class UIWindowSidebar extends HTMLElement {
     :host {
     }
 
-    #single {
+    #single, #multi {
+      width: 100%;
       min-width: 280px;
-    }
-
-    #multi {
-      min-width: 280px;
+      max-width: 280px;
     }
   `
 
