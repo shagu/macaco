@@ -22,7 +22,4 @@ window.addEventListener('DOMContentLoaded', () => {
   macaco.ipc.invoke = (ev, ...args) => {
     ipcRenderer.invoke(ev, ...args)
   }
-
-  // TODO // DEBUG
-  macaco.ipc.invoke('set-collection', '/home/eric/projects/macaco-testdata')
 })
