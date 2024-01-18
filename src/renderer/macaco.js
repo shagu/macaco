@@ -160,6 +160,7 @@ macaco.events.register('update-collection-contents', (ev, contents) => {
   let statistics = false
   for (const [, cards] of Object.entries(contents)) {
     statistics = macaco.statistics.read(cards, 'Collection', statistics)
+    statistics.folders += 1
   }
 
   macaco.events.invoke('update-statistics-contents', statistics)

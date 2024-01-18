@@ -44,6 +44,7 @@ class Statistics {
       price: { num: 0, sum: 0, min: 0, max: 0, avg: 0 },
       mana: { num: 0, sum: 0, min: 0, max: 0, avg: 0, values: {} },
 
+      folders: 0,
       cards: 0
     }
 
