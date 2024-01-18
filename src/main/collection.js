@@ -122,6 +122,7 @@ class Collection {
 
     for (const card of cards) {
       card.collection = this.folder
+      card.metadata = await metadata.query(card)
       filesystem.write(card)
     }
 
