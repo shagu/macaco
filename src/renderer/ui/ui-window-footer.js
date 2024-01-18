@@ -9,6 +9,8 @@ export default class UIWindowFooter extends HTMLElement {
 
   static style = css`
     :host {
+      padding: 4px;
+      text-align: center;
     }
   `
 
@@ -24,6 +26,11 @@ export default class UIWindowFooter extends HTMLElement {
     for (const e of this.shadow.querySelectorAll('*')) {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
+
+    macaco.events.register('update-statistics-contents', (ev, statistics) => {
+      const string = `Collection with <b>${statistics.cards}</b> cards in <b>${statistics.folders}</b> folders worth <b>${statistics.price.sum.toFixed(2)}€</b>.`
+      this.shadow.innerHTML = string
+    })
   }
 }
 
