@@ -45,7 +45,7 @@ export default class UIWindow extends HTMLElement {
     #library {
       grid-area: library;
       max-width: 550px;
-      min-width: 280px;
+      min-width: 8px;
       overflow-y: auto;
       overflow-x: hidden;
     }
@@ -69,7 +69,7 @@ export default class UIWindow extends HTMLElement {
       overflow-x: hidden;
 
       max-width: 280px;
-      min-width: 280px;
+      min-width: 8px;
     }
 
     #footer {

@@ -4,14 +4,15 @@ export default class UIWindowLibrary extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <input type='text' id='folder-input' value='Create New Folder'/>
-    <hr/>
-    <div id="folders"></div>
+    <div id='container-box'>
+      <input type='text' id='folder-input' value='Create New Folder'/>
+      <hr/>
+      <div id="folders"></div>
+    </div>
   `
 
   static style = css`
     :host {
-      padding: 5px;
     }
 
     hr {
@@ -19,6 +20,10 @@ export default class UIWindowLibrary extends HTMLElement {
       background-color: var(--border-light);
       border: none;
       margin: 5px;
+    }
+
+    #container-box {
+      padding: 5px;
     }
 
     #folder-input {
@@ -62,6 +67,8 @@ export default class UIWindowLibrary extends HTMLElement {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
+    this.dom['container-box'].style.display = 'none'
+
     this.dom['folder-input'].onfocus = (e) => {
       this.dom['folder-input'].classList.add('active')
       this.dom['folder-input'].value = ''
@@ -87,6 +94,8 @@ export default class UIWindowLibrary extends HTMLElement {
 
     macaco.events.register('update-collection-contents', (ev, contents) => {
       this.dom.folders.innerHTML = ''
+
+      this.dom['container-box'].style.display = 'block'
 
       for (const [path, cards] of Object.entries(contents)) {
         const element = document.createElement('ui-window-library-folder')

@@ -4,12 +4,22 @@ export default class UIWindowSidebar extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <ui-window-sidebar-single id="single"></ui-window-sidebar-single>
-    <ui-window-sidebar-multi id="multi"></ui-window-sidebar-multi>
+    <div id='container-box'>
+      <ui-window-sidebar-single id="single"></ui-window-sidebar-single>
+      <ui-window-sidebar-multi id="multi"></ui-window-sidebar-multi>
+    </div>
   `
 
   static style = css`
     :host {
+    }
+
+    #single {
+      min-width: 280px;
+    }
+
+    #multi {
+      min-width: 280px;
     }
   `
 
@@ -25,6 +35,11 @@ export default class UIWindowSidebar extends HTMLElement {
     for (const e of this.shadow.querySelectorAll('*')) {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
+
+    this.dom['container-box'].style.display = 'none'
+    macaco.events.register('update-collection-contents', (ev, contents) => {
+      this.dom['container-box'].style.display = 'block'
+    })
 
     macaco.events.register('update-collection-selection', (ev, selection) => {
       /* change visibility based on selection contents */
