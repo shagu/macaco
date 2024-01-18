@@ -14,8 +14,7 @@ export default class UIWindowSidebar extends HTMLElement {
     :host {
     }
 
-    #single, #multi {
-      width: 100%;
+    #container-box {
       min-width: 280px;
       max-width: 280px;
     }
@@ -48,6 +47,10 @@ export default class UIWindowSidebar extends HTMLElement {
         this.dom.single.style.display = 'none'
         this.dom.multi.style.display = 'block'
       }
+
+      /* hackfix: width doesn't reload when scrollbar visibility changes */
+      this.dom['container-box'].style.width = '0px'
+      setTimeout(() => { this.dom['container-box'].style.width = '100%' }, 10)
     })
   }
 }
