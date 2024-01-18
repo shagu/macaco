@@ -4,13 +4,67 @@ export default class UIWindowContent extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <div id="cards"></div>
+    <div id="cards">
+      <div id="welcome">
+        <div id="icon">
+          <img src="../../icon.png"/>
+        </div>
+        <div id="header">Magic Card Collection</div>
+        <div id="text">
+          Open an existing collection folder or create a new folder, where your collection should be stored at.
+        </div>
+      </div>
+    </div>
   `
 
   static style = css`
     #cards {
       min-width: 100%;
       min-height: 100%;
+    }
+
+    #welcome {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      display: grid;
+      grid-template-areas:
+        'icon  header'
+        'icon  text'
+      ;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 4px;
+
+      color: var(--font-dark);
+      width: 50%;
+      max-width: 460px;
+      height: min-content;
+    }
+
+    #welcome #header {
+      grid-area: header;
+      font-size: 24pt;
+    }
+
+    #welcome #text {
+      grid-area: text;
+      font-size: 12pt;
+    }
+
+    #welcome #icon {
+      grid-area: icon;
+    }
+
+    #welcome #icon img {
+      margin: 0px 4px;
+      filter: grayscale(0.9) opacity(50%);
+      max-height: 80px;
+      aspect-ratio: 1/1;
     }
   `
 
