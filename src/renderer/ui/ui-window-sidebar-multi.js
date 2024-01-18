@@ -12,11 +12,11 @@ export default class UIWindowSidebarMulti extends HTMLElement {
     }
 
     #cards {
-      margin: 4px 0px;
+      margin: 8px;
     }
 
     #cards .frame {
-      margin: 2px;
+      margin: 0px 2px 4px;
       padding: 4px;
     }
 
