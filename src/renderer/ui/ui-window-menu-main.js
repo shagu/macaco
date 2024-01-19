@@ -5,7 +5,7 @@ export default class UIWindowMenuMain extends HTMLElement {
 
   static template = html`
     <m-button id="metadata">Update Macaco Metadata</m-button>
-    <m-button id="delver">Import DelverLens Backup</m-button>
+    <m-button id="delver" disabled>Import DelverLens Backup</m-button>
   `
 
   static style = css`
@@ -52,6 +52,11 @@ export default class UIWindowMenuMain extends HTMLElement {
     this.dom.delver.onclick = (e) => {
       macaco.ipc.invoke('import-delver')
     }
+
+    // disable delver import button while nothing is loaded
+    macaco.events.register('update-collection-contents', (ev, contents) => {
+      this.dom.delver.disabled = false
+    })
   }
 }
 
