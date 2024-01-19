@@ -16,10 +16,9 @@ export default class UIWindowSidebarMulti extends HTMLElement {
     }
 
     #cards .frame {
-      margin: 0px 2px 4px;
+      margin: 0px 2px 2px;
       padding: 4px;
-      border: 1px var(--window-light) solid;
-      outline: 1px var(--border-dark) solid;
+      border: 1px var(--border-normal) solid;
     }
 
     #cards .frame:hover {
