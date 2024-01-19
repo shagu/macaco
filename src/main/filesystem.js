@@ -110,7 +110,6 @@ class Filesystem {
 
     const size = preview ? 'small' : 'border_crop'
     const url = `https://api.scryfall.com/cards/${card.edition}/${card.number}/${language}?format=image&version=${size}`
-    console.log(`fetch ${fallback ? 'fallback' : 'normal'} of ${card.number}\n  ${url}`)
 
     await downloader.queue(
       url, file, (info) => { this.notifier(info, card, preview) }, false, preview ? 'scryfall_preview' : 'scryfall_image'
@@ -119,7 +118,6 @@ class Filesystem {
     if (fs.existsSync(file)) { return [file, fallback] }
 
     if (!fallback) {
-      console.log('try fallback')
       const [fallbackFile, fallbackState] = await this.artwork(card, preview, true)
       return [fallbackFile, fallbackState]
     }

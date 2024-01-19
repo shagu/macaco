@@ -47,7 +47,6 @@ class Downloader {
 
           // skip download of existing file with same size
           if (!force && fs.existsSync(file) && info.size === fs.statSync(info.file).size) {
-            console.log('Skipping (same size)', file)
             resolve()
             return
           }
