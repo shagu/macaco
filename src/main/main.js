@@ -44,12 +44,14 @@ electron.app.whenReady().then(async () => {
   }
 
   // detect darkmode on system theme change
-  let lastThemeChange = 0
+  let themeLock = false
   electron.nativeTheme.on('updated', () => {
-    // skip everything if not enough time has passed since the last change
-    // and set lastThemeChange to ignore all events within the next 10ms
-    if (Date.now() < lastThemeChange) return
-    lastThemeChange = Date.now() + 10
+    // ignore theme events during update
+    if (themeLock) return
+
+    // lock theme change events for 100ms
+    themeLock = true
+    setTimeout(() => { themeLock = false }, 100)
 
     // setting the themeSource to 'system' will not update to the current
     // system mode if the value wasn't set to 'dark' & 'light' before
