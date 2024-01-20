@@ -48,10 +48,10 @@ const macaco = {
     return str
   },
 
-  addCounts: (view) => {
+  prepareView: (list) => {
+    // scan for card duplicates
     const duplicates = { }
-
-    for (const card of view) {
+    for (const card of list) {
       let id = `${card.fsurl}`
       if (macaco.combine === 'id') {
         id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
@@ -66,10 +66,25 @@ const macaco = {
       }
     }
 
-    // set all count values
+    // attach card count to each card (required for sorting)
     for (const [, cards] of Object.entries(duplicates)) {
       for (const card of cards) {
         card.count = cards.length
+      }
+
+      cards[0]._similar = cards
+    }
+
+    // filter and sort all cards in list
+    list = macaco.filter.view(list)
+
+    // build a list of sorted clusters
+    const view = []
+    for (const card of list) {
+      if (card._similar) {
+        const cluster = card._similar
+        delete card._similar
+        view.push(cluster)
       }
     }
 
@@ -131,7 +146,7 @@ macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
     macaco.collection.folder = '.'
     macaco.collection.contents = contents
 
-    macaco.collection.view = macaco.filter.view(macaco.addCounts(macaco.collection.contents[macaco.collection.folder]))
+    macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
     macaco.collection.selection = []
 
     /* send update events for all variables that did change */
@@ -143,7 +158,7 @@ macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
   } else {
     /* set new received collection data */
     macaco.collection.contents = contents
-    macaco.collection.view = macaco.filter.view(macaco.addCounts(macaco.collection.contents[macaco.collection.folder]))
+    macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
 
     /* send update events for all variables that did change */
     macaco.events.invoke('update-collection-contents', macaco.collection.contents)
@@ -156,16 +171,15 @@ macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
 /* internal events */
 macaco.events.register('set-collection-folder', (ev, folder) => {
   folder = macaco.collection.contents[folder] ? folder : '.'
-  const view = macaco.collection.contents[folder]
 
-  macaco.collection.view = macaco.filter.view(macaco.addCounts(view))
   macaco.collection.folder = folder
+  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
 
   /* send update events for all variables that did change */
   macaco.events.invoke('update-collection-view', macaco.collection.view)
   macaco.events.invoke('update-collection-folder', macaco.collection.folder)
 
-  macaco.statistics.read(macaco.collection.view)
+  macaco.statistics.read(macaco.collection.contents[macaco.collection.folder])
 })
 
 macaco.events.register('set-filter', (ev, entry, value, state) => {
@@ -175,14 +189,13 @@ macaco.events.register('set-filter', (ev, entry, value, state) => {
 
 macaco.events.register('set-combine', (ev, state) => {
   macaco.combine = state
-  macaco.collection.view = macaco.filter.view(macaco.addCounts(macaco.collection.contents[macaco.collection.folder]))
+  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
   macaco.events.invoke('update-combine', macaco.combine)
   macaco.events.invoke('update-collection-view', macaco.collection.view)
 })
 
 macaco.events.register('update-filter', (ev, filter) => {
-  const view = macaco.collection.contents[macaco.collection.folder]
-  macaco.collection.view = macaco.filter.view(macaco.addCounts(view))
+  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
   macaco.events.invoke('update-collection-view', macaco.collection.view)
 })
 
@@ -202,6 +215,6 @@ macaco.events.register('update-collection-selection', (ev, cards) => {
 })
 
 macaco.events.register('update-collection-view', (ev, cards) => {
-  const statistics = macaco.statistics.read(cards, macaco.collection.folder)
+  const statistics = macaco.statistics.read(macaco.collection.contents[macaco.collection.folder], macaco.collection.folder)
   macaco.events.invoke('update-statistics-view', statistics)
 })
