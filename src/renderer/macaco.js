@@ -119,6 +119,12 @@ const macaco = {
       for (const callback of macaco.events.on[ev]) {
         callback(ev, ...args)
       }
+    },
+
+    bind: (source, target) => {
+      macaco.events.register(source, (ev, ...args) => {
+        macaco.events.invoke(target, ...args)
+      })
     }
   },
 
@@ -179,31 +185,15 @@ macaco.events.register('set-statistics-contents', (ev, contents) => {
   macaco.events.invoke('update-statistics-contents', statistics)
 })
 
-/* collection view updates */
-macaco.events.register('update-collection-folder', (ev, folder) => {
-  macaco.events.invoke('set-collection-view')
-})
+/* bind events to setters: collection updates */
+macaco.events.bind('update-collection-folder', 'set-collection-view')
+macaco.events.bind('update-filter', 'set-collection-view')
+macaco.events.bind('update-combine', 'set-collection-view')
 
-macaco.events.register('update-filter', (ev, filter) => {
-  macaco.events.invoke('set-collection-view')
-})
-
-macaco.events.register('update-combine', (ev, combine) => {
-  macaco.events.invoke('set-collection-view')
-})
-
-/* statistic updates */
-macaco.events.register('update-collection-contents', (ev, contents) => {
-  macaco.events.invoke('set-statistics-contents', contents)
-})
-
-macaco.events.register('update-collection-view', (ev, cards) => {
-  macaco.events.invoke('set-statistics-view', cards)
-})
-
-macaco.events.register('update-collection-selection', (ev, cards) => {
-  macaco.events.invoke('set-statistics-selection', cards)
-})
+/* bind events to setters: statistic updates */
+macaco.events.bind('update-collection-contents', 'set-statistics-contents')
+macaco.events.bind('update-collection-view', 'set-statistics-view')
+macaco.events.bind('update-collection-selection', 'set-statistics-selection')
 
 /* external ipc events */
 macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
