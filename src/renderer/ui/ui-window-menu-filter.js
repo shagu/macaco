@@ -215,6 +215,7 @@ export default class UIWindowMenuFilter extends HTMLElement {
     // combine cards
     for (const combine of ['id', 'name']) {
       const button = this.dom[`group-mode-${combine}`]
+      if (combine === 'id') button.checked = true
       button.onclick = (ev) => {
         const state = !button.checked && combine
         macaco.events.invoke('set-combine', state)
