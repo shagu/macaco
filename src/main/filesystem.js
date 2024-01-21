@@ -176,6 +176,9 @@ class Filesystem {
   }
 
   async write (card, keepImage) {
+    /* ignore invalid cards */
+    if (!card.collection || !card.folder) return
+
     /* get the preferred filename for the card */
     const [, fsurl] = await this.filename(card)
     const identifier = this.identifier(card)
