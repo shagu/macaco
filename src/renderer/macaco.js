@@ -15,6 +15,8 @@ const macaco = {
   collection: {
     path: '',
     contents: {},
+    selection: [],
+    folder: '.',
     diff: []
   },
 
@@ -48,10 +50,10 @@ const macaco = {
     return str
   },
 
-  prepareView: (list) => {
+  prepareView: (files) => {
     // scan for card duplicates
     const duplicates = { }
-    for (const card of list) {
+    for (const card of files) {
       let id = `${card.fsurl}`
       if (macaco.combine === 'id') {
         id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
@@ -75,12 +77,12 @@ const macaco = {
       cards[0]._similar = cards
     }
 
-    // filter and sort all cards in list
-    list = macaco.filter.view(list)
+    // filter and sort all cards in files
+    files = macaco.filter.view(files)
 
-    // build a list of sorted clusters
+    // build a list of sorted card clusters
     const view = []
-    for (const card of list) {
+    for (const card of files) {
       if (card._similar) {
         const cluster = card._similar
         delete card._similar
@@ -130,56 +132,21 @@ const macaco = {
   }
 }
 
-/* external events */
-macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
-  // update and reset recent updates
-  macaco.collection.diff = diff || []
-  setTimeout(() => {
-    if (macaco.collection.diff === diff) {
-      macaco.collection.diff = []
-    }
-  }, 1000)
-
-  if (path !== macaco.collection.path) {
-    /* set new received collection data */
-    macaco.collection.path = path
-    macaco.collection.folder = '.'
-    macaco.collection.contents = contents
-
-    macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
-    macaco.collection.selection = []
-
-    /* send update events for all variables that did change */
-    macaco.events.invoke('update-collection-path', macaco.collection.path)
-    macaco.events.invoke('update-collection-contents', macaco.collection.contents)
-    macaco.events.invoke('update-collection-view', macaco.collection.view)
-    macaco.events.invoke('update-collection-selection', macaco.collection.selection)
-    macaco.events.invoke('update-collection-folder', macaco.collection.folder)
-  } else {
-    /* set new received collection data */
-    macaco.collection.contents = contents
-    macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
-
-    /* send update events for all variables that did change */
-    macaco.events.invoke('update-collection-contents', macaco.collection.contents)
-    macaco.events.invoke('update-collection-view', macaco.collection.view)
-  }
-
-  macaco.events.invoke('update-combine', macaco.combine)
+/* setters */
+macaco.events.register('set-collection-folder', (ev, folder) => {
+  macaco.collection.folder = folder || macaco.collection.folder
+  macaco.events.invoke('update-collection-folder', folder)
 })
 
-/* internal events */
-macaco.events.register('set-collection-folder', (ev, folder) => {
-  folder = macaco.collection.contents[folder] ? folder : '.'
+macaco.events.register('set-collection-selection', (ev, selection) => {
+  macaco.collection.selection = selection
+  macaco.events.invoke('update-collection-selection', selection)
+})
 
-  macaco.collection.folder = folder
-  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
-
-  /* send update events for all variables that did change */
-  macaco.events.invoke('update-collection-view', macaco.collection.view)
-  macaco.events.invoke('update-collection-folder', macaco.collection.folder)
-
-  macaco.statistics.read(macaco.collection.contents[macaco.collection.folder])
+macaco.events.register('set-collection-view', (ev) => {
+  const files = macaco.collection.contents[macaco.collection.folder]
+  const view = macaco.prepareView(files)
+  macaco.events.invoke('update-collection-view', view)
 })
 
 macaco.events.register('set-filter', (ev, entry, value, state) => {
@@ -189,17 +156,20 @@ macaco.events.register('set-filter', (ev, entry, value, state) => {
 
 macaco.events.register('set-combine', (ev, state) => {
   macaco.combine = state
-  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
   macaco.events.invoke('update-combine', macaco.combine)
-  macaco.events.invoke('update-collection-view', macaco.collection.view)
 })
 
-macaco.events.register('update-filter', (ev, filter) => {
-  macaco.collection.view = macaco.prepareView(macaco.collection.contents[macaco.collection.folder])
-  macaco.events.invoke('update-collection-view', macaco.collection.view)
+macaco.events.register('set-statistics-selection', (ev, cards) => {
+  const statistics = macaco.statistics.read(cards, 'Selection')
+  macaco.events.invoke('update-statistics-selection', statistics)
 })
 
-macaco.events.register('update-collection-contents', (ev, contents) => {
+macaco.events.register('set-statistics-view', (ev, view) => {
+  const statistics = macaco.statistics.read(macaco.collection.contents[macaco.collection.folder], macaco.collection.folder)
+  macaco.events.invoke('update-statistics-view', statistics)
+})
+
+macaco.events.register('set-statistics-contents', (ev, contents) => {
   let statistics = false
   for (const [, cards] of Object.entries(contents)) {
     statistics = macaco.statistics.read(cards, 'Collection', statistics)
@@ -209,12 +179,56 @@ macaco.events.register('update-collection-contents', (ev, contents) => {
   macaco.events.invoke('update-statistics-contents', statistics)
 })
 
-macaco.events.register('update-collection-selection', (ev, cards) => {
-  const statistics = macaco.statistics.read(cards, 'Selection')
-  macaco.events.invoke('update-statistics-selection', statistics)
+/* collection view updates */
+macaco.events.register('update-collection-folder', (ev, folder) => {
+  macaco.events.invoke('set-collection-view')
+})
+
+macaco.events.register('update-filter', (ev, filter) => {
+  macaco.events.invoke('set-collection-view')
+})
+
+macaco.events.register('update-combine', (ev, combine) => {
+  macaco.events.invoke('set-collection-view')
+})
+
+/* statistic updates */
+macaco.events.register('update-collection-contents', (ev, contents) => {
+  macaco.events.invoke('set-statistics-contents', contents)
 })
 
 macaco.events.register('update-collection-view', (ev, cards) => {
-  const statistics = macaco.statistics.read(macaco.collection.contents[macaco.collection.folder], macaco.collection.folder)
-  macaco.events.invoke('update-statistics-view', statistics)
+  macaco.events.invoke('set-statistics-view', cards)
+})
+
+macaco.events.register('update-collection-selection', (ev, cards) => {
+  macaco.events.invoke('set-statistics-selection', cards)
+})
+
+/* external ipc events */
+macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
+  // update and reset recent updates
+  macaco.collection.diff = diff || []
+  setTimeout(() => {
+    if (macaco.collection.diff === diff) {
+      macaco.collection.diff = []
+    }
+  }, 1000)
+
+  // detect library change
+  const changed = macaco.collection.path !== path
+
+  // set collection variables
+  macaco.collection.path = path
+  macaco.collection.contents = contents
+
+  // send update events
+  macaco.events.invoke('update-collection-path', path)
+  macaco.events.invoke('update-collection-contents', contents)
+
+  // reset folder on library change
+  macaco.events.invoke('set-collection-folder', changed && '.')
+
+  // reset selection after collection updates of any kind
+  macaco.events.invoke('set-collection-selection', [])
 })
