@@ -14,6 +14,8 @@ class Collection {
   static collection = {}
   static folder = ''
 
+  cardlock = {}
+
   /* set collection to a folder */
   async set (folder, force) {
     if (!force && folder === this.folder) return
@@ -83,7 +85,14 @@ class Collection {
     }
 
     // read previous fsurl if existing
+    const request = card
     const oldurl = card.fsurl
+
+    // ignore already pending existing cards
+    if (oldurl) {
+      if (this.cardlock[oldurl]) return request
+      this.cardlock[oldurl] = true
+    }
 
     // write current collection path
     card.collection = this.folder
@@ -95,8 +104,11 @@ class Collection {
     card = await filesystem.write(card, keep)
 
     // reload collection and return card
-    await this.reload(card, oldurl)
-    return card
+    if (card) await this.reload(card, oldurl)
+
+    // remove lock and return
+    if (oldurl) delete this.cardlock[oldurl]
+    return card || request
   }
 
   /* create new folder in library */
