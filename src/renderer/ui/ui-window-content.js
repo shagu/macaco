@@ -70,6 +70,7 @@ export default class UIWindowContent extends HTMLElement {
 
   dom = {}
   cards = []
+  view = []
 
   constructor () {
     super()
@@ -88,7 +89,7 @@ export default class UIWindowContent extends HTMLElement {
 
       if (event.ctrlKey && event.code === 'KeyA') {
         macaco.collection.selection = []
-        for (const cluster of macaco.collection.view) {
+        for (const cluster of this.view) {
           cluster.forEach((card) => macaco.collection.selection.push(card))
         }
         macaco.events.invoke('update-collection-selection', macaco.collection.selection)
@@ -135,9 +136,10 @@ export default class UIWindowContent extends HTMLElement {
 
       // cache dom object of same cards
       this.cards = []
+      this.view = view
 
       // add card for each entry in view
-      for (const cluster of macaco.collection.view) {
+      for (const cluster of view) {
         const element = document.createElement('ui-window-content-card')
         element.cards = cluster
         this.dom.cards.appendChild(element)
