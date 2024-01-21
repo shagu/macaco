@@ -188,17 +188,12 @@ class Filesystem {
 
     /* check if the card is an existing one */
     if (card.fsurl && fs.existsSync(card.fsurl)) {
-      if (keepImage) {
-        /* move the card to a new location */
-        shared.popup('Move Card', `[${identifier}]`)
-        const image = card.fsurl
-        fs.renameSync(image, fsurl)
-      } else {
-        /* modify existing card */
-        shared.popup('Update Card', `[${identifier}]`)
-        const image = await this.image(card)
-        fs.renameSync(image, fsurl)
-      }
+      /* move or update existing card */
+      shared.popup(keepImage ? 'Move Card' : 'Update Card', `[${identifier}]`)
+      fs.renameSync(card.fsurl, fsurl)
+
+      /* update image */
+      if (!keepImage) fs.copyFileSync(await this.image(card), fsurl)
     } else if (card.image) {
       /* write imagedata from json object to fsurl */
       shared.popup('Write Card', `[${identifier}]`)
