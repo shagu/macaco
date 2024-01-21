@@ -219,6 +219,7 @@ macaco.ipc.register('update-collection', (ev, path, contents, diff) => {
   // reset folder on library change
   macaco.events.invoke('set-collection-folder', changed && '.')
 
-  // reset selection after collection updates of any kind
+  // reset non-empty selections after collection updates
+  if (macaco.collection.selection.length === 0) return
   macaco.events.invoke('set-collection-selection', [])
 })
