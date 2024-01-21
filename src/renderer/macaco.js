@@ -141,7 +141,7 @@ const macaco = {
 /* setters */
 macaco.events.register('set-collection-folder', (ev, folder) => {
   macaco.collection.folder = folder || macaco.collection.folder
-  macaco.events.invoke('update-collection-folder', folder)
+  macaco.events.invoke('update-collection-folder', macaco.collection.folder)
 })
 
 macaco.events.register('set-collection-selection', (ev, selection) => {
