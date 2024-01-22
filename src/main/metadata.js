@@ -140,6 +140,13 @@ class Metadata {
         if (data.foil) metadata.price = metadata.prices[3] || metadata.prices[1]
       }
 
+      // add localized card name
+      if (metadata.locales[card.language] && metadata.locales[card.language].name) {
+        card.name = metadata.locales[card.language].name
+      } else if (metadata.name) {
+        card.name = metadata.name
+      }
+
       return metadata
     } else {
       return {}
