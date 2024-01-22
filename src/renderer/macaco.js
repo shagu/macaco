@@ -51,49 +51,6 @@ const macaco = {
     return str
   },
 
-  prepareView: (files) => {
-    // scan for card duplicates
-    const duplicates = { }
-    for (const card of files) {
-      let id = `${card.fsurl}`
-      if (macaco.combine === 'id') {
-        id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-      } else if (macaco.combine === 'name' && card.metadata) {
-        id = `[${card.metadata.name}]`
-      }
-
-      if (!duplicates[id]) {
-        duplicates[id] = [card]
-      } else {
-        duplicates[id].push(card)
-      }
-    }
-
-    // attach card count to each card (required for sorting)
-    for (const [, cards] of Object.entries(duplicates)) {
-      for (const card of cards) {
-        card.count = cards.length
-      }
-
-      cards[0]._similar = cards
-    }
-
-    // filter and sort all cards in files
-    files = macaco.filter.view(files)
-
-    // build a list of sorted card clusters
-    const view = []
-    for (const card of files) {
-      if (card._similar) {
-        const cluster = card._similar
-        delete card._similar
-        view.push(cluster)
-      }
-    }
-
-    return view
-  },
-
   /* ipc event system: main <=> renderer */
   ipc: {
     register: (ev, callback) => {
@@ -116,8 +73,47 @@ macaco.events.register('set-collection-selection', (ev, selection) => {
 })
 
 macaco.events.register('set-collection-view', (ev) => {
-  const files = macaco.collection.contents[macaco.collection.folder]
-  const view = macaco.prepareView(files)
+  let files = macaco.collection.contents[macaco.collection.folder]
+
+  // scan for card duplicates
+  const duplicates = { }
+  for (const card of files) {
+    let id = `${card.fsurl}`
+    if (macaco.combine === 'id') {
+      id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
+    } else if (macaco.combine === 'name' && card.metadata) {
+      id = `[${card.metadata.name}]`
+    }
+
+    if (!duplicates[id]) {
+      duplicates[id] = [card]
+    } else {
+      duplicates[id].push(card)
+    }
+  }
+
+  // attach card count to each card (required for sorting)
+  for (const [, cards] of Object.entries(duplicates)) {
+    for (const card of cards) {
+      card.count = cards.length
+    }
+
+    cards[0]._similar = cards
+  }
+
+  // filter and sort all cards in files
+  files = macaco.filter.view(files)
+
+  // build a list of sorted card clusters
+  const view = []
+  for (const card of files) {
+    if (card._similar) {
+      const cluster = card._similar
+      delete card._similar
+      view.push(cluster)
+    }
+  }
+
   macaco.events.invoke('update-collection-view', view)
 })
 
