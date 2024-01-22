@@ -1,8 +1,4 @@
 const macaco = {
-  config: {
-    byname: false
-  },
-
   icons:
     require('../../assets/svg-icons.js'),
 
@@ -11,6 +7,9 @@ const macaco = {
 
   statistics:
     require('./statistics.js'),
+
+  events:
+    require('./events.js'),
 
   collection: {
     path: '',
@@ -91,41 +90,6 @@ const macaco = {
     }
 
     return view
-  },
-
-  /* macaco.events:
-
-    The events are usually the name of the macaco variable that is accesed.
-    It is also prefixed with a `set-` if the registered function is supposed
-    to set the variable, or with an `update-` if the registered function is
-    supposed to update based on the value of the variable.
-
-    set-x-y: The receiver is expected to set the value of `macaco.x.y` and
-            also to trigger the required update events.
-
-    update-x-y: The receiver is expected to update itself based on the
-                value of the variable `macaco.x.y`
-  */
-  events: {
-    on: {},
-
-    register: (ev, callback) => {
-      macaco.events.on[ev] = macaco.events.on[ev] || []
-      macaco.events.on[ev].push(callback)
-    },
-
-    invoke: (ev, ...args) => {
-      macaco.events.on[ev] = macaco.events.on[ev] || []
-      for (const callback of macaco.events.on[ev]) {
-        callback(ev, ...args)
-      }
-    },
-
-    bind: (source, target) => {
-      macaco.events.register(source, (ev, ...args) => {
-        macaco.events.invoke(target, ...args)
-      })
-    }
   },
 
   /* ipc event system: main <=> renderer */
