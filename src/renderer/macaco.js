@@ -147,12 +147,23 @@ macaco.events.register('set-statistics-contents', (ev, contents) => {
   macaco.events.invoke('update-statistics-contents', statistics)
 })
 
+macaco.events.register('set-statistics-folder', (ev, view) => {
+  const folders = {}
+
+  for (const [folder, files] of Object.entries(macaco.collection.contents)) {
+    folders[folder] = macaco.filter.view(files).length
+  }
+
+  macaco.events.invoke('update-statistics-folder', folders)
+})
+
 /* bind events to setters: collection updates */
 macaco.events.bind('update-collection-folder', 'set-collection-view')
 macaco.events.bind('update-filter', 'set-collection-view')
 macaco.events.bind('update-combine', 'set-collection-view')
 
 /* bind events to setters: statistic updates */
+macaco.events.bind('update-filter', 'set-statistics-folder')
 macaco.events.bind('update-collection-contents', 'set-statistics-contents')
 macaco.events.bind('update-collection-view', 'set-statistics-view')
 macaco.events.bind('update-collection-selection', 'set-statistics-selection')

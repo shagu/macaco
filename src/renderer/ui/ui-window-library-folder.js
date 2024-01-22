@@ -78,6 +78,10 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       pointer-events: none;
     }
 
+    #count b {
+      color: var(--font-light);
+    }
+
     :host {
     }
   `
@@ -94,6 +98,17 @@ export default class UIWindowLibraryFolder extends HTMLElement {
     for (const e of this.shadow.querySelectorAll('*')) {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
+
+    macaco.events.register('update-statistics-folder', (ev, counts) => {
+      const real = this.cards.length > 0 ? this.cards.length : ''
+      const filtered = counts[this.path] ? counts[this.path] : 0
+
+      if (filtered <= 0 || filtered === real) {
+        this.dom.count.innerHTML = `${real}`
+      } else {
+        this.dom.count.innerHTML = `${real} [<b>${filtered}</b>]`
+      }
+    })
 
     macaco.events.register('update-collection-folder', (ev, folder) => {
       if (folder === this.path) {
