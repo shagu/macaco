@@ -205,8 +205,6 @@ export default class UIWindowContentCard extends HTMLElement {
     const card = this.cards[0]
     const amount = this.cards.length
 
-    const identifier = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-
     const image = document.createElement('img')
     image.setAttribute('id', 'image')
     image.setAttribute('src', card.fsurl)
@@ -214,7 +212,7 @@ export default class UIWindowContentCard extends HTMLElement {
 
     const title = document.createElement('div')
     title.setAttribute('id', 'title')
-    title.innerHTML = macaco.getLocale(card, 'name') || identifier
+    title.innerHTML = card.name
     this.shadow.appendChild(title)
 
     const count = document.createElement('div')
