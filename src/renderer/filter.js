@@ -93,14 +93,14 @@ class Filter {
           return aVal < bVal ? order : -1 * order
         }
       } else {
-        // metadata sorting algorithm
-        if ((a.metadata[attribute] || 0) !== (b.metadata[attribute] || 0)) {
-          return a.metadata[attribute] < b.metadata[attribute] ? order : -1 * order
-        }
-
         // generic sorting algorithm
         if ((a[attribute] || 0) !== (b[attribute] || 0)) {
           return a[attribute] < b[attribute] ? order : -1 * order
+        }
+
+        // metadata sorting algorithm
+        if ((a.metadata[attribute] || 0) !== (b.metadata[attribute] || 0)) {
+          return a.metadata[attribute] < b.metadata[attribute] ? order : -1 * order
         }
       }
 
