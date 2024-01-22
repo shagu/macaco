@@ -24,6 +24,8 @@ const macaco = {
   getLocale: (card, entry) => {
     if (card.language && card.metadata && card.metadata.locales && card.metadata.locales[card.language]) {
       return card.metadata.locales[card.language][entry]
+    } else if (card.metadata && card.metadata.locales && card.metadata.locales.en) {
+      return card.metadata.locales.en[entry]
     } else {
       return ''
     }
