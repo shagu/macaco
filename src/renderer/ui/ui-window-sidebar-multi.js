@@ -85,7 +85,7 @@ export default class UIWindowSidebarMulti extends HTMLElement {
 
       for (const card of selection) {
         let id = `[${card.edition}.${card.number}.${card.language}${card.foil ? '.f' : ''}]`
-        if (macaco.config.byname && card.data && card.data.name) { id = `${card.data.name}` }
+        if (macaco.combine === 'name' && card.data && card.data.name) { id = `${card.data.name}` }
 
         if (merged[id]) {
           merged[id].push(card)
