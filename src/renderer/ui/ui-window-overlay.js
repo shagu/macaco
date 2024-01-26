@@ -4,7 +4,6 @@ export default class UIWindowOverlay extends HTMLElement {
   static shadow = null
 
   static template = html`
-    <img id='image'/>
   `
 
   static style = css`
@@ -17,29 +16,47 @@ export default class UIWindowOverlay extends HTMLElement {
 
       background: var(--window-light);
       border: 1px var(--border-normal) solid;
-      padding: 4px;
 
-      display: block;
       visibility: hidden;
       opacity: 0;
-
-      max-height: 75%;
-      max-width: 75%;
-      aspect-ratio: 2.5/3.5;
+      width: auto;
     }
 
     :host(.visible) {
       visibility: visible;
       opacity: 1;
     }
-
-    #image {
-      width: 100%;
-    }
   `
 
   dom = {}
-  groups = {}
+
+  set (mode, data, ...args) {
+    if (mode && data) {
+      // change visibility
+      this.show()
+
+      // create and set content element
+      const content = document.createElement(`ui-window-overlay-${mode}`)
+      this.shadow.appendChild(content)
+      content.set(this, data, ...args)
+    } else {
+      this.hide()
+    }
+
+    // save current mode
+    this.mode = mode
+  }
+
+  show () {
+    this.shadow.innerHTML = ''
+    this.classList = 'visible'
+  }
+
+  hide () {
+    this.mode = false
+    this.shadow.innerHTML = ''
+    this.classList = ''
+  }
 
   constructor () {
     super()
@@ -54,21 +71,13 @@ export default class UIWindowOverlay extends HTMLElement {
 
     this.classList = 'invisible'
 
+    document.addEventListener('keydown', (event) => {
+      if (document.activeElement.tagName !== 'BODY') return
+      if (event.code === 'Escape') this.hide()
+    })
+
     macaco.events.register('set-overlay-image', (ev, path) => {
-      if (path !== false) {
-        this.shadow.innerHTML = ''
-
-        const image = document.createElement('img')
-        image.setAttribute('id', 'image')
-        image.src = path
-        this.shadow.appendChild(image)
-
-        this.classList = 'visible'
-      } else {
-        this.classList = ''
-      }
-
-      macaco.events.invoke('update-overlay-image', path)
+      this.set('image', path)
     })
   }
 }

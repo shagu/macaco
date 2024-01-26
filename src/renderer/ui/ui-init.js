@@ -12,6 +12,7 @@ import './ui-window-content.js'
 import './ui-window-content-card.js'
 
 import './ui-window-overlay.js'
+import './ui-window-overlay-image.js'
 
 import './ui-window-menu.js'
 import './ui-window-menu-filter.js'
