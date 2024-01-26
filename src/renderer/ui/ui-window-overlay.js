@@ -31,6 +31,9 @@ export default class UIWindowOverlay extends HTMLElement {
   dom = {}
 
   set (mode, data, ...args) {
+    // ignore other events during dialog mode
+    if (mode !== 'dialog' && this.mode === 'dialog') return
+
     if (mode && data) {
       // change visibility
       this.show()
@@ -78,6 +81,10 @@ export default class UIWindowOverlay extends HTMLElement {
 
     macaco.events.register('set-overlay-image', (ev, path) => {
       this.set('image', path)
+    })
+
+    macaco.events.register('set-overlay-dialog', (ev, text, yes, no) => {
+      this.set('dialog', text, yes, no)
     })
   }
 }
