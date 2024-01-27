@@ -175,6 +175,10 @@ class Filesystem {
     return list
   }
 
+  async delete (card) {
+    fs.unlinkSync(card.fsurl)
+  }
+
   async write (card, keepImage) {
     /* ignore invalid cards */
     if (!card.collection || !card.folder) return

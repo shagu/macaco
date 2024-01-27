@@ -93,6 +93,19 @@ export default class UIWindowContent extends HTMLElement {
           cluster.forEach((card) => macaco.collection.selection.push(card))
         }
         macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+      } else if (event.code === 'Delete') {
+        if (macaco.collection.selection.length > 0) {
+          /* clone current selection */
+          const selection = []
+          macaco.collection.selection.forEach((el) => selection.push(el))
+
+          /* show dialog */
+          const text = `Do you really want to delete <b>${selection.length}</b> card${selection.length > 1 ? 's' : ''}?`
+          macaco.events.invoke('set-overlay-dialog', text, (ev) => {
+            macaco.events.invoke('set-statistics-selection', [])
+            macaco.ipc.invoke('delete-card', selection)
+          })
+        }
       } else if (event.code === 'Escape') {
         macaco.collection.selection = []
         macaco.events.invoke('update-collection-selection', macaco.collection.selection)

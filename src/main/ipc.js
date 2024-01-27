@@ -56,6 +56,19 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
+  async deleteCard (event, card, ...args) {
+    // convert to array if a single card is found
+    const cards = Array.isArray(card) ? card : [card]
+
+    // delete each card in list
+    for (const card of cards) {
+      await collection.delete(card)
+    }
+
+    // notify frontend about collection changes
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
   async addUpdateCard (event, card, ...args) {
     // skip empty or invalid card
     if (!card || !card.edition || !card.number || !card.language) return
@@ -118,6 +131,7 @@ class Ipc {
     electron.ipcMain.handle('set-card-preview', this.setCardPreview)
     electron.ipcMain.handle('set-card-folder', this.setCardFolder)
 
+    electron.ipcMain.handle('delete-card', this.deleteCard)
     electron.ipcMain.handle('add-update-card', this.addUpdateCard)
     electron.ipcMain.handle('create-new-folder', this.createNewFolder)
   }

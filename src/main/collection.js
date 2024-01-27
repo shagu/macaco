@@ -111,6 +111,21 @@ class Collection {
     return card || request
   }
 
+  async delete (card) {
+    // abort on invalid card
+    if (!card.fsurl) return
+
+    // delete from filesystem
+    await filesystem.delete(card)
+
+    // remove card from collection cache to skip full rescan
+    for (const [folder, contents] of Object.entries(this.collection)) {
+      for (const entry of contents) {
+        if (entry.fsurl === card.fsurl) this.collection[folder].splice(this.collection[folder].indexOf(entry), 1)
+      }
+    }
+  }
+
   /* create new folder in library */
   async mkdir (folder) {
     await filesystem.mkdir(this.folder, folder)
