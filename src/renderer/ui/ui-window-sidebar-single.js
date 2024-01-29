@@ -204,7 +204,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
       number: this.dom['number-input'].value,
       language: this.dom['language-input'].value,
       foil: this.dom['foil-input'].checked,
-      fsurl: this.card.fsurl || undefined
+      fsurl: this.card ? this.card.fsurl : undefined
     }
   }
 
