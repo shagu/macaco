@@ -7,6 +7,35 @@ const downloader = require('./downloader.js')
 const jimp = require('jimp')
 
 class Filesystem {
+  wait = false
+  tasks = []
+
+  async queue (task) {
+    // add task to queue
+    this.tasks.push(task)
+
+    if (this.wait) {
+      // return pending promise
+      return this.wait
+    } else {
+      // create new promise that runs through all tasks
+      this.wait = new Promise(async (resolve, reject) => {
+        while (this.tasks[0]) {
+          // run task
+          await this.tasks[0]()
+
+          // load next task
+          this.tasks.shift()
+        }
+
+        this.wait = false
+        resolve(true)
+      })
+
+      return this.wait
+    }
+  }
+
   identifier (card) {
     let id = `${card.edition}.${card.number}.${card.language}`
     id = card.foil ? `${id}.f` : id
@@ -183,38 +212,41 @@ class Filesystem {
     /* ignore invalid cards */
     if (!card.collection || !card.folder) return
 
-    /* get the preferred filename for the card */
-    const [, fsurl] = await this.filename(card)
-    const identifier = this.identifier(card)
+    await this.queue(async () => {
+      /* get the preferred filename for the card */
+      const [, fsurl] = await this.filename(card)
+      const identifier = this.identifier(card)
 
-    /* create required directories */
-    fs.mkdirSync(path.dirname(fsurl), { recursive: true })
+      /* create required directories */
+      fs.mkdirSync(path.dirname(fsurl), { recursive: true })
 
-    /* check if the card is an existing one */
-    if (card.fsurl && fs.existsSync(card.fsurl)) {
-      /* move or update existing card */
-      shared.popup(keepImage ? 'Move Card' : 'Update Card', `[${identifier}]`)
-      fs.renameSync(card.fsurl, fsurl)
+      /* check if the card is an existing one */
+      if (card.fsurl && fs.existsSync(card.fsurl)) {
+        /* move or update existing card */
+        shared.popup(keepImage ? 'Move Card' : 'Update Card', `[${identifier}]`)
+        fs.renameSync(card.fsurl, fsurl)
 
-      /* update image */
-      if (!keepImage) fs.copyFileSync(await this.image(card), fsurl)
-    } else if (card.image) {
-      /* write imagedata from json object to fsurl */
-      shared.popup('Write Card', `[${identifier}]`)
-      const fd = fs.openSync(fsurl, 'a')
-      fs.writeSync(fd, card.image)
-      fs.closeSync(fd)
+        /* update image */
+        if (!keepImage) fs.copyFileSync(await this.image(card), fsurl)
+      } else if (card.image) {
+        /* write imagedata from json object to fsurl */
+        shared.popup('Write Card', `[${identifier}]`)
+        const fd = fs.openSync(fsurl, 'a')
+        fs.writeSync(fd, card.image)
+        fs.closeSync(fd)
 
-      delete card.image
-    } else {
-      /* create a new card on the new location/filename */
-      shared.popup('Add Card', `[${identifier}]`)
-      const image = await this.image(card)
-      fs.copyFileSync(image, fsurl)
-    }
+        delete card.image
+      } else {
+        /* create a new card on the new location/filename */
+        shared.popup('Add Card', `[${identifier}]`)
+        const image = await this.image(card)
+        fs.copyFileSync(image, fsurl)
+      }
 
-    // update card file data
-    card.fsurl = fsurl
+      // update card file data
+      card.fsurl = fsurl
+    })
+
     return card
   }
 
