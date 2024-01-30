@@ -1,41 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 
+const queue = require('./queue.js')
 const shared = require('./shared.js')
 const downloader = require('./downloader.js')
-
 const jimp = require('jimp')
 
 class Filesystem {
-  wait = false
-  tasks = []
-
-  async queue (task) {
-    // add task to queue
-    this.tasks.push(task)
-
-    if (this.wait) {
-      // return pending promise
-      return this.wait
-    } else {
-      // create new promise that runs through all tasks
-      this.wait = new Promise(async (resolve, reject) => {
-        while (this.tasks[0]) {
-          // run task
-          await this.tasks[0]()
-
-          // load next task
-          this.tasks.shift()
-        }
-
-        this.wait = false
-        resolve(true)
-      })
-
-      return this.wait
-    }
-  }
-
   identifier (card) {
     let id = `${card.edition}.${card.number}.${card.language}`
     id = card.foil ? `${id}.f` : id
@@ -212,7 +183,7 @@ class Filesystem {
     /* ignore invalid cards */
     if (!card.collection || !card.folder) return
 
-    await this.queue(async () => {
+    await queue.add('filesystem', async () => {
       /* get the preferred filename for the card */
       const [, fsurl] = await this.filename(card)
       const identifier = this.identifier(card)
