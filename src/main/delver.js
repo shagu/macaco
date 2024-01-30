@@ -47,27 +47,26 @@ class Delver {
   }
 
   /* fetch and unpack latest delver APK file */
+  async update () {
+    // fetch delver apk if required
+    await downloader.queue(
+      'https://delver-public.s3.us-west-1.amazonaws.com/app-release.apk',
+      path.join(shared.userdir, 'db', 'delverlens.apk'),
+      (info) => { this.notifier(info) }, false, 'metadata'
+    )
+
+    await this.unpack()
+    await this.queries()
+    this.busy = null
+  }
+
+  /* prepare delver requirements */
   async prepare () {
-    if (this.busy) {
-      return this.busy
-    } else {
-      this.busy = new Promise(async (resolve, reject) => {
-        // fetch delver apk if required
-        await downloader.queue(
-          'https://delver-public.s3.us-west-1.amazonaws.com/app-release.apk',
-          path.join(shared.userdir, 'db', 'delverlens.apk'),
-          (info) => { this.notifier(info) }, false, 'metadata'
-        )
-
-        await this.unpack()
-        await this.queries()
-
-        this.busy = null
-        resolve(true)
-      })
-
-      return this.busy
+    if (!this.busy) {
+      this.busy = this.update()
     }
+
+    return this.busy
   }
 
   /* unpack the card-association sqlite file from the delver APK file */
