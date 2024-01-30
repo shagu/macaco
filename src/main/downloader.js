@@ -87,8 +87,16 @@ class Downloader {
     })
   }
 
-  // TODO same url? same path? return existing promise
-  queue (url, path, notify, force, queueName) {
+  async worker (process) {
+    while (process.tasks[0]) {
+      const current = process.tasks.shift()
+      await this.fetch(current.url, current.path, current.notify, current.force, current.queue)
+    }
+
+    process.promise = null
+  }
+
+  async queue (url, path, notify, force, queueName) {
     // initialize empty process list by name
     if (!this.processes[queueName]) {
       this.processes[queueName] = { count: 0, tasks: [] }
@@ -108,17 +116,9 @@ class Downloader {
       })
     }
 
-    // runner
+    // worker
     if (!process.promise) {
-      process.promise = new Promise(async (resolve, reject) => {
-        while (process.tasks[0]) {
-          const current = process.tasks.shift()
-          await this.fetch(current.url, current.path, current.notify, current.force, current.queue)
-        }
-
-        process.promise = null
-        resolve(true)
-      })
+      process.promise = this.worker(process)
     }
 
     return process.promise
