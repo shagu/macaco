@@ -47,7 +47,7 @@ export default class UIWindowMenuFilter extends HTMLElement {
       <div><m-button id="sort-rarity">Rarity</m-button></div>
       <div><m-button id="sort-price">Price</m-button></div>
       <div><m-button id="sort-count">Count</m-button></div>
-      <div><m-button id="sort-set">Set</m-button></div>
+      <div><m-button id="sort-edition">Edition</m-button></div>
     </m-grid>
 
     <m-grid horizontal="1" gap="1px">
@@ -183,7 +183,7 @@ export default class UIWindowMenuFilter extends HTMLElement {
     }
 
     // sort methods
-    for (const method of ['name', 'color', 'cmc', 'rarity', 'price', 'count', 'set']) {
+    for (const method of ['name', 'color', 'cmc', 'rarity', 'price', 'count', 'edition']) {
       const button = this.dom[`sort-${method}`]
       button.onclick = (ev) => {
         const state = !button.checked
