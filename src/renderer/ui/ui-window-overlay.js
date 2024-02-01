@@ -16,6 +16,7 @@ export default class UIWindowOverlay extends HTMLElement {
 
       background: var(--window-light);
       border: 1px var(--border-normal) solid;
+      box-shadow: 0px 0px 20px #000;
 
       visibility: hidden;
       opacity: 0;
