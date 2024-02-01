@@ -26,6 +26,10 @@ export default class UIWindowMenuStatistics extends HTMLElement {
     <!-- Card Types -->
     <m-grid vertical=1 id=card-types>
     </m-grid>
+
+    <m-grid vertical=1 id=buttons>
+      <m-button id=draw-seven>Draw Seven</m-button>
+    </m-grid>
   `
 
   static style = css`
@@ -71,6 +75,11 @@ export default class UIWindowMenuStatistics extends HTMLElement {
 
     m-grid .content {
       text-align: right;
+    }
+
+    m-button {
+      text-align: center;
+      width: 100%;
     }
 
     #header {
@@ -235,6 +244,13 @@ export default class UIWindowMenuStatistics extends HTMLElement {
     }
 
     macaco.events.register('update-statistics-view', (ev, stats) => this.set(stats))
+    macaco.events.register('update-collection-folder', (ev, folder) => {
+      this.cards = macaco.collection.contents[folder]
+    })
+
+    this.dom['draw-seven'].onclick = (ev) => {
+      macaco.events.invoke('set-overlay-draw', this.cards)
+    }
   }
 }
 

@@ -14,6 +14,7 @@ import './ui-window-content-card.js'
 import './ui-window-overlay.js'
 import './ui-window-overlay-image.js'
 import './ui-window-overlay-dialog.js'
+import './ui-window-overlay-draw.js'
 
 import './ui-window-menu.js'
 import './ui-window-menu-filter.js'
