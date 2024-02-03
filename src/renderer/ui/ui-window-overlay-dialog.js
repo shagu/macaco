@@ -5,8 +5,6 @@ export default class UIWindowOverlayDialog extends HTMLElement {
 
   static template = html`
     <m-grid vertical="1">
-      <m-button id='close'>${macaco.icons.close}</m-button>
-
       <m-grid vertical="1">
         <div id='title'>TITLE</div>
       </m-grid>
@@ -47,22 +45,6 @@ export default class UIWindowOverlayDialog extends HTMLElement {
       max-width: 320px;
       overflow: auto;
     }
-
-    #close {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-
-      aspect-ratio: 1/1;
-
-      display: grid;
-      justify-items: center;
-      align-items: center;
-
-      min-height: 18px !important;
-      min-width: 18px !important;
-      padding: 1px;
-    }
   `
 
   dom = {}
@@ -80,10 +62,6 @@ export default class UIWindowOverlayDialog extends HTMLElement {
 
     this.dom.btnNo.onclick = (ev) => {
       dialog.no && dialog.no.function && dialog.no.function(ev)
-      parent.hide()
-    }
-
-    this.dom.close.onclick = (ev) => {
       parent.hide()
     }
 

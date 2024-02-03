@@ -4,6 +4,8 @@ export default class UIWindowOverlay extends HTMLElement {
   static shadow = null
 
   static template = html`
+    <m-button id='close'>${macaco.icons.close}</m-button>
+    <div id="popup"></div>
   `
 
   static style = css`
@@ -27,6 +29,22 @@ export default class UIWindowOverlay extends HTMLElement {
       visibility: visible;
       opacity: 1;
     }
+
+    #close {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+
+      aspect-ratio: 1/1;
+
+      display: grid;
+      justify-items: center;
+      align-items: center;
+
+      min-height: 22px !important;
+      min-width: 22px !important;
+      padding: 2px;
+    }
   `
 
   dom = {}
@@ -41,7 +59,7 @@ export default class UIWindowOverlay extends HTMLElement {
 
       // create and set content element
       const content = document.createElement(`ui-window-overlay-${mode}`)
-      this.shadow.appendChild(content)
+      this.dom.popup.appendChild(content)
       content.set(this, data, ...args)
     } else {
       this.hide()
@@ -52,13 +70,13 @@ export default class UIWindowOverlay extends HTMLElement {
   }
 
   show () {
-    this.shadow.innerHTML = ''
+    this.dom.popup.innerHTML = ''
     this.classList = 'visible'
   }
 
   hide () {
     this.mode = false
-    this.shadow.innerHTML = ''
+    this.dom.popup.innerHTML = ''
     this.classList = ''
   }
 
@@ -80,8 +98,10 @@ export default class UIWindowOverlay extends HTMLElement {
       if (event.code === 'Escape') this.hide()
     })
 
+    this.dom.close.onclick = (ev) => { this.hide() }
+
     macaco.events.register('set-overlay-image', (ev, path) => {
-      this.lastImage = path !== this.lastImage ? path : false
+      this.lastImage = path !== this.lastImage || !this.mode ? path : false
       this.set('image', this.lastImage)
     })
 
