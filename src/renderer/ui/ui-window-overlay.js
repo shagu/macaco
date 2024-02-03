@@ -90,8 +90,8 @@ export default class UIWindowOverlay extends HTMLElement {
       }
     })
 
-    macaco.events.register('set-overlay-dialog', (ev, text, yes, no) => {
-      this.set('dialog', text, yes, no)
+    macaco.events.register('set-overlay-dialog', (ev, dialog) => {
+      this.set('dialog', dialog)
     })
 
     macaco.events.register('set-overlay-draw', (ev, cards) => {

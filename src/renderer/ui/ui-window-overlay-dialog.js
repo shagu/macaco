@@ -32,20 +32,22 @@ export default class UIWindowOverlayDialog extends HTMLElement {
 
   dom = {}
 
-  set (parent, text, yes, no) {
-    this.dom.label.innerHTML = text
+  set (parent, dialog) {
+    this.dom.label.innerHTML = dialog.label || ''
+    this.dom.btnYes.innerHTML = dialog.yes.label || 'Yes'
+    this.dom.btnNo.innerHTML = dialog.no.label || 'No'
 
-    this.dom.btnYes.onclick = () => {
-      yes && yes()
+    this.dom.btnYes.onclick = (ev) => {
+      dialog.yes && dialog.yes.function && dialog.yes.function(ev)
       parent.hide()
     }
 
-    this.dom.btnNo.onclick = () => {
-      no && no()
+    this.dom.btnNo.onclick = (ev) => {
+      dialog.no && dialog.no.function && dialog.no.function(ev)
       parent.hide()
     }
 
-    macaco.events.invoke('update-overlay-dialog', text, yes, no)
+    macaco.events.invoke('update-overlay-dialog', dialog)
   }
 
   constructor () {

@@ -100,11 +100,24 @@ export default class UIWindowContent extends HTMLElement {
           macaco.collection.selection.forEach((el) => selection.push(el))
 
           /* show dialog */
-          const text = `Do you really want to delete <b>${selection.length}</b> card${selection.length > 1 ? 's' : ''}?`
-          macaco.events.invoke('set-overlay-dialog', text, (ev) => {
-            macaco.events.invoke('set-statistics-selection', [])
-            macaco.ipc.invoke('delete-card', selection)
-          })
+
+          const dialog = {
+            title: 'Delete Cards',
+            label: `Do you really want to delete <b>${selection.length}</b> card${selection.length > 1 ? 's' : ''}?`,
+            yes: {
+              label: 'Yes',
+              function: (ev) => {
+                macaco.events.invoke('set-statistics-selection', [])
+                macaco.ipc.invoke('delete-card', selection)
+              }
+            },
+            no: {
+              label: 'Cancel',
+              function: (ev) => {}
+            }
+          }
+
+          macaco.events.invoke('set-overlay-dialog', dialog)
         }
       } else if (event.code === 'Escape') {
         macaco.collection.selection = []
