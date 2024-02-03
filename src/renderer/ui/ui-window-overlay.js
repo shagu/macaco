@@ -81,13 +81,8 @@ export default class UIWindowOverlay extends HTMLElement {
     })
 
     macaco.events.register('set-overlay-image', (ev, path) => {
-      if (path !== this.lastImage) {
-        this.lastImage = path
-        this.set('image', path)
-      } else {
-        this.lastImage = false
-        this.hide()
-      }
+      this.lastImage = path !== this.lastImage ? path : false
+      this.set('image', this.lastImage)
     })
 
     macaco.events.register('set-overlay-dialog', (ev, dialog) => {
