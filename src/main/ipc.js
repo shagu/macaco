@@ -119,6 +119,37 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
+  async importTextFile (event, folder) {
+    // show open dialog if folder is not set
+    const dialogOptions = {
+      properties: ['openFile'],
+      filters: [
+        { name: 'Text File', extensions: ['txt'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    }
+
+    const result = await electron.dialog.showOpenDialog(dialogOptions)
+    if (!result.filePaths || result.canceled) return
+    const file = result.filePaths[0]
+
+    // reload collection
+    await collection.importTextFile(file, folder)
+
+    // notify frontend
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
+  async exportTextFile (event, contents) {
+    const result = await electron.dialog.showSaveDialog({
+      filters: [{ name: 'Plain Text File', extensions: ['txt'] }]
+    })
+
+    if (!result.filePath || result.canceled) return
+
+    await collection.exportTextFile(result.filePath, contents)
+  }
+
   register () {
     electron.ipcMain.handle('window-minimize', this.windowMinimize)
     electron.ipcMain.handle('window-maximize', this.windowMaximize)
@@ -134,6 +165,9 @@ class Ipc {
     electron.ipcMain.handle('delete-card', this.deleteCard)
     electron.ipcMain.handle('add-update-card', this.addUpdateCard)
     electron.ipcMain.handle('create-new-folder', this.createNewFolder)
+
+    electron.ipcMain.handle('import-textfile', this.importTextFile)
+    electron.ipcMain.handle('export-textfile', this.exportTextFile)
   }
 }
 

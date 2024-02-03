@@ -8,6 +8,7 @@
 const filesystem = require('./filesystem.js')
 const metadata = require('./metadata.js')
 const delver = require('./delver.js')
+const textfile = require('./textfile.js')
 const shared = require('./shared.js')
 
 class Collection {
@@ -141,6 +142,25 @@ class Collection {
     }
 
     await this.set(this.folder, true)
+  }
+
+  async importTextFile (file, folder) {
+    // abort if no collection is loaded
+    if (!this.folder || this.folder === '') return
+
+    const cards = await textfile.import(file, folder)
+
+    for (const card of cards) {
+      card.collection = this.folder
+      card.metadata = await metadata.query(card)
+      await filesystem.write(card)
+    }
+
+    await this.set(this.folder, true)
+  }
+
+  async exportTextFile (file, contents) {
+    textfile.export(file, contents)
   }
 }
 

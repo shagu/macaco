@@ -5,7 +5,9 @@ export default class UIWindowMenuMain extends HTMLElement {
 
   static template = html`
     <m-button id="metadata">Update Macaco Metadata</m-button>
-    <m-button id="delver" disabled>Import DelverLens Backup</m-button>
+    <m-button id="importDelver" disabled>Import DelverLens Backup</m-button>
+    <m-button id="importTextFile" disabled>Import Text File</m-button>
+    <m-button id="exportTextFile" disabled>Export Text File</m-button>
   `
 
   static style = css`
@@ -49,13 +51,36 @@ export default class UIWindowMenuMain extends HTMLElement {
       macaco.ipc.invoke('reload-metadata', true)
     }
 
-    this.dom.delver.onclick = (e) => {
+    this.dom.importDelver.onclick = (e) => {
       macaco.ipc.invoke('import-delver')
+    }
+
+    this.dom.importTextFile.onclick = (e) => {
+      macaco.ipc.invoke('import-textfile', macaco.collection.folder)
+    }
+
+    this.dom.exportTextFile.onclick = (e) => {
+      const dialog = {
+        title: 'Export Text File',
+        label: 'Would you like to export the current folder or the entire collection?',
+        yes: {
+          label: 'Collection',
+          function: (ev) => { macaco.ipc.invoke('export-textfile', macaco.collection.contents) }
+        },
+        no: {
+          label: 'Folder',
+          function: (ev) => { macaco.ipc.invoke('export-textfile', macaco.collection.contents[macaco.collection.folder]) }
+        }
+      }
+
+      macaco.events.invoke('set-overlay-dialog', dialog)
     }
 
     // disable delver import button while nothing is loaded
     macaco.events.register('update-collection-contents', (ev, contents) => {
-      this.dom.delver.disabled = false
+      this.dom.importDelver.disabled = false
+      this.dom.importTextFile.disabled = false
+      this.dom.exportTextFile.disabled = false
     })
   }
 }
