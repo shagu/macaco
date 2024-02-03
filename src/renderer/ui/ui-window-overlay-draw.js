@@ -98,7 +98,7 @@ export default class UIWindowOverlayDraw extends HTMLElement {
   shuffle (cards) {
     let copy = cards.slice(0)
 
-    return function() {
+    return function () {
       // create new copy if old pile is exhausted
       if (copy.length < 1) copy = cards.slice(0)
 
@@ -125,7 +125,7 @@ export default class UIWindowOverlayDraw extends HTMLElement {
     this.dom['slot-8-image'].src = '../../assets/cards/background.jpg'
 
     this.dom['slot-8-name'].realInnerHTML = this.dom['slot-8-name'].innerHTML
-    this.dom['slot-8-name'].innerHTML = "Draw"
+    this.dom['slot-8-name'].innerHTML = 'Draw'
 
     this.dom['slot-8'].onclick = (ev) => {
       this.dom['slot-8-image'].src = this.dom['slot-8-image'].realSrc
