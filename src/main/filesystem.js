@@ -135,6 +135,7 @@ class Filesystem {
     for (const file of fs.readdirSync(path.join(base, folder))) {
       const fsurl = path.join(base, folder, file)
       const stat = fs.statSync(fsurl)
+      const mtime = stat.mtime.getTime()
 
       // handle hidden files and folders
       if (file.length > 1 && file.startsWith('.')) {
@@ -166,6 +167,7 @@ class Filesystem {
           collection: base,
           folder,
           file,
+          mtime,
 
           fsurl
         })
@@ -215,6 +217,7 @@ class Filesystem {
       }
 
       // update card file data
+      card.mtime = Date.now()
       card.fsurl = fsurl
     })
 
