@@ -52,21 +52,17 @@ class Collection {
   }
 
   async reload (card, oldurl) {
-    // same file, doesn't need a reload
-    if (oldurl && card.fsurl === oldurl) return
-
-    // add new card to the collection
-    this.collection[card.folder].push(card)
-
-    // only clean obsolete if old file exists
-    if (!oldurl) return
-
-    // remove old card (if exists)
-    for (const [folder, contents] of Object.entries(this.collection)) {
-      for (const card of contents) {
-        if (card.fsurl === oldurl) this.collection[folder].splice(this.collection[folder].indexOf(card), 1)
+    // find and remove previous card from collection
+    if (oldurl) {
+      for (const [folder, contents] of Object.entries(this.collection)) {
+        for (const card of contents) {
+          if (card.fsurl === oldurl) this.collection[folder].splice(this.collection[folder].indexOf(card), 1)
+        }
       }
     }
+
+    // add updated card to the collection
+    this.collection[card.folder].push(card)
   }
 
   /* add card to current collection */
