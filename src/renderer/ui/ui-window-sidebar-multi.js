@@ -123,12 +123,8 @@ export default class UIWindowSidebarMulti extends HTMLElement {
         element.appendChild(etitle)
         element.appendChild(emana)
 
-        element.onmouseenter = (ev) => {
+        element.onclick = (ev) => {
           macaco.events.invoke('set-overlay-image', card.fsurl)
-        }
-
-        element.onmouseleave = (ev) => {
-          macaco.events.invoke('set-overlay-image', false)
         }
 
         this.dom.cards.appendChild(element)

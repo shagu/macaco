@@ -342,10 +342,6 @@ export default class UIWindowSidebarSingle extends HTMLElement {
     this.dom.image.onclick = (ev) => {
       macaco.events.invoke('set-overlay-image', this.dom.image.src)
     }
-
-    this.dom.image.onmouseleave = (ev) => {
-      macaco.events.invoke('set-overlay-image', false)
-    }
   }
 }
 
