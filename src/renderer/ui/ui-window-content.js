@@ -150,6 +150,7 @@ export default class UIWindowContent extends HTMLElement {
       for (const element of this.cards) {
         for (const card of element.cards) {
           if (macaco.collection.diff.includes(card.fsurl)) {
+            this.scrollTop = element.offsetTop - element.offsetHeight
             element.classList.add('recent')
           }
         }
