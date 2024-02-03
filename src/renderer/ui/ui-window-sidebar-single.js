@@ -213,6 +213,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
 
     if (card && card.metadata) {
       this.dom.image.src = card.preview || card.fsurl
+      if (card.mtime) this.dom.image.src += '?d=' + card.mtime
 
       const name = macaco.getLocale(card, 'name') || 'Unknown Card'
       const type = macaco.getLocale(card, 'type')

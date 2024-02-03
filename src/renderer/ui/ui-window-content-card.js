@@ -207,7 +207,10 @@ export default class UIWindowContentCard extends HTMLElement {
 
     const image = document.createElement('img')
     image.setAttribute('id', 'image')
-    image.setAttribute('src', card.fsurl)
+
+    image.src = card.fsurl
+    if (card.mtime) image.src += '?d=' + card.mtime
+
     this.shadow.appendChild(image)
 
     const title = document.createElement('div')
