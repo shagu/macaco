@@ -6,6 +6,7 @@ export default class UIWindowHeader extends HTMLElement {
   static template = html`
     <div> <!-- toolbar main buttons -->
       <m-button id="open-collection">${macaco.icons.open}</m-button>
+      <m-button id="reload-collection" disabled>${macaco.icons.reload}</m-button>
     </div>
 
     <div> <!-- mana icon buttons -->
@@ -116,7 +117,7 @@ export default class UIWindowHeader extends HTMLElement {
       const uiLock = [
         'button-color-w', 'button-color-u', 'button-color-b', 'button-color-r',
         'button-color-g', 'button-color-c', 'button-color-m', 'search',
-        'menu-filter', 'menu-statistics', 'menu-main'
+        'menu-filter', 'menu-statistics', 'menu-main', 'reload-collection'
       ]
 
       for (const element of uiLock) {
@@ -127,6 +128,10 @@ export default class UIWindowHeader extends HTMLElement {
     // add events to dom
     this.dom['open-collection'].addEventListener('click', (ev) => {
       macaco.ipc.invoke('set-collection')
+    })
+
+    this.dom['reload-collection'].addEventListener('click', (ev) => {
+      macaco.ipc.invoke('reload-collection')
     })
 
     this.dom['window-minimize'].addEventListener('click', (ev) => {

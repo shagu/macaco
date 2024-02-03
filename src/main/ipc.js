@@ -36,6 +36,14 @@ class Ipc {
     shared.window.webContents.send('update-collection', collection.folder, collection.collection)
   }
 
+  async reloadCollection (event, ...args) {
+    // reload collection
+    await collection.set(collection.folder, true)
+
+    // notify frontend
+    shared.window.webContents.send('update-collection', collection.folder, collection.collection)
+  }
+
   async setCardPreview (event, card, ...args) {
     // get preview card and send back to frontend
     const preview = await collection.preview(card)
@@ -159,6 +167,8 @@ class Ipc {
     electron.ipcMain.handle('import-delver', this.importDelver)
 
     electron.ipcMain.handle('set-collection', this.setCollection)
+    electron.ipcMain.handle('reload-collection', this.reloadCollection)
+
     electron.ipcMain.handle('set-card-preview', this.setCardPreview)
     electron.ipcMain.handle('set-card-folder', this.setCardFolder)
 
