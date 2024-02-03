@@ -5,10 +5,16 @@ export default class UIWindowOverlayDialog extends HTMLElement {
 
   static template = html`
     <m-grid vertical="1">
+      <m-button id='close'>${macaco.icons.close}</m-button>
+
+      <m-grid vertical="1">
+        <div id='title'>TITLE</div>
+      </m-grid>
+      <hr/>
       <m-grid vertical="1">
         <div id='label'>TEXT</div>
       </m-grid>
-
+      <hr/>
       <m-grid horizontal="1">
         <m-button id='btnYes'>Yes</m-button>
         <m-button id='btnNo'>No</m-button>
@@ -25,15 +31,45 @@ export default class UIWindowOverlayDialog extends HTMLElement {
       min-width: 100px;
     }
 
+    #title {
+      font-size: larger;
+    }
+
+    hr {
+      height: 0px;
+      background-color: var(--border-light);
+      border: none;
+      margin: 5px;
+    }
+
     #label {
       color: var(--font-light);
+      max-width: 320px;
+      overflow: auto;
+    }
+
+    #close {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+
+      aspect-ratio: 1/1;
+
+      display: grid;
+      justify-items: center;
+      align-items: center;
+
+      min-height: 18px !important;
+      min-width: 18px !important;
+      padding: 1px;
     }
   `
 
   dom = {}
 
   set (parent, dialog) {
-    this.dom.label.innerHTML = dialog.label || ''
+    this.dom.title.innerHTML = dialog.title || 'Warning'
+    this.dom.label.innerHTML = dialog.label || 'Would you like to proceed?'
     this.dom.btnYes.innerHTML = dialog.yes.label || 'Yes'
     this.dom.btnNo.innerHTML = dialog.no.label || 'No'
 
@@ -44,6 +80,10 @@ export default class UIWindowOverlayDialog extends HTMLElement {
 
     this.dom.btnNo.onclick = (ev) => {
       dialog.no && dialog.no.function && dialog.no.function(ev)
+      parent.hide()
+    }
+
+    this.dom.close.onclick = (ev) => {
       parent.hide()
     }
 
