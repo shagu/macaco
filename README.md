@@ -21,8 +21,6 @@ Macaco can add new cards to your library by simply typing the `set` and the `num
 
 ## Download
 
-> **This project is in early development. Use at your own risk.**
-
 Files are provided on the **[Release & Download Page](https://github.com/shagu/macaco/releases/latest)** for the following platforms:
 
 * **Linux** as AppImage *(macaco-X.X.X-linux.AppImage)*
