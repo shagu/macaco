@@ -56,6 +56,7 @@ export default class UIWindowLibrary extends HTMLElement {
   `
 
   dom = {}
+  folders = []
 
   constructor () {
     super()
@@ -93,8 +94,39 @@ export default class UIWindowLibrary extends HTMLElement {
       }
     }
 
+    macaco.events.register('update-statistics-folder', (ev, counts) => {
+      for (const element of this.folders) {
+        const real = element.cards.length > 0 ? element.cards.length : ''
+        const filtered = counts[element.path] ? counts[element.path] : 0
+
+        if (filtered <= 0 || filtered === real) {
+          element.dom.count.innerHTML = `${real}`
+        } else {
+          element.dom.count.innerHTML = `${real} [<b>${filtered}</b>]`
+        }
+      }
+    })
+
+    macaco.events.register('update-collection-folder', (ev, folder) => {
+      for (const element of this.folders) {
+        if (folder === element.path) {
+          element.dom.folder.classList.add('active')
+        } else {
+          element.dom.folder.classList.remove('active')
+        }
+
+        // detect recent change
+        if (macaco.collection.diff.includes(element.path)) {
+          element.dom.folder.classList.add('recent')
+        } else {
+          element.dom.folder.classList.remove('recent')
+        }
+      }
+    })
+
     macaco.events.register('update-collection-contents', (ev, contents) => {
       this.dom.folders.innerHTML = ''
+      this.folders = []
 
       this.dom['container-box'].style.display = 'block'
 
@@ -103,6 +135,7 @@ export default class UIWindowLibrary extends HTMLElement {
         element.cards = cards
         element.path = path
         this.dom.folders.appendChild(element)
+        this.folders.push(element)
       }
     })
   }

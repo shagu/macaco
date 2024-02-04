@@ -99,32 +99,6 @@ export default class UIWindowLibraryFolder extends HTMLElement {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
-    macaco.events.register('update-statistics-folder', (ev, counts) => {
-      const real = this.cards.length > 0 ? this.cards.length : ''
-      const filtered = counts[this.path] ? counts[this.path] : 0
-
-      if (filtered <= 0 || filtered === real) {
-        this.dom.count.innerHTML = `${real}`
-      } else {
-        this.dom.count.innerHTML = `${real} [<b>${filtered}</b>]`
-      }
-    })
-
-    macaco.events.register('update-collection-folder', (ev, folder) => {
-      if (folder === this.path) {
-        this.dom.folder.classList.add('active')
-      } else {
-        this.dom.folder.classList.remove('active')
-      }
-
-      // detect recent change
-      if (macaco.collection.diff.includes(this.path)) {
-        this.dom.folder.classList.add('recent')
-      } else {
-        this.dom.folder.classList.remove('recent')
-      }
-    })
-
     this.dom.folder.onclick = (ev) => {
       // set view to this path
       macaco.events.invoke('set-collection-folder', this.path)
