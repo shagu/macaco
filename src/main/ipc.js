@@ -115,7 +115,7 @@ class Ipc {
         ]
       }
 
-      const result = await await electron.dialog.showOpenDialog(dialogOptions)
+      const result = await electron.dialog.showOpenDialog(dialogOptions)
       if (!result.filePaths || result.canceled) return
       file = result.filePaths[0]
     }
