@@ -13,14 +13,14 @@
   "author": "Eric Mauser",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^23.3.11",
-    "electron-builder": "^23.6.0",
+    "electron": "^28.2.1",
+    "electron-builder": "^24.9.1",
     "electron-rebuild": "^3.2.7",
     "standard": "^17.0.0"
   },
   "dependencies": {
-    "better-sqlite3": "^8.7.0",
-    "jimp": "^0.16.2",
+    "better-sqlite3": "^9.4.0",
+    "jimp": "^0.22.10",
     "jszip": "^3.10.1"
   },
   "standard": {
