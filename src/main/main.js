@@ -4,10 +4,6 @@ const electron = require('electron')
 const shared = require('./shared.js')
 const ipc = require('./ipc.js')
 
-electron.app.commandLine.appendSwitch('ignore-gpu-blacklist')
-electron.app.commandLine.appendSwitch('disable-gpu')
-electron.app.commandLine.appendSwitch('disable-gpu-compositing')
-
 electron.app.whenReady().then(async () => {
   const rootdir = path.join(__dirname, '..', '..')
   const userdir = electron.app.getPath('userData')
