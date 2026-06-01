@@ -28,7 +28,12 @@ class Downloader {
     }
 
     return new Promise((resolve, reject) => {
-      const request = http.get(url, { headers: { 'User-Agent': 'Macaco [github.com/shagu/macaco]' } } ,async (response) => {
+      const request = http.get(url, {
+        headers: {
+          'User-Agent': 'Macaco [github.com/shagu/macaco]',
+          'Accept': '*/*'
+        }
+      }, async (response) => {
         // handle non-200 http status codes
         if (response.statusCode === 301 || response.statusCode === 302) {
           info.redirect = response.headers.location
