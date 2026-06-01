@@ -8,11 +8,11 @@ jobs:
   linux_build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3.5.1
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: '24'
 
     - name: Install and Publish
       run: |
@@ -22,11 +22,11 @@ jobs:
   macos_build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3.5.1
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: '24'
 
     - name: Install and Publish
       run: |
@@ -36,11 +36,11 @@ jobs:
   windows_build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3.5.1
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: '24'
 
     - name: Install and Publish
       env:
