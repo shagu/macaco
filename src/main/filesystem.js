@@ -55,6 +55,9 @@ class Filesystem {
 
     const [artwork] = await this.artwork(card, preview)
 
+    const imagesDir = path.join(shared.userdir, 'images')
+    fs.mkdirSync(imagesDir, { recursive: true })
+
     if (card.foil) {
       const imgdata = await jimp.read(artwork)
 
