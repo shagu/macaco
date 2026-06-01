@@ -12,16 +12,16 @@
   },
   "author": "Eric Mauser",
   "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "jszip": "^3.10.1",
+    "jimp": "^1.6.1"
+  },
   "devDependencies": {
     "electron": "^32.3.3",
     "electron-builder": "^26.8.1",
     "electron-rebuild": "^3.2.9",
-    "jimp": "^1.6.1",
     "standard": "^17.1.2"
-  },
-  "dependencies": {
-    "better-sqlite3": "^12.10.0",
-    "jszip": "^3.10.1"
   },
   "standard": {
     "globals": [
