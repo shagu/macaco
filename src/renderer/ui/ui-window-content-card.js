@@ -141,6 +141,8 @@ export default class UIWindowContentCard extends HTMLElement {
     // set the current selection to the object
     const selection = JSON.stringify(macaco.collection.selection)
     ev.dataTransfer.setData('text/plain', selection)
+    ev.dataTransfer.effectAllowed = 'copy'
+    ev.dataTransfer.dropEffect = 'copy'
 
     // set drag image
     const dragger = document.createElement('div')
