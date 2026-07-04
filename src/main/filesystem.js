@@ -130,7 +130,7 @@ class Filesystem {
 
   async find (folder, base) {
     base = base || folder
-    folder = path.join(folder.replace(base, '.'))
+    folder = path.relative(base, folder) || '.'
 
     const list = {}
     list[folder] = []
