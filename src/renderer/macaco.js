@@ -34,6 +34,13 @@ const macaco = {
   getTextHtml: (str) => {
     if (!str) return ''
 
+    // escape special characters
+    str = str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+
     // remove multicolor icon slash-separator
     const micons = /{(.+?)\/(.+?)}/gi
     str = str.replace(micons, '{$1$2}')
