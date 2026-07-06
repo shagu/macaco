@@ -25,6 +25,8 @@ const languages = {
   Spanish: 'sp'
 }
 
+const MAX_RETRIES = 3
+
 class Metadata {
   runner = false
 
@@ -34,7 +36,7 @@ class Metadata {
     shared.popup('MTGJSON Database', text, small, info.percent)
   }
 
-  async reload (force) {
+  async reload (force, retries = 0) {
     const data = path.join(shared.userdir, 'db', 'macaco-data.json.gz')
     const locales = path.join(shared.userdir, 'db', 'macaco-locales.json.gz')
 
@@ -68,8 +70,14 @@ class Metadata {
 
       shared.popup('MTGJSON Database', 'Loading Metadata', false, 100)
     } catch (err) {
-      console.log('Corrupted MTJSON database detected. Retrying...')
-      await this.reload(true)
+      if (retries < MAX_RETRIES) {
+        console.log(`Corrupted MTJSON database detected. Retry ${retries + 1}/${MAX_RETRIES}...`)
+        await this.reload(force, retries + 1)
+      } else {
+        console.error('Failed to load MTJSON database after 3 retries. Manual reimport may be required.')
+        this.data = null
+        this.locales = null
+      }
     }
   }
 
