@@ -52,14 +52,20 @@ class Collection {
     await this.set(this.folder)
   }
 
+  remove (fsurl) {
+    for (const [folder, contents] of Object.entries(this.collection)) {
+      const idx = contents.findIndex(e => e.fsurl === fsurl)
+      if (idx !== -1) {
+        this.collection[folder].splice(idx, 1)
+        break
+      }
+    }
+  }
+
   async reload (card, oldurl) {
     // find and remove previous card from collection
     if (oldurl) {
-      for (const [folder, contents] of Object.entries(this.collection)) {
-        for (const card of contents) {
-          if (card.fsurl === oldurl) this.collection[folder].splice(this.collection[folder].indexOf(card), 1)
-        }
-      }
+      this.remove(oldurl)
     }
 
     // add updated card to the collection
@@ -107,11 +113,7 @@ class Collection {
     await filesystem.delete(card)
 
     // remove card from collection cache to skip full rescan
-    for (const [folder, contents] of Object.entries(this.collection)) {
-      for (const entry of contents) {
-        if (entry.fsurl === card.fsurl) this.collection[folder].splice(this.collection[folder].indexOf(entry), 1)
-      }
-    }
+    this.remove(card.fsurl)
   }
 
   /* create new folder in library */
