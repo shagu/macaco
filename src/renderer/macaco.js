@@ -22,13 +22,19 @@ const macaco = {
   combine: 'id',
 
   getLocale: (card, entry) => {
-    if (card.language && card.metadata && card.metadata.locales && card.metadata.locales[card.language]) {
+    // try requested language
+    if (card.language && card.metadata?.locales?.[card.language]?.[entry]) {
       return card.metadata.locales[card.language][entry]
-    } else if (card.metadata && card.metadata.locales && card.metadata.locales.en) {
-      return card.metadata.locales.en[entry]
-    } else {
-      return ''
     }
+    // fallback to english locale
+    if (card.metadata?.locales?.en?.[entry]) {
+      return card.metadata.locales.en[entry]
+    }
+    // final fallback: raw metadata field (always available from mtgjson)
+    if (card.metadata?.[entry]) {
+      return card.metadata[entry]
+    }
+    return ''
   },
 
   getTextHtml: (str) => {
