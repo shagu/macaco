@@ -217,7 +217,9 @@ export default class UIWindowContentCard extends HTMLElement {
 
     const title = document.createElement('div')
     title.setAttribute('id', 'title')
-    title.innerHTML = card.name
+    title.innerHTML = Object.keys(card.metadata).length > 0
+      ? card.name
+      : `${card.edition}: ${card.number}`
     this.shadow.appendChild(title)
 
     const count = document.createElement('div')
