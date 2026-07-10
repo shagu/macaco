@@ -12,6 +12,9 @@
   },
   "author": "Eric Mauser",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "better-sqlite3": "^12.10.0",
     "jszip": "^3.10.1",
