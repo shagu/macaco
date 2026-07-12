@@ -27,6 +27,43 @@ Files are provided on the **[Release & Download Page](https://github.com/shagu/m
 * **MacOS** as Apple Disk Image *(macaco-X.X.X-mac.dmg)*
 * **Windows** as portable Executable *(macaco-X.X.X-win.exe)*
 
+## Development
+
+### Prerequisites
+
+- Node.js >= 18.0.0
+- npm
+
+### Setup
+
+1. Clone the repository:
+
+    git clone https://github.com/shagu/macaco
+
+2. Install dependencies:
+
+    npm install
+
+### Launch
+
+3. Start the app:
+
+    npm start
+
+4. Run with dev tools:
+
+    DEV=1 npm start
+
+### Build
+
+- Package for distribution:
+
+    npm run dist
+
+- Build without publishing:
+
+    npm run pack
+
 ## Thanks
 
 * **[MTGJSON](https://mtgjson.com/)** - The main source of all card data used in this project
