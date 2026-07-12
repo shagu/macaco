@@ -36,33 +36,15 @@ Files are provided on the **[Release & Download Page](https://github.com/shagu/m
 
 ### Setup
 
-1. Clone the repository:
+1. Clone the repository: `git clone https://github.com/shagu/macaco`
+2. Install dependencies: `npm install`  
+3. Start the app: `npm start`
 
-    git clone https://github.com/shagu/macaco
+### Debug & Build
 
-2. Install dependencies:
-
-    npm install
-
-### Launch
-
-3. Start the app:
-
-    npm start
-
-4. Run with dev tools:
-
-    DEV=1 npm start
-
-### Build
-
-- Package for distribution:
-
-    npm run dist
-
-- Build without publishing:
-
-    npm run pack
+- Run with dev tools: `DEV=1 npm start`
+- Package for distribution: `npm run dist`
+- Build without publishing: `npm run pack`
 
 ## Thanks
 
