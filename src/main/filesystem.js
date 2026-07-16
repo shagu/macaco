@@ -4,7 +4,7 @@ const path = require('path')
 const queue = require('./queue.js')
 const shared = require('./shared.js')
 const downloader = require('./downloader.js')
-const jimp = require('jimp')
+const { Jimp, BlendMode } = require('jimp')
 
 class Filesystem {
   identifier (card) {
@@ -59,21 +59,21 @@ class Filesystem {
     fs.mkdirSync(imagesDir, { recursive: true })
 
     if (card.foil) {
-      const imgdata = await jimp.read(artwork)
+      const imgdata = await Jimp.read(artwork)
 
       const foilDev = path.join(__dirname, '..', '..', 'assets', 'cards', 'foil.png')
       const foilProd = path.join(process.resourcesPath, '..', '..', 'assets', 'cards', 'foil.png')
-      let foil = await jimp.read(fs.existsSync(foilDev) ? foilDev : foilProd)
+      let foil = await Jimp.read(fs.existsSync(foilDev) ? foilDev : foilProd)
 
-      foil = foil.resize(imgdata.bitmap.width, imgdata.bitmap.height)
+      foil = foil.resize({ w: imgdata.bitmap.width, h: imgdata.bitmap.height })
 
       imgdata.composite(foil, 0, 0, {
-        mode: jimp.BLEND_SOURCE_OVER,
+        mode: BlendMode.SRC_OVER,
         opacityDest: 1,
         opacitySource: 0.4
       })
 
-      await imgdata.writeAsync(file)
+      await imgdata.write(file)
     } else if (artwork !== file) {
       fs.copyFileSync(artwork, file)
     }
