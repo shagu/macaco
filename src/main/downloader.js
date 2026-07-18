@@ -85,7 +85,7 @@ class Downloader {
         info.status = -1
 
         notify(info)
-        resolve(err)
+        reject(err)
       })
 
       notify(info)
