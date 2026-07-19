@@ -70,7 +70,7 @@ class Statistics {
       if (card.metadata.cmc && card.metadata.cmc > 0) {
         stats.mana.num++
         stats.mana.sum += card.metadata.cmc
-        stats.mana.min = stats.price.min === 0 ? card.metadata.cmc : Math.min(stats.mana.min, card.metadata.cmc)
+        stats.mana.min = stats.mana.min === 0 ? card.metadata.cmc : Math.min(stats.mana.min, card.metadata.cmc)
         stats.mana.max = Math.max(stats.mana.max, card.metadata.cmc)
         stats.mana.avg = stats.mana.sum / stats.mana.num
 
