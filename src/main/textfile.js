@@ -1,11 +1,7 @@
 const fs = require('fs')
+const filesystem = require('./filesystem.js')
 
 class TextFile {
-  identifier (card) {
-    let id = `${card.edition}.${card.number}.${card.language}`
-    id = card.foil ? `${id}.f` : id
-    return id
-  }
 
   sort (a, b) {
     if ((a.edition || 0) !== (b.edition || 0)) {
@@ -24,18 +20,18 @@ class TextFile {
 
     // detect duplicates
     for (const card of list) {
-      const id = this.identifier(card)
+      const id = filesystem.identifier(card)
       duplicates[id] = duplicates[id] || []
       duplicates[id].push(card)
     }
 
     for (const card of list) {
-      const id = this.identifier(card)
+      const id = filesystem.identifier(card)
       if (duplicates[id]) {
         if (folder) {
-          string += `${folder.replace(':', '\\:')}: ${duplicates[id].length}x ${card.name} [${this.identifier(card)}]\r\n`
+          string += `${folder.replace(':', '\\:')}: ${duplicates[id].length}x ${card.name} [${filesystem.identifier(card)}]\r\n`
         } else {
-          string += `${duplicates[id].length}x ${card.name} [${this.identifier(card)}]\r\n`
+          string += `${duplicates[id].length}x ${card.name} [${filesystem.identifier(card)}]\r\n`
         }
 
         delete duplicates[id]
