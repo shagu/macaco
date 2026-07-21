@@ -73,8 +73,11 @@ class Delver {
   async unpack () {
     shared.popup('DelverLens Import', 'Unpacking Database')
 
+    const apkPath = path.join(shared.userdir, 'db', 'delverlens.apk')
+    if (!fs.existsSync(apkPath)) return
+
     const extractor = new Jszip()
-    const apk = fs.readFileSync(path.join(shared.userdir, 'db', 'delverlens.apk'))
+    const apk = fs.readFileSync(apkPath)
     const result = await extractor.loadAsync(apk)
     const output = path.join(shared.userdir, 'db', 'delverlens.sqlite')
 
