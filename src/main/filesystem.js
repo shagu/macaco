@@ -181,7 +181,9 @@ class Filesystem {
   }
 
   async delete (card) {
-    fs.unlinkSync(card.fsurl)
+    if (card.fsurl && fs.existsSync(card.fsurl)) {
+      fs.unlinkSync(card.fsurl)
+    }
   }
 
   async write (card, keepImage) {
