@@ -19,7 +19,8 @@ class Collection {
   async set (folder, force) {
     if (!force && folder === this.folder) return
 
-    const foldername = folder.match(/([^/]*)\/*$/)[1]
+    const folderMatch = folder.match(/([^/]*)\/*$/)
+    const foldername = folderMatch ? folderMatch[1] : folder
 
     shared.popup('Open Collection', `Folder: ${foldername}`, 'Scanning Files')
 
