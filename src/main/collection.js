@@ -12,8 +12,8 @@ const textfile = require('./textfile.js')
 const shared = require('./shared.js')
 
 class Collection {
-  static collection = {}
-  static folder = ''
+  collection = {}
+  folder = ''
 
   /* set collection to a folder */
   async set (folder, force) {
