@@ -99,8 +99,8 @@ class Filter {
         }
 
         // metadata sorting algorithm
-        if ((a.metadata[attribute] || 0) !== (b.metadata[attribute] || 0)) {
-          return a.metadata[attribute] < b.metadata[attribute] ? order : -1 * order
+        if ((a.metadata?.[attribute] || 0) !== (b.metadata?.[attribute] || 0)) {
+          return (a.metadata?.[attribute] || 0) < (b.metadata?.[attribute] || 0) ? order : -1 * order
         }
       }
 
