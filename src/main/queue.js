@@ -4,7 +4,11 @@ class Queue {
 
   async worker (name) {
     while (this.tasks[name][0]) {
-      await this.tasks[name][0]()
+      try {
+        await this.tasks[name][0]()
+      } catch (err) {
+        console.error('Queue task failed:', err)
+      }
       this.tasks[name].shift()
     }
 
