@@ -4,11 +4,7 @@ const path = require('path')
 const shared = require('./shared.js')
 
 class Downloader {
-  static processes
-
-  constructor () {
-    this.processes = {}
-  }
+  static processes = {}
 
   notifier (info) {
     const small = info.downloaded > 0 && `${shared.unit(info.downloaded)} of ${shared.unit(info.size)}`
@@ -103,11 +99,11 @@ class Downloader {
 
   async queue (url, path, notify, force, queueName) {
     // initialize empty process list by name
-    if (!this.processes[queueName]) {
-      this.processes[queueName] = { count: 0, tasks: [] }
+    if (!Downloader.processes[queueName]) {
+      Downloader.processes[queueName] = { count: 0, tasks: [] }
     }
 
-    const process = this.processes[queueName]
+    const process = Downloader.processes[queueName]
 
     // detect duplicate entries in queue
     const duplicate = process.tasks.find((task) => {
@@ -116,8 +112,8 @@ class Downloader {
 
     // add new task to the process list
     if (!duplicate) {
-      this.processes[queueName].tasks.push({
-        url, path, notify, force, queue: this.processes[queueName]
+      Downloader.processes[queueName].tasks.push({
+        url, path, notify, force, queue: Downloader.processes[queueName]
       })
     }
 
