@@ -17,7 +17,7 @@ class Statistics {
     }
 
     for (const [color, count] of Object.entries(colors)) {
-      if (count / cards.length >= 0.10) {
+      if (cards.length > 0 && count / cards.length >= 0.10) {
         identity.push(color)
       }
     }
