@@ -26,7 +26,7 @@ export default class UIWindowSidebarSingle extends HTMLElement {
       <m-grid horizontal=1>
         <div class="left" id="language-label">Language:</div>
         <div class="right">
-          <select id="language-input" name="language" id="language">
+          <select id="language-input" name="language">
             <option value="grc">Ancient Greek</option>
             <option value="ar">Arabic</option>
             <option value="cs">Chinese Simplified</option>
