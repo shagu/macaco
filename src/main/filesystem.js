@@ -24,8 +24,8 @@ class Filesystem {
       if (card.fsurl && card.fsurl === path.join(card.collection, card.folder, filename)) break
 
       /* try next available filename */
-      filename = `[${identifier}](${count}).jpg`
       count++
+      filename = `[${identifier}](${count}).jpg`
     }
 
     // generate new fsurl filename
