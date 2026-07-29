@@ -122,7 +122,7 @@ class Metadata {
       const data = this.data[edition][number] || { name: 'Unknown' }
       const locale = this.locales[data.name]
 
-      // deep copy the dabase's metadata to a new metadata object
+      // deep copy the database's metadata to a new metadata object
       const metadata = structuredClone(data)
 
       // replace pointers with locale strings
