@@ -27,8 +27,9 @@ class Downloader {
       const request = http.get(url, {
         headers: {
           'User-Agent': 'Macaco [github.com/shagu/macaco]',
-          'Accept': '*/*'
-        }
+          Accept: '*/*'
+        },
+        timeout: 30000
       }, async (response) => {
         // handle non-200 http status codes
         if (response.statusCode === 301 || response.statusCode === 302) {
@@ -75,6 +76,13 @@ class Downloader {
             resolve()
           })
         }
+      })
+
+      request.on('timeout', () => {
+        info.status = -1
+        request.destroy()
+        notify(info)
+        reject(new Error('Request timed out'))
       })
 
       request.on('error', function (err) {
