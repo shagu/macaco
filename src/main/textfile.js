@@ -67,7 +67,7 @@ class TextFile {
       const amount = decklist[1]
       const name = decklist[2].replaceAll('_!COLON!_', ':')
       card = { folder, amount, name, edition, number, language, foil }
-    } else if (line.length !== 0 || line !== '') {
+    } else if (line.length > 0) {
       console.log(`ERROR: Could not parse line: "${line.replaceAll('_!COLON!_', ':')}"`)
     }
 
