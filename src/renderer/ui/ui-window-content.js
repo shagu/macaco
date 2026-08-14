@@ -14,13 +14,25 @@ export default class UIWindowContent extends HTMLElement {
           Open an existing collection folder or create a new folder, where your collection should be stored at.
         </div>
       </div>
+      <div id="select-rect"></div>
     </div>
   `
 
   static style = css`
     #cards {
+      position: relative;
       min-width: 100%;
       min-height: 100%;
+    }
+
+    #select-rect {
+      position: absolute;
+      display: none;
+      border: 1px var(--color-notify) solid;
+      background: var(--color-accent);
+      opacity: 0.4;
+      z-index: 10;
+      pointer-events: none;
     }
 
     #welcome {
@@ -83,9 +95,105 @@ export default class UIWindowContent extends HTMLElement {
       if (e.id) this.dom[e.id] = this.shadow.getElementById(e.id)
     }
 
+    // rectangle selection state
+    let rect = null
+    let rectStart = null
+    let rectAdditive = false
+    let rectDrawn = false
+
+    const rectShow = (box) => {
+      this.dom['select-rect'].style.left = `${box.x}px`
+      this.dom['select-rect'].style.top = `${box.y}px`
+      this.dom['select-rect'].style.width = `${box.w}px`
+      this.dom['select-rect'].style.height = `${box.h}px`
+      this.dom['select-rect'].style.display = 'block'
+    }
+
+    const rectHide = () => {
+      this.dom['select-rect'].style.display = 'none'
+    }
+
+    const rectCoords = (ev) => {
+      const bounds = this.dom.cards.getBoundingClientRect()
+      const x = Math.max(0, Math.min(ev.clientX - bounds.left, this.dom.cards.offsetWidth))
+      const y = Math.max(0, Math.min(ev.clientY - bounds.top, this.dom.cards.offsetHeight))
+      return { x, y }
+    }
+
+    const rectStop = () => {
+      document.removeEventListener('mousemove', rectMove)
+      document.removeEventListener('mouseup', rectFinish)
+      rectHide()
+      rect = null
+      rectStart = null
+      rectDrawn = false
+    }
+
+    const rectMove = (ev) => {
+      if (!rectStart) return
+
+      const pos = rectCoords(ev)
+      if (!rectDrawn) {
+        // ignore tiny movements, a plain click should still work
+        if (Math.abs(pos.x - rectStart.x) < 4 && Math.abs(pos.y - rectStart.y) < 4) return
+        rectDrawn = true
+      }
+
+      rect = {
+        x: Math.min(rectStart.x, pos.x),
+        y: Math.min(rectStart.y, pos.y),
+        w: Math.abs(pos.x - rectStart.x),
+        h: Math.abs(pos.y - rectStart.y)
+      }
+      rectShow(rect)
+    }
+
+    const rectFinish = () => {
+      const drawn = rectDrawn
+      const box = rect
+      rectStop()
+
+      if (!drawn || !box) return
+
+      // suppress the click event right after a rectangle drag
+      this.rectDragged = true
+
+      // select every card whose center is inside the rectangle
+      const selection = []
+      let anchor = null
+      for (const element of this.cards) {
+        const cx = element.offsetLeft + element.offsetWidth / 2
+        const cy = element.offsetTop + element.offsetHeight / 2
+        if (cx >= box.x && cx <= box.x + box.w && cy >= box.y && cy <= box.y + box.h) {
+          for (const card of element.cards) selection.push(card)
+          anchor = element
+        }
+      }
+
+      // merge with the existing selection in additive mode
+      if (rectAdditive) {
+        for (const card of selection) {
+          if (!macaco.collection.selection.includes(card)) {
+            macaco.collection.selection.push(card)
+          }
+        }
+      } else {
+        macaco.collection.selection = selection
+      }
+
+      macaco.collection.anchor = anchor
+      macaco.events.invoke('update-collection-selection', macaco.collection.selection)
+    }
+
     document.addEventListener('keydown', (event) => {
       /* ignore if any element or input has focus */
       if (document.activeElement.tagName !== 'BODY') return
+
+      /* escape cancels an active rectangle selection */
+      if (event.code === 'Escape' && rectStart) {
+        rectStop()
+        return
+      }
 
       if (event.ctrlKey && event.code === 'KeyA') {
         macaco.collection.selection = []
@@ -125,10 +233,68 @@ export default class UIWindowContent extends HTMLElement {
       }
     })
 
+    this.dom.cards.onmousedown = (ev) => {
+      // start a rectangle selection on empty space
+      if (ev.button !== 0) return
+      if (this.cards.length === 0) return
+      if (ev.target.closest('ui-window-content-card')) return
+
+      ev.preventDefault()
+      rectStart = rectCoords(ev)
+      rectAdditive = ev.ctrlKey || ev.shiftKey
+      rectDrawn = false
+      document.addEventListener('mousemove', rectMove)
+      document.addEventListener('mouseup', rectFinish)
+    }
+
     this.dom.cards.onclick = (ev) => {
+      // ignore the click event right after a rectangle drag
+      if (this.rectDragged) {
+        this.rectDragged = false
+        return
+      }
+
       macaco.collection.selection = []
       macaco.events.invoke('update-collection-selection', macaco.collection.selection)
     }
+
+    const resolveAnchor = () => {
+      const anchor = macaco.collection.anchor
+      if (!anchor) return -1
+
+      // anchor element might be gone after a view rebuild
+      const index = this.cards.indexOf(anchor)
+      if (index >= 0) return index
+
+      const ref = anchor.cards && anchor.cards[0]
+      if (!ref) return -1
+      return this.cards.findIndex((element) => element.cards[0] === ref)
+    }
+
+    macaco.events.register('select-card-range', (ev, element) => {
+      // select every card between the anchor and the clicked element
+      const from = resolveAnchor()
+      const to = this.cards.indexOf(element)
+
+      // no valid anchor, fall back to a plain click
+      if (from < 0 || to < 0) {
+        macaco.collection.anchor = element
+        element.selector(false)
+        return
+      }
+
+      const [first, last] = from < to ? [from, to] : [to, from]
+      const selection = []
+      for (let i = first; i <= last; i++) {
+        for (const card of this.cards[i].cards) {
+          selection.push(card)
+        }
+      }
+
+      macaco.collection.selection = selection
+      macaco.collection.anchor = this.cards[last]
+      macaco.events.invoke('update-collection-selection', selection)
+    })
 
     const updateSelection = (ev, selection) => {
       // remove previous selections
@@ -160,6 +326,9 @@ export default class UIWindowContent extends HTMLElement {
     const updateView = (ev, view) => {
       // clear current view
       this.dom.cards.innerHTML = ''
+
+      // keep the selection rectangle attached to the cards container
+      this.dom.cards.appendChild(this.dom['select-rect'])
 
       // cache dom object of same cards
       this.cards = []

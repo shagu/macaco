@@ -130,11 +130,18 @@ export default class UIWindowContentCard extends HTMLElement {
   }
 
   static click (ev) {
-    this.selector(ev.ctrlKey)
+    // shift+click extends the selection from the anchor
+    if (ev.shiftKey && macaco.collection.anchor) {
+      macaco.events.invoke('select-card-range', this)
+    } else {
+      macaco.collection.anchor = this
+      this.selector(ev.ctrlKey)
+    }
     ev.stopPropagation()
   }
 
   static dragstart (ev) {
+    macaco.collection.anchor = this
     // handle click event
     this.selector(ev.ctrlKey, true)
 

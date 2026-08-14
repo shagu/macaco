@@ -16,7 +16,8 @@ const macaco = {
     contents: {},
     selection: [],
     folder: '.',
-    diff: []
+    diff: [],
+    anchor: null
   },
 
   combine: 'id',
@@ -82,6 +83,7 @@ macaco.events.register('set-collection-folder', (ev, folder) => {
 
 macaco.events.register('set-collection-selection', (ev, selection) => {
   macaco.collection.selection = selection
+  macaco.collection.anchor = null
   macaco.events.invoke('update-collection-selection', selection)
 })
 
