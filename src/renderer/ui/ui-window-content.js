@@ -151,14 +151,16 @@ export default class UIWindowContent extends HTMLElement {
       rectSelect(rect)
     }
 
-    // select every card whose center is inside the rectangle
+    // select every card whose bounds are touched by the rectangle
     const rectSelect = (box) => {
       const selection = []
       let anchor = null
       for (const element of this.cards) {
-        const cx = element.offsetLeft + element.offsetWidth / 2
-        const cy = element.offsetTop + element.offsetHeight / 2
-        if (cx >= box.x && cx <= box.x + box.w && cy >= box.y && cy <= box.y + box.h) {
+        const l = element.offsetLeft
+        const t = element.offsetTop
+        const r = l + element.offsetWidth
+        const b = t + element.offsetHeight
+        if (l <= box.x + box.w && r >= box.x && t <= box.y + box.h && b >= box.y) {
           for (const card of element.cards) selection.push(card)
           anchor = element
         }
