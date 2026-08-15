@@ -100,6 +100,8 @@ export default class UIWindowContent extends HTMLElement {
     let rectStart = null
     let rectAdditive = false
     let rectDrawn = false
+    let rectBase = []
+    let rectAnchor = null
 
     const rectShow = (box) => {
       this.dom['select-rect'].style.left = `${box.x}px`
@@ -146,19 +148,11 @@ export default class UIWindowContent extends HTMLElement {
         h: Math.abs(pos.y - rectStart.y)
       }
       rectShow(rect)
+      rectSelect(rect)
     }
 
-    const rectFinish = () => {
-      const drawn = rectDrawn
-      const box = rect
-      rectStop()
-
-      if (!drawn || !box) return
-
-      // suppress the click event right after a rectangle drag
-      this.rectDragged = true
-
-      // select every card whose center is inside the rectangle
+    // select every card whose center is inside the rectangle
+    const rectSelect = (box) => {
       const selection = []
       let anchor = null
       for (const element of this.cards) {
@@ -185,12 +179,26 @@ export default class UIWindowContent extends HTMLElement {
       macaco.events.invoke('update-collection-selection', macaco.collection.selection)
     }
 
+    const rectFinish = () => {
+      // the selection is already applied live while dragging
+      const drawn = rectDrawn
+      rectStop()
+      if (!drawn) return
+
+      // suppress the click event right after a rectangle drag
+      this.rectDragged = true
+    }
+
     document.addEventListener('keydown', (event) => {
       /* ignore if any element or input has focus */
       if (document.activeElement.tagName !== 'BODY') return
 
       /* escape cancels an active rectangle selection */
       if (event.code === 'Escape' && rectStart) {
+        // restore the selection from before the drag
+        macaco.collection.selection = rectBase
+        macaco.collection.anchor = rectAnchor
+        macaco.events.invoke('update-collection-selection', macaco.collection.selection)
         rectStop()
         return
       }
@@ -243,6 +251,8 @@ export default class UIWindowContent extends HTMLElement {
       rectStart = rectCoords(ev)
       rectAdditive = ev.ctrlKey || ev.shiftKey
       rectDrawn = false
+      rectBase = [...macaco.collection.selection]
+      rectAnchor = macaco.collection.anchor
       document.addEventListener('mousemove', rectMove)
       document.addEventListener('mouseup', rectFinish)
     }
