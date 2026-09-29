@@ -55,6 +55,12 @@
     "linux": {
       "target": [
         "AppImage"
+      ],
+      "extraFiles": [
+        {
+          "from": "build/org.shagu.macaco.metainfo.xml",
+          "to": "usr/share/metainfo/org.shagu.macaco.metainfo.xml"
+        }
       ]
     },
     "win": {

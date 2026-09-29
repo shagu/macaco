@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.shagu.macaco</id>
+  <name>Macaco</name>
+  <summary>A Magic Card Collection Software</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>Macaco stands for <em>Magic Card Collection</em> and is a utility that helps you to digitalize and organize your Magic: The Gathering collection. Each card in your collection is represented as a single file and is grouped by folders. This allows you to browse, sort, backup and work with your collection using any file manager of your choice.</p>
+    <p>Macaco can add new cards to your library by simply typing the set and the number of the card into the side panel. It will then automatically begin to download an image of the card from Scryfall and saves it into your library.</p>
+  </description>
+  <launchable type="desktop-id">macaco.desktop</launchable>
+  <url type="homepage">https://github.com/shagu/macaco</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The main window</caption>
+      <image>https://raw.githubusercontent.com/shagu/macaco/master/preview-light.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.6" date="2026-07-17"/>
+  </releases>
+</component>
